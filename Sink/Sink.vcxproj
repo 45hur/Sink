@@ -23,7 +23,7 @@
     <ProjectGuid>{D1C8A710-1303-48BB-91A8-064A2C98879D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Sink</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -156,7 +156,7 @@
     <None Include="hashtable.dump">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="top-1m.csv">
+    <None Include="top-5.csv">
       <DeploymentContent>true</DeploymentContent>
     </None>
   </ItemGroup>
