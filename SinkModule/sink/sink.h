@@ -7,6 +7,8 @@
 #include "daemon/engine.h"
 #include <knot/query/layer.h>
 
+#include "hashcontainer.h"
+
 static __inline void logtosyslog(char *text)
 {
     openlog("sink", LOG_CONS | LOG_PID, LOG_USER);

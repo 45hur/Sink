@@ -1,10 +1,7 @@
 /* Convenience macro to declare module API. */
 #define C_MOD_SINK "\x08""mod-sink"
 
-
 #include "lib/module.h"
-//#include "lib/rplan.h"
-//
 #include <pthread.h>
 #include <syslog.h>
 #include <lib/rplan.h>
@@ -13,12 +10,18 @@
 
 static void* observe(void *arg)
 {
-        /* ... do some observing ... */
-        openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
-        syslog(LOG_INFO, "Loaded");
-        closelog();
+    /* ... do some observing ... */
+    openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+    syslog(LOG_INFO, "Loading");
+    closelog();
 
-        return NULL;
+    hashcontainer_init();
+
+    openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+    syslog(LOG_INFO, "Loaded");
+    closelog();
+
+    return NULL;
 }
 
 static int load(struct kr_module *module, const char *path)
@@ -46,12 +49,11 @@ static int collect(kr_layer_t *ctx)
     sprintf(message, "State %u",request->state);
     logtosyslog(message);
 
-
     char qname_str[KNOT_DNAME_MAXLEN];
     if (rplan->resolved.len > 0)
     {
         bool sinkit = false;
-        uint16_t rclass;
+        uint16_t rclass = 0;
         struct kr_query *last = array_tail(rplan->resolved);
         const knot_pktsection_t *ns = knot_pkt_section(request->answer, KNOT_ANSWER);
 
@@ -69,14 +71,20 @@ static int collect(kr_layer_t *ctx)
 
             if (rr->type == KNOT_RRTYPE_A || rr->type == KNOT_RRTYPE_AAAA)
             {
-                knot_dname_to_str(message, rr->owner, KNOT_DNAME_MAXLEN);
-                char *badhosthane = "google.com.\0";
+                char domain[KNOT_DNAME_MAXLEN];
+                knot_dname_to_str(domain, rr->owner, KNOT_DNAME_MAXLEN);
 
-                if (strcmp(badhosthane, message) == 0)
+                int domainLen = strlen(domain);
+                if(domain[domainLen - 1] == '.')
                 {
-                    sprintf(message, "redirecting = %s", badhosthane);
-                    logtosyslog(message);
+                    domain[domainLen - 1] = '\0';
+                }
 
+                sprintf(message, "redirecting ? %s", domain);
+                logtosyslog(message);
+
+                if (hashcontainer_contains(domain))
+                {
                     uint16_t msgid = knot_wire_get_id(request->answer->wire);
                     kr_pkt_recycle(request->answer);
 
@@ -84,10 +92,13 @@ static int collect(kr_layer_t *ctx)
                     knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
 
                     struct sockaddr_storage sinkhole;
-                    const char *sinkit_sinkhole = "192.168.1.1";
+                    const char *sinkit_sinkhole = "94.237.30.217";
                     if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0) {
                         return kr_error(EINVAL);
                     }
+
+                    sprintf(message, "apply redirect to %s", sinkit_sinkhole);
+                    logtosyslog(message);
 
                     size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
                     const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
