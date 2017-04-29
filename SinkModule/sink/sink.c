@@ -26,24 +26,19 @@ static int load(struct kr_module *module, const char *path)
         return kr_ok();
 }
 
+static int parse_addr_str(struct sockaddr_storage *sa, const char *addr) {
+    int family = strchr(addr, ':') ? AF_INET6 : AF_INET;
+    memset(sa, 0, sizeof(struct sockaddr_storage));
+    sa->ss_family = family;
+    char *addr_bytes = (char *)kr_inaddr((struct sockaddr *)sa);
+    if (inet_pton(family, addr, addr_bytes) < 1) {
+        return kr_error(EILSEQ);
+    }
+    return 0;
+}
+
 static int collect(kr_layer_t *ctx)
 {
-/*
-        struct kr_request *param = ctx->data;
-        struct kr_rplan *rplan = &param->rplan;
-        if (!param->qsource.addr) {
-                openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
-                syslog(LOG_INFO, "sank");
-                closelog();
-
-
-                return ctx->state;
-        }
-        const struct sockaddr *sa = param->qsource.addr;
-        struct sockaddr_in *sin = (struct sockaddr_in *) sa;
-
-        const char *client_address = inet_ntoa(sin->sin_addr);
-        */
     struct kr_request *request = (struct kr_request *)ctx->req;
     struct kr_rplan *rplan = &request->rplan;
 
@@ -75,7 +70,35 @@ static int collect(kr_layer_t *ctx)
             if (rr->type == KNOT_RRTYPE_A || rr->type == KNOT_RRTYPE_AAAA)
             {
                 knot_dname_to_str(message, rr->owner, KNOT_DNAME_MAXLEN);
-                logtosyslog(message);
+                char *badhosthane = "google.com.\0";
+
+                if (strcmp(badhosthane, message) == 0)
+                {
+                    sprintf(message, "redirecting = %s", badhosthane);
+                    logtosyslog(message);
+
+                    uint16_t msgid = knot_wire_get_id(request->answer->wire);
+                    kr_pkt_recycle(request->answer);
+
+                    knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
+                    knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
+
+                    struct sockaddr_storage sinkhole;
+                    const char *sinkit_sinkhole = "192.168.1.1";
+                    if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0) {
+                        return kr_error(EINVAL);
+                    }
+
+                    size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
+                    const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
+                    static knot_rdata_t rdata_arr[RDATA_ARR_MAX];
+
+                    knot_wire_set_id(request->answer->wire, msgid);
+
+                    kr_pkt_put(request->answer, last->sname, 120, rclass, KNOT_RRTYPE_A, raw_addr, addr_len);
+
+                    return KNOT_STATE_DONE;
+                }
             }
         }
     }
