@@ -75,7 +75,7 @@ protected:
 		else
 		{
 			/// Load CSV and parse it
-			FILE* stream = fopen("top-5.csv", "r");
+			FILE* stream = fopen("top-1m.csv", "r");
 			char line[1024];
 
 			/// Get total number of domains
