@@ -15,7 +15,7 @@ static void* observe(void *arg)
     syslog(LOG_INFO, "Loading");
     closelog();
 
-    hashcontainer_init();
+    //hashcontainer_init();
 
     openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
     syslog(LOG_INFO, "Loaded");
