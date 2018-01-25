@@ -5,7 +5,7 @@
 #include <libknot/rrtype/aaaa.h>
 #include <ucw/mempool.h>
 #include "daemon/engine.h"
-#include <knot/query/layer.h>
+#include <lib/layer.h>
 
 #include "hashcontainer.h"
 
