@@ -15,7 +15,7 @@ static void* observe(void *arg)
     syslog(LOG_INFO, "Loading");
     closelog();
 
-    //hashcontainer_init();
+    hashcontainer_init();
 
     openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
     syslog(LOG_INFO, "Loaded");
@@ -116,17 +116,17 @@ static int collect(kr_layer_t *ctx)
 
     return ctx->state;
 }
-/*
+
 KR_EXPORT
 const kr_layer_api_t *sink_layer(struct kr_module *module) {
         static kr_layer_api_t _layer = {
                 .finish = &collect,
         };
-         Store module reference 
+        /* Store module reference */
         _layer.data = module;
         return &_layer;
 }
-*/
+
 KR_EXPORT
 int sink_init(struct kr_module *module)
 {

@@ -67,7 +67,7 @@ int hashcontainer_init()
 	else
 	{
 		/// Load CSV and parse it
-		FILE* stream = fopen("/home/ashur/top-5.csv", "r");
+		FILE* stream = fopen("/data/top-5.csv", "r");
 		char line[1024];
 
 		/// Get total number of domains
