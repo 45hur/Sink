@@ -85,6 +85,9 @@ static int collect(kr_layer_t *ctx)
 
                 if (hashcontainer_contains(domain))
                 {
+                    sprintf(message, "contains");
+                    logtosyslog(message);
+ 
                     uint16_t msgid = knot_wire_get_id(request->answer->wire);
                     kr_pkt_recycle(request->answer);
 
