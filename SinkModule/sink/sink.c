@@ -80,7 +80,7 @@ static int collect(kr_layer_t *ctx)
                     domain[domainLen - 1] = '\0';
                 }
 
-                sprintf(message, "redirecting ? %s", domain);
+                sprintf(message, "redirecting ? '%s'", domain);
                 logtosyslog(message);
 
                 if (hashcontainer_contains(domain))
@@ -109,7 +109,10 @@ static int collect(kr_layer_t *ctx)
 
                     knot_wire_set_id(request->answer->wire, msgid);
 
-                    kr_pkt_put(request->answer, last->sname, 120, rclass, KNOT_RRTYPE_A, raw_addr, addr_len);
+                    sprintf(message, "addr_len = %d", addr_len);
+                    logtosyslog(message);
+ 
+                    kr_pkt_put(request->answer, last->sname, 120, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
 
                     return KNOT_STATE_DONE;
                 }

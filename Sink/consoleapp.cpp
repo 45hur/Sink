@@ -19,7 +19,7 @@ int main()
 
 	for (int i = 0; i < 1000000; i++)
 	{
-		hc.contains("napitwptech.com");
+		hc.contains("facebook.com")
 	}
 		
 
