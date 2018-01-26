@@ -46,8 +46,6 @@ static int collect(kr_layer_t *ctx)
     struct kr_rplan *rplan = &request->rplan;
 
     char message[KNOT_DNAME_MAXLEN] = {};
-    sprintf(message, "State %u",request->state);
-    logtosyslog(message);
 
     char qname_str[KNOT_DNAME_MAXLEN];
     if (rplan->resolved.len > 0)
@@ -63,8 +61,6 @@ static int collect(kr_layer_t *ctx)
             return ctx->state;
         }
 
-        sprintf(message, "ns->count = %u", ns->count);
-        logtosyslog(message);
         for (unsigned i = 0; i < ns->count; ++i)
         {
             const knot_rrset_t *rr = knot_pkt_rr(ns, i);
@@ -80,14 +76,11 @@ static int collect(kr_layer_t *ctx)
                     domain[domainLen - 1] = '\0';
                 }
 
-                sprintf(message, "redirecting ? '%s'", domain);
-                logtosyslog(message);
-
                 if (hashcontainer_contains(domain))
                 {
-                    sprintf(message, "contains");
+                    sprintf(message, "redirecting ? '%s'", domain);
                     logtosyslog(message);
- 
+
                     uint16_t msgid = knot_wire_get_id(request->answer->wire);
                     kr_pkt_recycle(request->answer);
 
@@ -108,9 +101,6 @@ static int collect(kr_layer_t *ctx)
                     static knot_rdata_t rdata_arr[RDATA_ARR_MAX];
 
                     knot_wire_set_id(request->answer->wire, msgid);
-
-                    sprintf(message, "addr_len = %d", addr_len);
-                    logtosyslog(message);
  
                     kr_pkt_put(request->answer, last->sname, 120, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
 
