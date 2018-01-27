@@ -43,7 +43,7 @@ void hashcontainer_reinit(char *buffer, int size)
 {
 	list *old = hashtable;
 	hashtable = sink_list_init_ex(buffer, size);
-	free (old);
+	sink_list_destroy(old);
 }
 
 int hashcontainer_init()

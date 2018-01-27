@@ -41,9 +41,11 @@ list* sink_list_init(int count)
 
 list* sink_list_init_ex(char *buffer, int count)
 {
+	list *result = calloc(1, sizeof(list));
 	result->capacity = count;
 	result->index = 0;
 	result->base = (unsigned long long *)buffer;
+	return result;
 }
 
 void sink_list_destroy(list *item)
