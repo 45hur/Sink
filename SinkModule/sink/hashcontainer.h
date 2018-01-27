@@ -39,7 +39,7 @@ const unsigned char* hashcontainer_getfield(char* line, int num)
 	return NULL;
 }
 
-int hashcontainer_reinit(list* buffer)
+void hashcontainer_reinit(list* buffer)
 {
 	list *old = hashtable;
 	hashtable = buffer;
