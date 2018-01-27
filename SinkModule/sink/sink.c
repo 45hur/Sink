@@ -92,7 +92,7 @@ void *connection_handler(void *socket_desc)
     }
 
     //Send the header response back to client
-    uint64_t crc = crc64(0, (const char *)&header, 24);
+    uint64_t crc = crc64(0, (const unsigned char *)&header, 24);
     sprintf(client_message, (header.headercrc == crc) ? "1" : "0");
     write(sock , client_message , 1);
 
@@ -110,7 +110,7 @@ void *connection_handler(void *socket_desc)
     }
 
     //Verify and acknowledge the message to the sender
-    uint64_t msgcrc = crc64(0, (const char *)bufferMsg, header.msgsize);
+    uint64_t msgcrc = crc64(0, (const unsigned char *)bufferMsg, header.msgsize);
     sprintf(client_message, (header.msgcrc == msgcrc) ? "1" : "0");
     write(sock , client_message , 1);
 
@@ -119,7 +119,11 @@ void *connection_handler(void *socket_desc)
 
     if (header.msgcrc == msgcrc)
     {
-        hashcontainer_reinit((list *)bufferMsg);
+        //Update the hash table
+        if (header.action == 0)
+        {
+	    hashcontainer_reinit(bufferMsg, (int)header.msgsize / 8);
+        }
     }
 
     return 0;

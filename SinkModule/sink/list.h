@@ -39,6 +39,13 @@ list* sink_list_init(int count)
 	return result;
 }
 
+list* sink_list_init(char *buffer, int count)
+{
+	result->capacity = count;
+	result->index = 0;
+	result->base = (unsigned long long *)buffer;
+}
+
 void sink_list_destroy(list *item)
 {
 	if (item->base != NULL)
