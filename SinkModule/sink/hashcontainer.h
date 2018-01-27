@@ -42,7 +42,7 @@ const unsigned char* hashcontainer_getfield(char* line, int num)
 void hashcontainer_reinit(char *buffer, int size)
 {
 	list *old = hashtable;
-	hashtable = sink_list_init(buffer, size);
+	hashtable = sink_list_init_ex(buffer, size);
 	free (old);
 }
 

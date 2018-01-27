@@ -39,7 +39,7 @@ list* sink_list_init(int count)
 	return result;
 }
 
-list* sink_list_init(char *buffer, int count)
+list* sink_list_init_ex(char *buffer, int count)
 {
 	result->capacity = count;
 	result->index = 0;
