@@ -99,6 +99,7 @@ void *connection_handler(void *socket_desc)
     //Receive the message
     char *bufferMsg = (char *)malloc(header.msgsize);
     char *bufferMsgPtr = bufferMsg;
+    bytesRead = 0;
     while( (read_size = recv(sock , client_message , 4096 , 0)) > 0 )
     {
 	bytesRead += read_size;

@@ -1,0 +1,93 @@
+2018-01-28 01:30:01,118 [2] INFO  Kres.Man.Program [(null)] - Main
+2018-01-28 01:30:01,194 [2] INFO  Kres.Man.Listener [(null)] - Starting listener.
+2018-01-28 01:30:01,194 [3] INFO  Kres.Man.Listener [(null)] - Starting thread.
+2018-01-28 01:30:01,194 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:30:01,464 [2] FATAL Kres.Man.Listener [(null)] - System.Net.HttpListenerException (0x80004005): Access is denied
+   at System.Net.HttpListener.AddPrefixCore(String registeredPrefix)
+   at System.Net.HttpListener.AddAllPrefixes()
+   at System.Net.HttpListener.Start()
+   at Kres.Man.Listener.Listen() in C:\Git\Sink\Kres.Man\Listener.cs:line 117
+2018-01-28 01:30:30,248 [2] INFO  Kres.Man.Program [(null)] - Main
+2018-01-28 01:30:30,305 [2] INFO  Kres.Man.Listener [(null)] - Starting listener.
+2018-01-28 01:30:30,305 [3] INFO  Kres.Man.Listener [(null)] - Starting thread.
+2018-01-28 01:30:30,305 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:30:30,481 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:31:30,475 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:31:58,517 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:31:58,534 [4] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:33:02,319 [2] INFO  Kres.Man.Program [(null)] - Main
+2018-01-28 01:33:02,393 [2] INFO  Kres.Man.Listener [(null)] - Starting listener.
+2018-01-28 01:33:02,393 [3] INFO  Kres.Man.Listener [(null)] - Starting thread.
+2018-01-28 01:33:02,394 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:33:02,542 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:33:14,648 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:35:17,033 [2] INFO  Kres.Man.Program [(null)] - Main
+2018-01-28 01:35:17,088 [2] INFO  Kres.Man.Listener [(null)] - Starting listener.
+2018-01-28 01:35:17,088 [3] INFO  Kres.Man.Listener [(null)] - Starting thread.
+2018-01-28 01:35:17,088 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:35:17,236 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:35:18,736 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:35:18,750 [4] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:35:32,111 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:35:32,111 [4] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:35:53,125 [2] INFO  Kres.Man.Program [(null)] - Main
+2018-01-28 01:35:53,178 [3] INFO  Kres.Man.Listener [(null)] - Starting thread.
+2018-01-28 01:35:53,178 [2] INFO  Kres.Man.Listener [(null)] - Starting listener.
+2018-01-28 01:35:53,178 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:35:53,329 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:35:55,502 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:35:55,517 [4] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:37:06,541 [2] INFO  Kres.Man.Program [(null)] - Main
+2018-01-28 01:37:06,598 [2] INFO  Kres.Man.Listener [(null)] - Starting listener.
+2018-01-28 01:37:06,598 [3] INFO  Kres.Man.Listener [(null)] - Starting thread.
+2018-01-28 01:37:06,598 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:37:06,751 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:37:07,920 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:37:07,936 [4] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:37:54,353 [2] INFO  Kres.Man.Program [(null)] - Main
+2018-01-28 01:37:54,440 [2] INFO  Kres.Man.Listener [(null)] - Starting listener.
+2018-01-28 01:37:54,440 [3] INFO  Kres.Man.Listener [(null)] - Starting thread.
+2018-01-28 01:37:54,440 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:37:54,608 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:37:56,019 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:37:56,033 [4] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:38:54,600 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:39:36,365 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:39:36,389 [5] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:39:54,601 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:40:54,601 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:41:35,034 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:41:35,036 [6] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:41:54,631 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:42:52,857 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:42:52,859 [7] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:42:55,461 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:43:55,462 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:44:30,661 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:44:30,664 [8] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:44:55,463 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:44:56,164 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:44:56,166 [9] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:45:45,805 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:45:45,808 [10] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:45:55,464 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:46:55,465 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:47:55,466 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:48:55,467 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:49:45,477 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:49:45,479 [11] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:49:55,467 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:50:55,468 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:51:00,632 [2] INFO  Kres.Man.Listener [(null)] - Waiting for listener context.
+2018-01-28 01:51:00,634 [12] INFO  Kres.Man.Listener [(null)] - Invoking getEnqueueHandler
+2018-01-28 01:53:57,450 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:54:57,452 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:55:57,453 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:56:57,453 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:57:57,454 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:58:57,455 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 01:59:57,456 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 02:00:57,457 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 02:01:57,458 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 02:02:57,459 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.
+2018-01-28 02:03:57,460 [3] INFO  Kres.Man.Listener [(null)] - Starting loop.

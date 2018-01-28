@@ -43,7 +43,7 @@ list* sink_list_init_ex(char *buffer, int count)
 {
 	list *result = calloc(1, sizeof(list));
 	result->capacity = count;
-	result->index = 0;
+	result->index = count;
 	result->base = (unsigned long long *)buffer;
 	return result;
 }
