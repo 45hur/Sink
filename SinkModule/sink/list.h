@@ -3,11 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>      
+#include <unistd.h>
 
 typedef struct
 {
 	int capacity;
 	int index;
+	_Atomic int searchers;
 	unsigned long long *base;
 } list;
 
@@ -35,6 +37,7 @@ list* sink_list_init(int count)
 	list *result = calloc(1, sizeof(list));
 	result->capacity = count;
 	result->index = 0;
+	result->searchers = 0;
 	result->base = (unsigned long long *)malloc(result->capacity * sizeof(unsigned long long));
 	return result;
 }
@@ -44,12 +47,18 @@ list* sink_list_init_ex(char *buffer, int count)
 	list *result = calloc(1, sizeof(list));
 	result->capacity = count;
 	result->index = count;
+	result->searchers = 0;
 	result->base = (unsigned long long *)buffer;
 	return result;
 }
 
 void sink_list_destroy(list *item)
 {
+        while(item->searchers > 0)
+        {
+            usleep(50000);
+        }
+
 	if (item->base != NULL)
 	{
 		free(item->base);
@@ -98,6 +107,7 @@ int sink_list_dump(list* item, const char * filename)
 
 bool sink_list_contains(list* item, unsigned long long value)
 {
+	item->searchers++;
 	int lowerbound = 0;
 	int upperbound = item->index;
 	int position;
@@ -117,5 +127,6 @@ bool sink_list_contains(list* item, unsigned long long value)
 		position = (lowerbound + upperbound) / 2;
 	}
 
+	item->searchers--;
 	return (lowerbound <= upperbound);
 }
