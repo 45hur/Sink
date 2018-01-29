@@ -96,7 +96,6 @@ namespace Kres.Man
                     {
 
                         log.Info($"Buffer succesfully exchanged and freed.");
-                        stream.Write(message, 0, message.Length);
                     }
                 }
 
