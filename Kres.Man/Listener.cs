@@ -34,8 +34,9 @@ namespace Kres.Man
         }
 
         [Mapping("push")]
-        public object getEnqueueHandler(string postData, string server)
+        public object getPushHandler(string postData, string server)
         {
+            log.Info($"Push");
             var list = postData.Split(';');
             var orderedList = new List<ulong>();
             foreach (var item in list)
@@ -46,7 +47,11 @@ namespace Kres.Man
                 var domain = Encoding.ASCII.GetBytes(item);
                 orderedList.Add(Crc64.Compute(0, domain));
             }
+            log.Info($"Sorting list");
             orderedList.Sort();
+
+            log.Info($"List sorted, length = {orderedList.Count}");
+
             var message = new byte[orderedList.Count * 8];
             for(var i = 0; i < orderedList.Count; i++)
             {
@@ -64,20 +69,31 @@ namespace Kres.Man
             var headerCrc = Crc64.Compute(0, header.ToArray());
             header = header.Concat(BitConverter.GetBytes(headerCrc));
 
+            log.Info($"Get stream");
             var stream = client.GetStream();
             var headerBytes = header.ToArray();
             stream.Write(headerBytes, 0, headerBytes.Length);
 
+            log.Info($"Written header");
+
             var response = new byte[1];
             var bytesRead = stream.Read(response, 0, 1);
 
+            log.Info($"Read header response");
             if (bytesRead == 1 && response[0] == '1')
             {
+                log.Info($"Header understood");
+
                 stream.Write(message, 0, message.Length);
+                log.Info($"Written message");
 
                 bytesRead = stream.Read(response, 0, 1);
+
+                log.Info($"Read message response");
                 if (bytesRead == 1 && response[0] == '1')
                 {
+
+                    log.Info($"Buffer succesfully exchanged and freed.");
                     stream.Write(message, 0, message.Length);
                 }
             }
@@ -97,7 +113,7 @@ namespace Kres.Man
 
             while (true)
             {
-                log.Info($"Starting loop.");
+                //log.Info($"Starting loop.");
 
                 Thread.Sleep(Configuration.GetRedeliveryInterval());
             }
