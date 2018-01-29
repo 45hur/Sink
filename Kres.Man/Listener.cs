@@ -39,7 +39,7 @@ namespace Kres.Man
             log.Info($"Push");
             var list = postData.Split(';');
             log.Info($"Split list = {list.Length}");
-            var sub = postData.Substring(30);
+            var sub = postData.Substring(0,30);
             log.Info($"Start data (30cut) = {sub}");
             var orderedList = new List<ulong>();
             foreach (var item in list)
@@ -159,9 +159,22 @@ namespace Kres.Man
                             var @params = new object[args.Count() + 1];
 
                             var inLength = ctx.Request.ContentLength64;
-                            var inBuffer = new byte[inLength];
-                            if (ctx.Request.InputStream.Read(inBuffer, 0, inBuffer.Length) != inLength)
-                                throw new Exception("Unable to read input stream.");
+                            var inBuffer = new byte[4096];
+                            var buffer = new byte[inLength];
+                            int totalBytesRead = 0;
+                            int bytesRead = 0;
+                            while (true)
+                            {
+                                bytesRead = ctx.Request.InputStream.Read(inBuffer, 0, inBuffer.Length);
+                                if (bytesRead == 0 || bytesRead == -1)
+                                    break;
+
+                                Array.Copy(inBuffer, 0, buffer, totalBytesRead, bytesRead);
+                                totalBytesRead += bytesRead;
+
+                                if (totalBytesRead == inLength)
+                                    break;
+                            }
 
                             var content = Encoding.UTF8.GetString(inBuffer);
                             @params[0] = content;
