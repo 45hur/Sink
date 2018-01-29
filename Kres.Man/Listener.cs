@@ -159,6 +159,7 @@ namespace Kres.Man
                             var @params = new object[args.Count() + 1];
 
                             var inLength = ctx.Request.ContentLength64;
+                            log.Info($"Content len = {inLength}.");
                             var inBuffer = new byte[4096];
                             var buffer = new byte[inLength];
                             int totalBytesRead = 0;
@@ -167,13 +168,19 @@ namespace Kres.Man
                             {
                                 bytesRead = ctx.Request.InputStream.Read(inBuffer, 0, inBuffer.Length);
                                 if (bytesRead == 0 || bytesRead == -1)
+                                {
+                                    log.Info($"Nothing to read len = {totalBytesRead}.");
                                     break;
+                                }
 
                                 Array.Copy(inBuffer, 0, buffer, totalBytesRead, bytesRead);
                                 totalBytesRead += bytesRead;
 
                                 if (totalBytesRead == inLength)
+                                {
+                                    log.Info($"Read finished to read len = {totalBytesRead}.");
                                     break;
+                                }
                             }
 
                             var content = Encoding.UTF8.GetString(inBuffer);
