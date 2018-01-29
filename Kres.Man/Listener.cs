@@ -38,6 +38,9 @@ namespace Kres.Man
         {
             log.Info($"Push");
             var list = postData.Split(';');
+            log.Info($"Split list = {list.Count}");
+            var sub = postData.Substring(30);
+            log.Info($"Start data (30cut) = {sub}");
             var orderedList = new List<ulong>();
             foreach (var item in list)
             {
