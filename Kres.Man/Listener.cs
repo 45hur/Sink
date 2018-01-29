@@ -100,10 +100,12 @@ namespace Kres.Man
                     }
                 }
 
+                log.Info($"Closing stream.");
                 stream.Flush();
                 stream.Close();
             }
 
+            log.Info($"Return.");
             return null;
         }
 
