@@ -183,7 +183,7 @@ namespace Kres.Man
                                 }
                             }
 
-                            var content = Encoding.UTF8.GetString(inBuffer);
+                            var content = Encoding.UTF8.GetString(buffer);
                             @params[0] = content;
                             Array.Copy(args.ToArray(), 0, @params, 1, args.Count());
 
