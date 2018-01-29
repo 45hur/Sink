@@ -39,8 +39,6 @@ namespace Kres.Man
             log.Info($"Push");
             var list = postData.Split(';');
             log.Info($"Split list = {list.Length}");
-            var sub = postData.Substring(0,30);
-            log.Info($"Start data (30cut) = {sub}");
             var orderedList = new List<ulong>();
             foreach (var item in list)
             {
@@ -73,32 +71,37 @@ namespace Kres.Man
             header = header.Concat(BitConverter.GetBytes(headerCrc));
 
             log.Info($"Get stream");
-            var stream = client.GetStream();
-            var headerBytes = header.ToArray();
-            stream.Write(headerBytes, 0, headerBytes.Length);
-
-            log.Info($"Written header");
-
-            var response = new byte[1];
-            var bytesRead = stream.Read(response, 0, 1);
-
-            log.Info($"Read header response");
-            if (bytesRead == 1 && response[0] == '1')
+            using (var stream = client.GetStream())
             {
-                log.Info($"Header understood");
+                var headerBytes = header.ToArray();
+                stream.Write(headerBytes, 0, headerBytes.Length);
 
-                stream.Write(message, 0, message.Length);
-                log.Info($"Written message");
+                log.Info($"Written header");
 
-                bytesRead = stream.Read(response, 0, 1);
+                var response = new byte[1];
+                var bytesRead = stream.Read(response, 0, 1);
 
-                log.Info($"Read message response");
+                log.Info($"Read header response");
                 if (bytesRead == 1 && response[0] == '1')
                 {
+                    log.Info($"Header understood");
 
-                    log.Info($"Buffer succesfully exchanged and freed.");
                     stream.Write(message, 0, message.Length);
+                    log.Info($"Written message");
+
+                    bytesRead = stream.Read(response, 0, 1);
+
+                    log.Info($"Read message response");
+                    if (bytesRead == 1 && response[0] == '1')
+                    {
+
+                        log.Info($"Buffer succesfully exchanged and freed.");
+                        stream.Write(message, 0, message.Length);
+                    }
                 }
+
+                stream.Flush();
+                stream.Close();
             }
 
             return null;
