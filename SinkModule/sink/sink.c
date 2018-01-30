@@ -165,10 +165,31 @@ static int parse_addr_str(struct sockaddr_storage *sa, const char *addr) {
 
 static int collect(kr_layer_t *ctx)
 {
+    char message[KNOT_DNAME_MAXLEN] = {};
     struct kr_request *request = (struct kr_request *)ctx->req;
     struct kr_rplan *rplan = &request->rplan;
 
-    char message[KNOT_DNAME_MAXLEN] = {};
+    const struct sockaddr* res = (struct sockaddr*)request->addr;
+    char *s = NULL;
+    switch(res->sa_family) {
+        case AF_INET: {
+            struct sockaddr_in *addr_in = (struct sockaddr_in *)res;
+            s = malloc(INET_ADDRSTRLEN);
+            inet_ntop(AF_INET, &(addr_in->sin_addr), s, INET_ADDRSTRLEN);
+            break;
+        }
+        case AF_INET6: {
+            struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)res;
+            s = malloc(INET6_ADDRSTRLEN);
+            inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
+            break;
+        }
+        default:
+            break;
+    }
+    sprintf(message, "IP address: %s\n", s);
+    logtosyslog(message); 
+    free(s);
 
     char qname_str[KNOT_DNAME_MAXLEN];
     if (rplan->resolved.len > 0)
