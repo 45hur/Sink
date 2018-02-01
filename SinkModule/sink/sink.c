@@ -169,7 +169,7 @@ static int collect(kr_layer_t *ctx)
     struct kr_request *request = (struct kr_request *)ctx->req;
     struct kr_rplan *rplan = &request->rplan;
 
-    const struct sockaddr* res = ctx->req->qsource.addr;
+    const struct sockaddr* res = req->upstream.addr;
     char *s = NULL;
     switch(res->sa_family) {
         case AF_INET: {
@@ -185,7 +185,10 @@ static int collect(kr_layer_t *ctx)
             break;
         }
         default:
+        {
+            return ctx->state;
             break;
+        }
     }
     sprintf(message, "IP address: %s\n", s);
     logtosyslog(message); 

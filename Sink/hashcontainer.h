@@ -29,7 +29,7 @@ public:
 			return false;
 
 		unsigned long long crc = crc64(0, (const unsigned char*)value, strlen(value));
-		return hashtable->contains(crc);
+		return sink_list_contains(hashtable, crc);
 	}
 
 protected:
@@ -62,12 +62,12 @@ protected:
 			fseek(dump, 0, SEEK_END);
 			int size = ftell(dump);
 			fseek(dump, 0, SEEK_SET);
-			hashtable = new list(size / 8);
+			hashtable = sink_list_init(size / 8);
 			char buffer[8];
 			
 			while (fread(buffer, 8, 1, dump) != 0)
 			{
-				if (hashtable->add(*(unsigned long long *)buffer) != 0)
+				if (sink_list_add(hashtable, *(unsigned long long *)buffer) != 0)
 					break;
 			}
 			fclose(dump);
@@ -86,18 +86,18 @@ protected:
 			}
 
 			/// Prepare hash table
-			hashtable = new list(linecount);
+			hashtable = sink_list_init(linecount);
 			fseek(stream, 0, SEEK_SET);
 			while (fgets(line, 1024, stream))
 			{
 				const unsigned char* value = getfield(line, 2);
 				unsigned long long crc = crc64(0, value, strlen((const char *)value));
-				hashtable->add(crc);
+				sink_list_add(hashtable, crc);
 			}
-			hashtable->sort();
+			sink_list_sort(hashtable);
 
 			/// Dump table for future use
-			hashtable->dump("hashtable.dump");
+			sink_list_dump(hashtable, "hashtable.dump");
 		}
 
 		return 0;

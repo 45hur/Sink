@@ -3,7 +3,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>      
+
+#ifndef WIN32
 #include <unistd.h>
+
+
+#else
+#define _Atomic volatile
+#include <Windows.h>
+void usleep(__int64 usec)
+{
+	HANDLE timer;
+	LARGE_INTEGER ft;
+
+	ft.QuadPart = -(10 * usec); // Convert to 100 nanosecond interval, negative value indicates relative time
+
+	timer = CreateWaitableTimer(NULL, TRUE, NULL);
+	SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
+	WaitForSingleObject(timer, INFINITE);
+	CloseHandle(timer);
+}
+
+#endif
 
 typedef struct
 {
@@ -34,7 +55,7 @@ static int sink_list_compare(const void * a, const void * b)
 
 list* sink_list_init(int count)
 {
-	list *result = calloc(1, sizeof(list));
+	list *result = (list *)calloc(1, sizeof(list));
 	result->capacity = count;
 	result->index = 0;
 	result->searchers = 0;
@@ -44,7 +65,7 @@ list* sink_list_init(int count)
 
 list* sink_list_init_ex(char *buffer, int count)
 {
-	list *result = calloc(1, sizeof(list));
+	list *result = (list *)calloc(1, sizeof(list));
 	result->capacity = count;
 	result->index = count;
 	result->searchers = 0;
