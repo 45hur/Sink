@@ -175,6 +175,7 @@ static int collect(kr_layer_t *ctx)
         return ctx->state;
     }
 
+    logtosyslog("check");
     const struct sockaddr* res = request->upstream.addr;
     char *s = NULL;
     switch(res->sa_family) {
@@ -192,6 +193,7 @@ static int collect(kr_layer_t *ctx)
         }
         default:
         {
+            logtosyslog("not valid addr");
             return ctx->state;
             break;
         }
