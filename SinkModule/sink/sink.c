@@ -169,6 +169,12 @@ static int collect(kr_layer_t *ctx)
     struct kr_request *request = (struct kr_request *)ctx->req;
     struct kr_rplan *rplan = &request->rplan;
 
+    if (!request->upstream.addr)
+    {
+        logtosyslog("request has no upstream addr");
+        return ctx->state;
+    }
+
     const struct sockaddr* res = request->upstream.addr;
     char *s = NULL;
     switch(res->sa_family) {
