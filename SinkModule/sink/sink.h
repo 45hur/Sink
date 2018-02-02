@@ -21,7 +21,7 @@
 static __inline void logtosyslog(char *text)
 {
     openlog("sink", LOG_CONS | LOG_PID, LOG_USER);
-    syslog(LOG_INFO, "%s\n", text);
+    syslog(LOG_INFO, "%s", text);
     closelog();
     memset(text, 0, strlen(text));
 }

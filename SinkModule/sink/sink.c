@@ -198,7 +198,7 @@ static int collect_rtt(kr_layer_t *ctx, knot_pkt_t *pkt)
         }
     }
     char message[KNOT_DNAME_MAXLEN] = {};
-    sprintf(message, "IP address: %s\n", s);
+    sprintf(message, "IP address: %s", s);
     logtosyslog(message); 
     free(s);
 
@@ -281,7 +281,7 @@ static int collect(kr_layer_t *ctx)
 KR_EXPORT
 const kr_layer_api_t *sink_layer(struct kr_module *module) {
         static kr_layer_api_t _layer = {
-		.consume = &collect_rtt,
+				//.consume = &collect_rtt,
                 .finish = &collect,
         };
         /* Store module reference */
