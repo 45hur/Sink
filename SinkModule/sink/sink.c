@@ -175,7 +175,7 @@ static int collect_rtt(kr_layer_t *ctx, knot_pkt_t *pkt)
     struct kr_module *module = ctx->api->data;
     struct stat_data *data = module->data;
     
-    const struct sockaddr *res = req->upstream.addr;
+    const struct sockaddr *res = req->qsource.addr;
     char *s = NULL;
     switch(res->sa_family) {
         case AF_INET: {
