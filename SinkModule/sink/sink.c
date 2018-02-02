@@ -209,8 +209,9 @@ static int collect(kr_layer_t *ctx)
     struct kr_rplan *rplan = &request->rplan;
 
 	if (!request->qsource.addr) {
-		sprintf(message, "not valid qsource addr");
+		sprintf(message, "request has no source address");
 		logtosyslog(message);
+
 		return ctx->state;
 	}
 
@@ -231,7 +232,7 @@ static int collect(kr_layer_t *ctx)
 	}
 	default:
 	{
-		sprintf(message, "not valid addr");
+		sprintf(message, "qsource is invalid");
 		logtosyslog(message);
 		return ctx->state;
 		break;

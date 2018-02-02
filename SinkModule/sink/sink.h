@@ -15,8 +15,8 @@
 #include <unistd.h>    //write
 #include <pthread.h> //for threading , link with lpthread
 
-
 #include "hashcontainer.h"
+#include "iprange.h"
 
 static __inline void logtosyslog(char *text)
 {
