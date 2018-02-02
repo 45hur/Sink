@@ -175,21 +175,33 @@ static int collect_rtt(kr_layer_t *ctx, knot_pkt_t *pkt)
     struct kr_module *module = ctx->api->data;
     struct stat_data *data = module->data;
     
-    /* Socket address is encoded into sockaddr_in6 struct that
-     * unions with sockaddr_in and differ in sa_family */
-    struct sockaddr_in6 *e = &data->upstreams.q.at[data->upstreams.head];
-    const struct sockaddr *src = req->upstream.addr;
-    switch (src->sa_family) 
-    {
-      case AF_INET:  memcpy(e, src, sizeof(struct sockaddr_in)); break;
-      case AF_INET6: memcpy(e, src, sizeof(struct sockaddr_in6)); break;
-      default: return ctx->state;
+    const struct sockaddr *res = req->upstream.addr;
+    char *s = NULL;
+    switch(res->sa_family) {
+        case AF_INET: {
+            struct sockaddr_in *addr_in = (struct sockaddr_in *)res;
+            s = malloc(INET_ADDRSTRLEN);
+            inet_ntop(AF_INET, &(addr_in->sin_addr), s, INET_ADDRSTRLEN);
+            break;
+        }
+        case AF_INET6: {
+            struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)res;
+            s = malloc(INET6_ADDRSTRLEN);
+            inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
+            break;
+        }
+        default:
+        {
+            logtosyslog("not valid addr");
+            return ctx->state;
+            break;
+        }
     }
-    /* Replace port number with the RTT information (cap is UINT16_MAX milliseconds) */
-    e->sin6_rtt = req->upstream.rtt;
-    
-    /* Advance ring buffer head */
-    data->upstreams.head = (data->upstreams.head + 1) % UPSTREAMS_COUNT;
+    char message[KNOT_DNAME_MAXLEN] = {};
+    sprintf(message, "IP address: %s\n", s);
+    logtosyslog(message); 
+    free(s);
+
     return ctx->state;
 }
 
