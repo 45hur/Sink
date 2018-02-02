@@ -167,7 +167,7 @@ static int collect_rtt(kr_layer_t *ctx, knot_pkt_t *pkt)
 {
     struct kr_request *req = ctx->req;
     struct kr_query *qry = req->current_query;
-    if (qry->flags.CACHED || !req->upstream.addr) {
+    if (qry->flags.CACHED || !req->qsource.addr) {
         return ctx->state;
     }
     
@@ -175,7 +175,7 @@ static int collect_rtt(kr_layer_t *ctx, knot_pkt_t *pkt)
     struct kr_module *module = ctx->api->data;
     struct stat_data *data = module->data;
     
-    const struct sockaddr *res = req->upstream.addr;
+    const struct sockaddr *res = req->qsource.addr;
     char *s = NULL;
     switch(res->sa_family) {
         case AF_INET: {
@@ -281,7 +281,7 @@ static int collect(kr_layer_t *ctx)
 KR_EXPORT
 const kr_layer_api_t *sink_layer(struct kr_module *module) {
         static kr_layer_api_t _layer = {
-				//.consume = &collect_rtt,
+				.consume = &collect_rtt,
                 .finish = &collect,
         };
         /* Store module reference */
