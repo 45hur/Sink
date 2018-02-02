@@ -159,7 +159,7 @@ int sink_list_dump(list* item, const char * filename)
 	return fclose(file);
 }
 
-bool sink_list_contains(list* item, unsigned long long value, cache1item &citem)
+bool sink_list_contains(list* item, unsigned long long value, cache1item *citem)
 {
 	item->searchers++;
 	int lowerbound = 0;
@@ -183,8 +183,8 @@ bool sink_list_contains(list* item, unsigned long long value, cache1item &citem)
 	
 	if (lowerbound <= upperbound)
 	{
-		citem.accuracy = (item->accuracy[position]);
-		citem.flags = (item->flags[position]);
+		citem->accuracy = (item->accuracy[position]);
+		citem->flags = (item->flags[position]);
 	}
 
 	item->searchers--;

@@ -10,7 +10,7 @@
 
 int main()
 {
-	hashcontainer hc;
+	hashcontainer_init();
 	
 	struct timeb start, end;
 	int diff;
@@ -19,7 +19,7 @@ int main()
 
 	for (int i = 0; i < 1000000; i++)
 	{
-		hc.contains("facebook.com");
+		hashcontainer_contains("facebook.com");
 	}
 		
 

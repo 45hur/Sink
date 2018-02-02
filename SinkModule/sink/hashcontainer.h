@@ -24,7 +24,7 @@ bool hashcontainer_contains(char * value)
 
 	unsigned long long crc = crc64(0, (const unsigned char*)value, strlen(value));
 	cache1item cache;
-	return sink_list_contains(hashtable, crc, cache);
+	return sink_list_contains(hashtable, crc, &cache);
 }
 
 const unsigned char* hashcontainer_getfield(char* line, int num)
