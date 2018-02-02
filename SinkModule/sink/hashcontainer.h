@@ -23,7 +23,8 @@ bool hashcontainer_contains(char * value)
 		return false;
 
 	unsigned long long crc = crc64(0, (const unsigned char*)value, strlen(value));
-	return sink_list_contains(hashtable, crc);
+	cache1item cache;
+	return sink_list_contains(hashtable, crc, cache);
 }
 
 const unsigned char* hashcontainer_getfield(char* line, int num)
@@ -39,10 +40,10 @@ const unsigned char* hashcontainer_getfield(char* line, int num)
 	return NULL;
 }
 
-void hashcontainer_reinit(char *buffer, int size)
+void hashcontainer_reinit(int count, char *domains, char *accuracy, char *flags)
 {
 	list *old = hashtable;
-	hashtable = sink_list_init_ex(buffer, size);
+	hashtable = sink_list_init_ex(domains, accuracy, flags, count);
 	sink_list_destroy(old);
 }
 
@@ -66,7 +67,7 @@ int hashcontainer_init()
 		while (fread(buffer, 8, 1, dump) != 0)
 		{
 			unsigned long long* value = (unsigned long long *)buffer;
-			if (sink_list_add(hashtable, *value) != 0)
+			if (sink_list_add(hashtable, *value, 0, 0) != 0)
 				break;
 		}
 		fclose(dump);
@@ -91,7 +92,7 @@ int hashcontainer_init()
 		{
 			const unsigned char* value = hashcontainer_getfield(line, 2);
 			unsigned long long crc = crc64(0, value, strlen((const char *)value));
-			sink_list_add(hashtable, crc);
+			sink_list_add(hashtable, crc, 0, 0);
 		}
 		sink_list_sort(hashtable);
 

@@ -84,9 +84,9 @@ void *connection_handler(void *socket_desc)
     //Receive a header from client
     while((read_size = recv(sock, client_message, 4096, 0)) > 0)
     {
-	bytesRead += read_size;
+        bytesRead += read_size;
         memcpy(bufferPtr, client_message, read_size);
-	bufferPtr += read_size;
+        bufferPtr += read_size;
         if (read_size == -1 || read_size == 0 || bytesRead >= 32)
             break; 
     }
@@ -102,9 +102,9 @@ void *connection_handler(void *socket_desc)
     bytesRead = 0;
     while( (read_size = recv(sock , client_message , 4096 , 0)) > 0 )
     {
-	bytesRead += read_size;
+        bytesRead += read_size;
         memcpy(bufferMsgPtr, client_message, read_size);
-	bufferMsgPtr += read_size; 
+        bufferMsgPtr += read_size; 
 
         if (read_size == -1 || read_size == 0 || bytesRead >= header.msgsize)
             break; 
@@ -123,7 +123,7 @@ void *connection_handler(void *socket_desc)
         //Update the hash table
         if (header.action == 0)
         {
-	    hashcontainer_reinit(bufferMsg, (int)header.msgsize / 8);
+            hashcontainer_reinit((int)header.msgsize / 8, bufferMsg, 0, bufferMsg);
         }
     }
 
@@ -175,7 +175,7 @@ static int collect_rtt(kr_layer_t *ctx, knot_pkt_t *pkt)
     struct kr_module *module = ctx->api->data;
     struct stat_data *data = module->data;
     
-    const struct sockaddr *res = req->qsource.addr;
+    const struct sockaddr *res = req->upstream.addr;
     char *s = NULL;
     switch(res->sa_family) {
         case AF_INET: {
