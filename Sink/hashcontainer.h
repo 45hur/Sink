@@ -29,7 +29,8 @@ public:
 			return false;
 
 		unsigned long long crc = crc64(0, (const unsigned char*)value, strlen(value));
-		return sink_list_contains(hashtable, crc);
+		cache1item item;
+		return sink_list_contains(hashtable, crc, item);
 	}
 
 protected:
@@ -67,7 +68,7 @@ protected:
 			
 			while (fread(buffer, 8, 1, dump) != 0)
 			{
-				if (sink_list_add(hashtable, *(unsigned long long *)buffer) != 0)
+				if (sink_list_add(hashtable, *(unsigned long long *)buffer, 0, 0) != 0)
 					break;
 			}
 			fclose(dump);
@@ -92,7 +93,7 @@ protected:
 			{
 				const unsigned char* value = getfield(line, 2);
 				unsigned long long crc = crc64(0, value, strlen((const char *)value));
-				sink_list_add(hashtable, crc);
+				sink_list_add(hashtable, crc, 0, 0);
 			}
 			sink_list_sort(hashtable);
 
