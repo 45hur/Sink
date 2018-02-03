@@ -93,7 +93,6 @@ int countchar(char separator, char *string)
 
 int loader_loaddomains()
 {
-  puts("fopen");
 	FILE* stream = fopen("domains.csv", "r");
 	char line[1024];
   
@@ -102,21 +101,18 @@ int loader_loaddomains()
     return -1;
   }
 
-  puts("lines");
-	int linecount = 0;
+  int linecount = 0;
 	while (fgets(line, 1024, stream))
 	{
 		linecount++;
 	}
 
-  puts("init");
 	if ((cached_domain = cache_domain_init(linecount)) == NULL)
   {
     puts("not enough memory to create domain cache");
     return -1;
   }
   
-  puts("gets");      
 	fseek(stream, 0, SEEK_SET);
 	while (fgets(line, 1024, stream))
 	{
@@ -129,11 +125,13 @@ int loader_loaddomains()
 		cache_domain_add(cached_domain, crc, 0, 0);
     free(fields);
 	}
+  puts("sort");
 	cache_domain_sort(cached_domain);
   
 	fseek(stream, 0, SEEK_SET);
 	while (fgets(line, 1024, stream))
 	{
+    puts("split");
 		char **fields = split(line, ',', 3);
     unsigned long long crc = crc64(0, (const unsigned char *)fields[0], strlen((const char *)fields[0]));
     short acc = atoi(fields[1]);
@@ -142,6 +140,7 @@ int loader_loaddomains()
 		cache_domain_update(cached_domain, crc, acc, flags);
     free(fields);
 	}
+  puts("close");
   
   fclose(stream);
   
@@ -150,6 +149,7 @@ int loader_loaddomains()
 
 int loader_loadranges()
 {
+  puts("ranges");
 	FILE* stream = fopen("ranges.csv", "r");
 	char line[1024];
 
@@ -201,6 +201,7 @@ int loader_loadranges()
 
 int loader_loadpolicy()
 {
+  puts("policy");
 	FILE* stream = fopen("policy.csv", "r");
 	char line[1024];
   
@@ -243,6 +244,7 @@ int loader_loadpolicy()
 
 int loader_loadcustom()
 {
+  puts("custom");
 	FILE* stream = fopen("custom.csv", "r");
 	char line[1024];
   
