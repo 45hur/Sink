@@ -134,7 +134,7 @@ static void* socket_server(void *arg)
         }
          
         pthread_join( sniffer_thread , NULL);
-        puts("Handler assigned");
+        puts("handler assigned");
     }
      
     if (new_socket < 0)

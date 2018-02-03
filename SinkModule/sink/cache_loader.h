@@ -116,7 +116,6 @@ int loader_loaddomains()
 	fseek(stream, 0, SEEK_SET);
 	while (fgets(line, 1024, stream))
 	{
-    puts("split");
 		char **fields = split(line, ',', 3);
     unsigned long long crc = crc64(0, (const unsigned char *)fields[0], strlen((const char *)fields[0]));
     short acc = atoi(fields[1]);
@@ -125,7 +124,6 @@ int loader_loaddomains()
 		cache_domain_add(cached_domain, crc, 0, 0);
     free(fields);
 	}
-  puts("sort");
 	cache_domain_sort(cached_domain);
   
 	fseek(stream, 0, SEEK_SET);
@@ -147,7 +145,7 @@ int loader_loaddomains()
 
 int loader_loadranges()
 {
-  puts("ranges");
+
 	FILE* stream = fopen("ranges.csv", "r");
 	char line[1024];
 
@@ -171,22 +169,19 @@ int loader_loadranges()
 	fseek(stream, 0, SEEK_SET);
 	while (fgets(line, 1024, stream))
 	{
-    puts("split");
 		char **fields = split(line, ',', 4);
     
     struct sockaddr from;
     struct sockaddr to;
     char *ipfrom = fields[0];
     char *ipto = fields[1];
-    puts("parse");
+
     parse_addr(&from, ipfrom);
     parse_addr(&to, ipto);
 
-    puts("endp");  
     char *identity = fields[2];
     int policy_id = atoi(fields[3]);    
     
-    puts("add");		
 		if (cache_iprange_add(cached_iprange, &from, &to, identity, policy_id) != 0)
     {
       puts("not enough memory to add to ip range cache");
@@ -195,7 +190,6 @@ int loader_loadranges()
     
     free(fields);
 	}
-  puts("end");
   
   fclose(stream);
   
@@ -204,7 +198,6 @@ int loader_loadranges()
 
 int loader_loadpolicy()
 {
-  puts("policy");
 	FILE* stream = fopen("policy.csv", "r");
 	char line[1024];
   
@@ -247,7 +240,6 @@ int loader_loadpolicy()
 
 int loader_loadcustom()
 {
-  puts("custom");
 	FILE* stream = fopen("custom.csv", "r");
 	char line[1024];
   
