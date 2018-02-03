@@ -193,7 +193,7 @@ int sink_list_dump(list* item, const char * filename)
 	return fclose(file);
 }   */
 
-int cache_domains_contains(cache_domain* cache, unsigned long long value, domain *citem)
+int cache_domain_contains(cache_domain* cache, unsigned long long value, domain *citem)
 {
 	cache->searchers++;
 	int lowerbound = 0;

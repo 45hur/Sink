@@ -163,8 +163,10 @@ static int collect(kr_layer_t *ctx)
                 {
                     domain[domainLen - 1] = '\0';
                 }
-/*
-                if (hashcontainer_contains(domain))
+
+                unsigned long long crc = crc64(0, (const unsigned char*)value, strlen(value));
+	              domain domain_item;
+                if (cache_domain_contains(cached_domain, crc, &domain_item))
                 {
                     sprintf(message, "redirecting ? '%s'", domain);
                     logtosyslog(message);
@@ -194,7 +196,7 @@ static int collect(kr_layer_t *ctx)
 
                     return KNOT_STATE_DONE;
                 }
-*/
+
             }
         }
     }
