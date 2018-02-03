@@ -15,12 +15,18 @@ static void* observe(void *arg)
     syslog(LOG_INFO, "Loading");
     closelog();
 
+    if (loader_init() != 0)
+    {
+        puts("csv load failed");
+	return (void *)-1;
+    }
+
     pthread_t thr_id;
     int ret = 0;
     if ((ret = pthread_create(&thr_id, NULL, &socket_server, NULL)) != 0) 
     {
         puts("failed to create server thread");
-        return ret;  
+        return (void *)ret;  
     }
 
     openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
