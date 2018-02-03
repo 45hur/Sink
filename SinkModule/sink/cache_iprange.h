@@ -130,8 +130,8 @@ int cache_iprange_add(cache_iprange* cache, struct sockaddr *low, struct sockadd
     return -1;    
   }
 
-  memcpy(xlow, low, sizeof(low));
-  memcpy(xhigh, high, sizeof(high));
+  memcpy(xlow, low, sizeof(struct sockaddr));
+  memcpy(xhigh, high, sizeof(struct sockaddr));
   memcpy(xidentity, identity, strlen(identity));
 	cache->low[cache->index] = xlow;
 	cache->high[cache->index] = xhigh;

@@ -293,13 +293,13 @@ int loader_loadcustom()
      
     for (int i = 0; i < whitenum; i++)
     { 
-      unsigned long long crc = crc64(0, whitelist[i], strlen((const char *)whitelist[i]));
+      unsigned long long crc = crc64(0, (unsigned char *)whitelist[i], strlen((const char *)whitelist[i]));
 		  cache_domain_add(cwhitelist, crc, 0, 0);
     }
     cache_domain_sort(cwhitelist);
     for (int i = 0; i < blacknum; i++)
     {
-      unsigned long long crc = crc64(0, blacklist[i], strlen((const char *)blacklist[i]));
+      unsigned long long crc = crc64(0, (unsigned char *)blacklist[i], strlen((const char *)blacklist[i]));
 		  cache_domain_add(cblacklist, crc, 0, 0);
     }
     cache_domain_sort(cblacklist);
