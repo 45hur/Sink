@@ -155,20 +155,20 @@ static int collect(kr_layer_t *ctx)
 
             if (rr->type == KNOT_RRTYPE_A || rr->type == KNOT_RRTYPE_AAAA)
             {
-                char domain[KNOT_DNAME_MAXLEN];
-                knot_dname_to_str(domain, rr->owner, KNOT_DNAME_MAXLEN);
+                char querieddomain[KNOT_DNAME_MAXLEN];
+                knot_dname_to_str(querieddomain, rr->owner, KNOT_DNAME_MAXLEN);
 
-                int domainLen = strlen(domain);
-                if(domain[domainLen - 1] == '.')
+                int domainLen = strlen(querieddomain);
+                if(querieddomain[domainLen - 1] == '.')
                 {
-                    domain[domainLen - 1] = '\0';
+                    querieddomain[domainLen - 1] = '\0';
                 }
 
-                unsigned long long crc = crc64(0, (const unsigned char*)domain, strlen(domain));
-	              struct domain domain_item;
+                unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
+	              domain domain_item;
                 if (cache_domain_contains(cached_domain, crc, &domain_item))
                 {
-                    sprintf(message, "redirecting ? '%s'", domain);
+                    sprintf(message, "redirecting ? '%s'", querieddomain);
                     logtosyslog(message);
 
                     uint16_t msgid = knot_wire_get_id(request->answer->wire);
