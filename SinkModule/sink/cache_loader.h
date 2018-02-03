@@ -117,14 +117,13 @@ int loader_loaddomains()
 	while (fgets(line, 1024, stream))
 	{
 		char **fields = split(line, ',', 3);
-    //unsigned long long crc = crc64(0, fields[0], strlen((const char *)fields[0]));
-    //short acc = atoi(fields[1]);
-    //unsigned long long flags = strtoull(fields[2], (char **)NULL, 10);
+    unsigned long long crc = crc64(0, fields[0], strlen((const char *)fields[0]));
+    short acc = atoi(fields[1]);
+    unsigned long long flags = strtoull(fields[2], (char **)NULL, 10);
 		
-		//cache_domain_add(cached_domain, crc, 0, 0);
+		cache_domain_add(cached_domain, crc, 0, 0);
     free(fields);
 	}
-  /*
 	cache_domain_sort(cached_domain);
   
 	fseek(stream, 0, SEEK_SET);
@@ -137,7 +136,7 @@ int loader_loaddomains()
 		
 		cache_domain_update(cached_domain, crc, acc, flags);
     free(fields);
-	}   */
+	}
   
   fclose(stream);
   
