@@ -17,6 +17,12 @@ int is_ip_in_range(const struct sockaddr *ip,  const struct sockaddr *from, cons
 		struct sockaddr_in *addr_ip = (struct sockaddr_in *)ip;
 		struct sockaddr_in *addr_fr = (struct sockaddr_in *)from;
 		struct sockaddr_in *addr_to = (struct sockaddr_in *)to;
+    
+    printf("%x => %x <= %x\n", 
+      addr_fr->sin_addr.s_addr, 
+      addr_ip->sin_addr.s_addr, 
+      addr_to->sin_addr.s_addr 
+      );
   
 		result = (addr_ip->sin_addr.s_addr >= addr_fr->sin_addr.s_addr) && (addr_ip->sin_addr.s_addr <= addr_to->sin_addr.s_addr);
 		break;
