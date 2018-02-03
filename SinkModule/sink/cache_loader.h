@@ -117,7 +117,7 @@ int loader_loaddomains()
 	while (fgets(line, 1024, stream))
 	{
 		char **fields = split(line, ',', 3);
-    unsigned long long crc = crc64(0, fields[0], strlen((const char *)fields[0]));
+    unsigned long long crc = crc64(0, (const unsigned char *)fields[0], strlen((const char *)fields[0]));
     short acc = atoi(fields[1]);
     unsigned long long flags = strtoull(fields[2], (char **)NULL, 10);
 		
@@ -130,7 +130,7 @@ int loader_loaddomains()
 	while (fgets(line, 1024, stream))
 	{
 		char **fields = split(line, ',', 3);
-    unsigned long long crc = crc64(0, fields[0], strlen((const char *)fields[0]));
+    unsigned long long crc = crc64(0, (const unsigned char *)fields[0], strlen((const char *)fields[0]));
     short acc = atoi(fields[1]);
     unsigned long long flags = strtoull(fields[2], (char **)NULL, 10);
 		

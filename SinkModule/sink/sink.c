@@ -10,30 +10,34 @@
 
 static void* observe(void *arg)
 {
-    /* ... do some observing ... */
-    openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
-    syslog(LOG_INFO, "Loading");
-    closelog();
+  /* ... do some observing ... */
+  openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+  syslog(LOG_INFO, "Loading");
+  closelog();
 
-    if (loader_init() != 0)
-    {
-        puts("csv load failed");
-	return (void *)-1;
-    }
+  unsigned long long ret = 0;
+  if ((ret = loader_init()) != 0)
+  {
+  	openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+  	syslog(LOG_INFO, "CSV load failed");
+  	closelog();
+  	return (void *)-1;
+  }
 
-    pthread_t thr_id;
-    int ret = 0;
-    if ((ret = pthread_create(&thr_id, NULL, &socket_server, NULL)) != 0) 
-    {
-        puts("failed to create server thread");
-        return (void *)ret;  
-    }
+  pthread_t thr_id;
+  if ((ret = pthread_create(&thr_id, NULL, &socket_server, NULL)) != 0) 
+  {
+  	openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+  	syslog(LOG_INFO, "Create thread failed");
+  	closelog();
+    return (void *)ret;  
+  }
 
-    openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
-    syslog(LOG_INFO, "Loaded");
-    closelog();
+  openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+  syslog(LOG_INFO, "Loaded");
+  closelog();
 
-    return NULL;
+  return NULL;
 }
 
 static int load(struct kr_module *module, const char *path)
