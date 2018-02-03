@@ -165,7 +165,7 @@ static int collect(kr_layer_t *ctx)
                 }
 
                 unsigned long long crc = crc64(0, (const unsigned char*)domain, strlen(domain));
-	              domain domain_item;
+	              struct domain domain_item;
                 if (cache_domain_contains(cached_domain, crc, &domain_item))
                 {
                     sprintf(message, "redirecting ? '%s'", domain);
