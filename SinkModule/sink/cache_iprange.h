@@ -122,8 +122,8 @@ int cache_iprange_add(cache_iprange* cache, struct sockaddr *low, struct sockadd
 	if (cache->index > cache->capacity)
 		return -1;
 
-  struct sockaddr* xlow = (struct sockaddr*)malloc(sizeof(low));
-  struct sockaddr* xhigh = (struct sockaddr*)malloc(sizeof(xhigh));
+  struct sockaddr* xlow = (struct sockaddr*)malloc(sizeof(struct sockaddr));
+  struct sockaddr* xhigh = (struct sockaddr*)malloc(sizeof(struct sockaddr));
   char* xidentity = (char *)malloc(strlen(identity));
   if (xlow == NULL || xhigh == NULL || xidentity == NULL)
   {
