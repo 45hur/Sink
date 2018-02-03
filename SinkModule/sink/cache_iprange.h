@@ -148,11 +148,8 @@ int cache_iprange_contains(cache_iprange* cache, const struct sockaddr * ip, ipr
   int result = 0;
 	int position = cache->index;
           
-  puts("contains");          
 	while (--position >= 0)
 	{
-    printf("%d", position);
-        
     if ((result = is_ip_in_range(
       ip,
       (const struct sockaddr *)cache->low[position],

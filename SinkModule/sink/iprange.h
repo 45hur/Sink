@@ -8,6 +8,10 @@
 
 int is_ip_in_range(const struct sockaddr *ip,  const struct sockaddr *from, const struct sockaddr *to)
 {
+
+  printf("%x\n\n", ip->sa_family);
+  printf("%x=%x=%x", ip->sa_family, from->sa_family, to->sa_family); 
+
 	int result = 0;
   if (ip->sa_family != from->sa_family || ip->sa_family != to->sa_family)
     return result;
@@ -35,8 +39,11 @@ int is_ip_in_range(const struct sockaddr *ip,  const struct sockaddr *from, cons
 		result = memcmp(addr6_ip->sin6_addr.s6_addr, addr6_fr->sin6_addr.s6_addr, 16) >= 0 && memcmp(addr6_ip->sin6_addr.s6_addr, addr6_to->sin6_addr.s6_addr, 16) <= 0;
   		break;
 	}
-	default: 
+	default:
+  { 
+      printf("kekek");
   		break;
+  }
 	}
   
 	return result;
