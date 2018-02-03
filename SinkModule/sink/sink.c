@@ -164,7 +164,7 @@ static int collect(kr_layer_t *ctx)
                     domain[domainLen - 1] = '\0';
                 }
 
-                unsigned long long crc = crc64(0, (const unsigned char*)value, strlen(value));
+                unsigned long long crc = crc64(0, (const unsigned char*)domain, strlen(domain));
 	              domain domain_item;
                 if (cache_domain_contains(cached_domain, crc, &domain_item))
                 {
