@@ -93,7 +93,7 @@ int countchar(char separator, char *string)
 
 int loader_loaddomains()
 {
-  puts("fopen"):
+  puts("fopen");
 	FILE* stream = fopen("domains.csv", "r");
 	char line[1024];
   
@@ -102,25 +102,25 @@ int loader_loaddomains()
     return -1;
   }
 
-  puts("lines"):
+  puts("lines");
 	int linecount = 0;
 	while (fgets(line, 1024, stream))
 	{
 		linecount++;
 	}
 
-  puts("init"):  
+  puts("init");
 	if ((cached_domain = cache_domain_init(linecount)) == NULL)
   {
     puts("not enough memory to create domain cache");
     return -1;
   }
   
-  puts("gets"):      
+  puts("gets");      
 	fseek(stream, 0, SEEK_SET);
 	while (fgets(line, 1024, stream))
 	{
-    puts("split"):
+    puts("split");
 		char **fields = split(line, ',', 3);
     unsigned long long crc = crc64(0, (const unsigned char *)fields[0], strlen((const char *)fields[0]));
     short acc = atoi(fields[1]);
