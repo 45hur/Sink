@@ -176,7 +176,7 @@ static int collect(kr_layer_t *ctx)
                     iprange iprange_item = {};
                     if (cache_iprange_contains(cached_iprange, res, &iprange_item))
                     {
-                      sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange.policy_id);
+                      sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange_item.policy_id);
                       logtosyslog(message);
                       
                       uint16_t msgid = knot_wire_get_id(request->answer->wire);

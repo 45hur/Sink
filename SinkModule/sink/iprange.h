@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h> //inet_addr
 
-int is_ip_in_range(struct sockaddr *ip, struct sockaddr *from, struct sockaddr *to)
+int is_ip_in_range(const struct sockaddr *ip,  const struct sockaddr *from, const struct sockaddr *to)
 {
 	int result = 0;
   if (ip->sa_family != from->sa_family || ip->sa_family != to->sa_family)

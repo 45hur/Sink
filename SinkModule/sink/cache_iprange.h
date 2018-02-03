@@ -142,7 +142,7 @@ int cache_iprange_add(cache_iprange* cache, struct sockaddr *low, struct sockadd
 	return 0;
 }
 
-int cache_iprange_contains(cache_iprange* cache, struct sockaddr * ip, iprange *item)
+int cache_iprange_contains(cache_iprange* cache, const struct sockaddr * ip, iprange *item)
 {
 	cache->searchers++;
   int result = 0;
@@ -152,8 +152,8 @@ int cache_iprange_contains(cache_iprange* cache, struct sockaddr * ip, iprange *
 	{
     if ((result = is_ip_in_range(
       ip,
-      cache->low[position],
-      cache->high[position]
+      (const struct sockaddr *)cache->low[position],
+      (const struct sockaddr *)cache->high[position]
       )) == 1)
       {
         item->identity = cache->identity[position]; 
