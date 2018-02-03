@@ -1,10 +1,17 @@
+#pragma once
+#ifndef IP_RANGE_H
+#define IP_RANGE_H
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h> //inet_addr
 
 int is_ip_in_range(struct sockaddr *ip, struct sockaddr *from, struct sockaddr *to)
 {
-	int result = 0; 
+	int result = 0;
+  if (ip->sa_family != from->sa_family || ip->sa_family != to->sa_family)
+    return result;
+    
 	switch (ip->sa_family) {
 	case AF_INET: {
 		struct sockaddr_in *addr_ip = (struct sockaddr_in *)ip;
@@ -28,3 +35,5 @@ int is_ip_in_range(struct sockaddr *ip, struct sockaddr *from, struct sockaddr *
   
 	return result;
 }
+
+#endif

@@ -1,3 +1,7 @@
+#pragma once
+#ifndef CRC64_H
+#define CRC64_H
+
 /* Redis uses the CRC64 variant with "Jones" coefficients and init value of 0.
 *
 * Specification of this CRC64 variant follows:
@@ -180,3 +184,5 @@ uint64_t crc64(uint64_t crc, const unsigned char *s, uint64_t l) {
 	}
 	return crc;
 }
+
+#endif
