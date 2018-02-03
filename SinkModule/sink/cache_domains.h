@@ -45,6 +45,20 @@ typedef struct
 	unsigned long long flags;
 } domain;
 
+enum 
+{
+  flags_none = 0,
+  flags_accuracy = 1,
+  flags_blacklist = 2, 
+  flags_whitelist = 4, 
+  flags_drop = 8 
+} flags;
+
+unsigned char cache_domain_get_flags(unsigned long long flags, int n)
+{
+  return (flags >> (8 * n)) & 0xff; 
+} 
+
 static int cache_domain_compare(const void * a, const void * b)
 {
 	const unsigned long long ai = *(const unsigned long long*)a;

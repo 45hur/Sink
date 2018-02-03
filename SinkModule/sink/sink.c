@@ -111,27 +111,29 @@ static int collect(kr_layer_t *ctx)
 	const struct sockaddr *res = request->qsource.addr;
 	char *s = NULL;
 	switch (res->sa_family) {
-	case AF_INET: {
-		struct sockaddr_in *addr_in = (struct sockaddr_in *)res;
-		s = malloc(INET_ADDRSTRLEN);
-		inet_ntop(AF_INET, &(addr_in->sin_addr), s, INET_ADDRSTRLEN);
-		break;
+  	case AF_INET: 
+    {
+  		struct sockaddr_in *addr_in = (struct sockaddr_in *)res;
+  		s = malloc(INET_ADDRSTRLEN);
+  		inet_ntop(AF_INET, &(addr_in->sin_addr), s, INET_ADDRSTRLEN);
+  		break;
+  	}
+  	case AF_INET6: 
+    {
+  		struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)res;
+  		s = malloc(INET6_ADDRSTRLEN);
+  		inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
+  		break;
+  	}
+  	default:
+  	{
+  		sprintf(message, "qsource is invalid");
+  		logtosyslog(message);
+  		return ctx->state;
+  		break;
+  	}
 	}
-	case AF_INET6: {
-		struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)res;
-		s = malloc(INET6_ADDRSTRLEN);
-		inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
-		break;
-	}
-	default:
-	{
-		sprintf(message, "qsource is invalid");
-		logtosyslog(message);
-		return ctx->state;
-		break;
-	}
-	}
-	sprintf(message, "IP address: %s", s);
+	sprintf(message, "[%s] request", s);
 	logtosyslog(message);
 	free(s);
 
@@ -165,38 +167,44 @@ static int collect(kr_layer_t *ctx)
                 }
 
                 unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
-	              domain domain_item;
+	              domain domain_item = {};
                 if (cache_domain_contains(cached_domain, crc, &domain_item))
                 {
-                    sprintf(message, "redirecting ? '%s'", querieddomain);
+                    sprintf(message, "detected '%s'", querieddomain);
                     logtosyslog(message);
-
-                    uint16_t msgid = knot_wire_get_id(request->answer->wire);
-                    kr_pkt_recycle(request->answer);
-
-                    knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
-                    knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
-
-                    struct sockaddr_storage sinkhole;
-                    const char *sinkit_sinkhole = "94.237.30.217";
-                    if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0) {
-                        return kr_error(EINVAL);
+                    
+                    iprange iprange_item = {};
+                    if (cache_iprange_contains(cached_iprange, res, &iprange_item))
+                    {
+                      sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange.policy_id);
+                      logtosyslog(message);
+                      
+                      uint16_t msgid = knot_wire_get_id(request->answer->wire);
+                      kr_pkt_recycle(request->answer);
+  
+                      knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
+                      knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
+  
+                      struct sockaddr_storage sinkhole;
+                      const char *sinkit_sinkhole = "94.237.30.217";
+                      if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0) {
+                          return kr_error(EINVAL);
+                      }
+  
+                      sprintf(message, "apply redirect to %s", sinkit_sinkhole);
+                      logtosyslog(message);
+  
+                      size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
+                      const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
+                      static knot_rdata_t rdata_arr[RDATA_ARR_MAX];
+  
+                      knot_wire_set_id(request->answer->wire, msgid);
+   
+                      kr_pkt_put(request->answer, last->sname, 120, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
+  
+                      return KNOT_STATE_DONE;
                     }
-
-                    sprintf(message, "apply redirect to %s", sinkit_sinkhole);
-                    logtosyslog(message);
-
-                    size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
-                    const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
-                    static knot_rdata_t rdata_arr[RDATA_ARR_MAX];
-
-                    knot_wire_set_id(request->answer->wire, msgid);
- 
-                    kr_pkt_put(request->answer, last->sname, 120, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
-
-                    return KNOT_STATE_DONE;
                 }
-
             }
         }
     }
