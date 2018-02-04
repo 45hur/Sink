@@ -184,6 +184,31 @@ static int collect(kr_layer_t *ctx)
                       sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange_item.policy_id);
                       logtosyslog(message);
                       
+                      struct policy policy_item = {}; 
+                      if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
+                      {
+                        if (policy_item.strategy & flags_accuracy) 
+                        {
+                          sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d'", iprange_item.policy_id, policy_item.audit, policy_item.block);
+                          logtosyslog(message);
+                        }
+                        if (policy_item.strategy & flags_blacklist) 
+                        {
+                          sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d'", iprange_item.policy_id, policy_item.audit, policy_item.block);
+                          logtosyslog(message);
+                        }
+                        if (policy_item.strategy & flags_whitelist) 
+                        {
+                          sprintf(message, "policy '%d' strategy=>'whitelist' audit='%d' block='%d'", iprange_item.policy_id, policy_item.audit, policy_item.block);
+                          logtosyslog(message);
+                        }
+                        if (policy_item.strategy & flags_drop) 
+                        {
+                          sprintf(message, "policy '%d' strategy=>'drop' audit='%d' block='%d'", iprange_item.policy_id, policy_item.audit, policy_item.block);
+                          logtosyslog(message);
+                        }
+                      }
+                      
                       uint16_t msgid = knot_wire_get_id(request->answer->wire);
                       kr_pkt_recycle(request->answer);
   
