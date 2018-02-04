@@ -199,22 +199,22 @@ static int collect(kr_layer_t *ctx)
                       }
                       
                       int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
-                      if (policy_item.strategy & flags_accuracy)
+                      if (domain_flags & flags_accuracy)
                       {
                           sprintf(message, "'%s' domain-policy %d=>'accuracy'", querieddomain, iprange_item.policy_id);
                           logtosyslog(message);
                       }
-                      if (policy_item.strategy & flags_blacklist)
+                      if (domain_flags & flags_blacklist)
                       {
                           sprintf(message, "'%s' domain-policy %d=>'blacklist'", querieddomain, iprange_item.policy_id);
                           logtosyslog(message);
                       }
-                      if (policy_item.strategy & flags_whitelist)
+                      if (domain_flags & flags_whitelist)
                       {
                           sprintf(message, "'%s' domain-policy %d=>'whitelist'", querieddomain, iprange_item.policy_id);
                           logtosyslog(message);
                       }
-                      if (policy_item.strategy & flags_drop)
+                      if (domain_flags & flags_drop)
                       {
                           sprintf(message, "'%s' domain-policy %d=>'drop'", querieddomain, iprange_item.policy_id);
                           logtosyslog(message);
