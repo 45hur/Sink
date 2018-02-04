@@ -203,8 +203,8 @@ static int collect(kr_layer_t *ctx)
                       policy policy_item = {}; 
                       if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
                       {
-                        int policy_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
-                        if (policy_item.strategy & flags_accuracy) 
+                        int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
+                        if (domain_flags & flags_accuracy) 
                         {
                           sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
@@ -219,18 +219,18 @@ static int collect(kr_layer_t *ctx)
                             logtoaudit(message);
                           }
                         }
-                        if (policy_item.strategy & flags_blacklist) 
+                        if (domain_flags & flags_blacklist) 
                         {
                           sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-                          if (domain_item.
                           logtosyslog(message);
+                          return redirect(request, last);   
                         }
-                        if (policy_item.strategy & flags_whitelist) 
+                        if (domain_flags & flags_whitelist) 
                         {
                           sprintf(message, "policy '%d' strategy=>'whitelist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
                         }
-                        if (policy_item.strategy & flags_drop) 
+                        if (domain_flags & flags_drop) 
                         {
                           sprintf(message, "policy '%d' strategy=>'drop' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
