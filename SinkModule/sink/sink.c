@@ -184,7 +184,21 @@ static int collect(kr_layer_t *ctx)
                       sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange_item.policy_id);
                       logtosyslog(message);
                       
-                      struct policy policy_item = {}; 
+                      if (strlen(iprange_item.identity) > 0)
+                      {
+                        if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc))
+                        {
+                          sprintf(message, "identity '%s' got '%s' blacklisted.", iprange_item.identity, querieddomain);
+                          logtosyslog(message);
+                        }
+                        if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc))
+                        {
+                          sprintf(message, "identity '%s' got '%s' whitelisted.", iprange_item.identity, querieddomain);
+                          logtosyslog(message);
+                        }
+                      }
+                      
+                      policy policy_item = {}; 
                       if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
                       {
                         if (policy_item.strategy & flags_accuracy) 

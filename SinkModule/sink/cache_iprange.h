@@ -124,7 +124,7 @@ int cache_iprange_add(cache_iprange* cache, struct ip_addr *low, struct ip_addr 
 
   struct ip_addr* xlow = (struct ip_addr*)malloc(sizeof(struct ip_addr));
   struct ip_addr* xhigh = (struct ip_addr*)malloc(sizeof(struct ip_addr));
-  char* xidentity = (char *)calloc(strlen(identity 1), sizeof(char));
+  char* xidentity = (char *)calloc(strlen(identity), sizeof(char));
   if (xlow == NULL || xhigh == NULL || xidentity == NULL)
   {
     return -1;    
