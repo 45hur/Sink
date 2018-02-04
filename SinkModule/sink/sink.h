@@ -22,5 +22,13 @@ static __inline void logtosyslog(char *text)
     closelog();
     memset(text, 0, strlen(text));
 }
+
+static __inline void logtoaudit(char *text)
+{
+    openlog("sink-audit", LOG_CONS | LOG_PID, LOG_USER);
+    syslog(LOG_INFO, "%s", text);
+    closelog();
+    memset(text, 0, strlen(text));
+}
  
 #endif //SINK_SINK_H

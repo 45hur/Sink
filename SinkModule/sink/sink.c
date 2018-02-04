@@ -190,85 +190,86 @@ static int collect(kr_layer_t *ctx)
                         {
                           sprintf(message, "identity '%s' got '%s' blacklisted.", iprange_item.identity, querieddomain);
                           logtosyslog(message);
+                          return redirect(request, last);                          
                         }
                         if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc))
                         {
                           sprintf(message, "identity '%s' got '%s' whitelisted.", iprange_item.identity, querieddomain);
                           logtosyslog(message);
+                          return KNOT_STATE_DONE;
                         }
                       }
-                      
-                      int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
-                      if (domain_flags & flags_accuracy)
-                      {
-                          sprintf(message, "'%s' domain-policy %d=>'accuracy'", querieddomain, iprange_item.policy_id);
-                          logtosyslog(message);
-                      }
-                      if (domain_flags & flags_blacklist)
-                      {
-                          sprintf(message, "'%s' domain-policy %d=>'blacklist'", querieddomain, iprange_item.policy_id);
-                          logtosyslog(message);
-                      }
-                      if (domain_flags & flags_whitelist)
-                      {
-                          sprintf(message, "'%s' domain-policy %d=>'whitelist'", querieddomain, iprange_item.policy_id);
-                          logtosyslog(message);
-                      }
-                      if (domain_flags & flags_drop)
-                      {
-                          sprintf(message, "'%s' domain-policy %d=>'drop'", querieddomain, iprange_item.policy_id);
-                          logtosyslog(message);
-                      }
-                      
+                     
                       policy policy_item = {}; 
                       if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
                       {
+                        int policy_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
                         if (policy_item.strategy & flags_accuracy) 
                         {
-                          sprintf(message, "iprange-policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+                          sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
+                          if (domain.accuracy >= policy_item.block)
+                          {
+                            return redirect(request, last);  
+                          } 
+                          else 
+                          if (domain.accuracy > policy_item.audit)
+                          {
+                            sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+                            logtoaudit(message);
+                          }
                         }
                         if (policy_item.strategy & flags_blacklist) 
                         {
-                          sprintf(message, "iprange-policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+                          sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+                          if (domain_item.
                           logtosyslog(message);
                         }
                         if (policy_item.strategy & flags_whitelist) 
                         {
-                          sprintf(message, "iprange-policy '%d' strategy=>'whitelist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+                          sprintf(message, "policy '%d' strategy=>'whitelist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
                         }
                         if (policy_item.strategy & flags_drop) 
                         {
-                          sprintf(message, "iprange-policy '%d' strategy=>'drop' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+                          sprintf(message, "policy '%d' strategy=>'drop' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
                         }
                       }
-                      
-                      uint16_t msgid = knot_wire_get_id(request->answer->wire);
-                      kr_pkt_recycle(request->answer);
-  
-                      knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
-                      knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
-  
-                      struct sockaddr_storage sinkhole;
-                      const char *sinkit_sinkhole = "94.237.30.217";
-                      if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0) {
-                          return kr_error(EINVAL);
+                      else
+                      {
+                        int domain_flags = cache_domain_get_flags(domain_item.flags, 0);
+                        if (domain_flags & flags_accuracy)
+                        {
+                            sprintf(message, "'%s' no-policy => domain-policy =>'accuracy'", querieddomain);
+                            logtosyslog(message);
+                            logtoaudit(message);
+                        }
+                        if (domain_flags & flags_blacklist)
+                        {
+                            sprintf(message, "'%s' no-policy => domain-policy =>'blacklist'", querieddomain);
+                            logtosyslog(message);
+                            return redirect(request, last); 
+                        }
+                        if (domain_flags & flags_whitelist)
+                        {
+                            sprintf(message, "'%s' no-policy => domain-policy =>'whitelist'", querieddomain);
+                            logtosyslog(message);
+                            return KNOT_STATE_DONE;
+                        }
+                        if (domain_flags & flags_drop)
+                        {
+                            sprintf(message, "'%s' no-policy => domain-policy =>'drop'", querieddomain);
+                            logtosyslog(message);
+                            
+                            //TODO
+                        }     
                       }
-  
-                      sprintf(message, "apply redirect to %s", sinkit_sinkhole);
-                      logtosyslog(message);
-  
-                      size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
-                      const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
-                      static knot_rdata_t rdata_arr[RDATA_ARR_MAX];
-  
-                      knot_wire_set_id(request->answer->wire, msgid);
-   
-                      kr_pkt_put(request->answer, last->sname, 120, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
-  
-                      return KNOT_STATE_DONE;
+                      
+                      
+                      
+
+
                     }
                 }
             }
@@ -276,6 +277,31 @@ static int collect(kr_layer_t *ctx)
     }
 
     return ctx->state;
+}
+
+static int kr_layer_api_t(struct kr_request * request, struct kr_query *last)
+{
+  uint16_t msgid = knot_wire_get_id(request->answer->wire);
+  kr_pkt_recycle(request->answer);
+
+  knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
+  knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
+
+  struct sockaddr_storage sinkhole;
+  const char *sinkit_sinkhole = "94.237.30.217";
+  if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0) {
+      return kr_error(EINVAL);
+  }
+
+  size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
+  const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
+  static knot_rdata_t rdata_arr[RDATA_ARR_MAX];
+
+  knot_wire_set_id(request->answer->wire, msgid);
+
+  kr_pkt_put(request->answer, last->sname, 120, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
+
+  return KNOT_STATE_DONE;
 }
 
 KR_EXPORT
