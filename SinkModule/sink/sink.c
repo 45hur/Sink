@@ -198,27 +198,49 @@ static int collect(kr_layer_t *ctx)
                         }
                       }
                       
+                      int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
+                      if (policy_item.strategy & flags_accuracy)
+                      {
+                          sprintf(message, "'%s' domain-policy %d=>'accuracy'", querieddomain, iprange_item.policy_id);
+                          logtosyslog(message);
+                      }
+                      if (policy_item.strategy & flags_blacklist)
+                      {
+                          sprintf(message, "'%s' domain-policy %d=>'blacklist'", querieddomain, iprange_item.policy_id);
+                          logtosyslog(message);
+                      }
+                      if (policy_item.strategy & flags_whitelist)
+                      {
+                          sprintf(message, "'%s' domain-policy %d=>'whitelist'", querieddomain, iprange_item.policy_id);
+                          logtosyslog(message);
+                      }
+                      if (policy_item.strategy & flags_drop)
+                      {
+                          sprintf(message, "'%s' domain-policy %d=>'drop'", querieddomain, iprange_item.policy_id);
+                          logtosyslog(message);
+                      }
+                      
                       policy policy_item = {}; 
                       if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
                       {
                         if (policy_item.strategy & flags_accuracy) 
                         {
-                          sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d'", iprange_item.policy_id, policy_item.audit, policy_item.block);
+                          sprintf(message, "iprange-policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
                         }
                         if (policy_item.strategy & flags_blacklist) 
                         {
-                          sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d'", iprange_item.policy_id, policy_item.audit, policy_item.block);
+                          sprintf(message, "iprange-policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
                         }
                         if (policy_item.strategy & flags_whitelist) 
                         {
-                          sprintf(message, "policy '%d' strategy=>'whitelist' audit='%d' block='%d'", iprange_item.policy_id, policy_item.audit, policy_item.block);
+                          sprintf(message, "iprange-policy '%d' strategy=>'whitelist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
                         }
                         if (policy_item.strategy & flags_drop) 
                         {
-                          sprintf(message, "policy '%d' strategy=>'drop' audit='%d' block='%d'", iprange_item.policy_id, policy_item.audit, policy_item.block);
+                          sprintf(message, "iprange-policy '%d' strategy=>'drop' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
                         }
                       }
