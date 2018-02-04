@@ -127,7 +127,7 @@ static int collect(kr_layer_t *ctx)
   		s = malloc(INET6_ADDRSTRLEN);
   		inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
       origin.family = AF_INET6;
-      memcpy(&origin.ipv6_sin_addr, &(addr_in->sin6_addr), 16); 
+      memcpy(&origin.ipv6_sin_addr, &(addr_in6->sin6_addr), 16); 
   		break;
   	}
   	default:
