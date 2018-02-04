@@ -110,12 +110,15 @@ static int collect(kr_layer_t *ctx)
 
 	const struct sockaddr *res = request->qsource.addr;
 	char *s = NULL;
+  struct ip_addr origin = {};
 	switch (res->sa_family) {
   	case AF_INET: 
     {
   		struct sockaddr_in *addr_in = (struct sockaddr_in *)res;
   		s = malloc(INET_ADDRSTRLEN);
   		inet_ntop(AF_INET, &(addr_in->sin_addr), s, INET_ADDRSTRLEN);
+      origin.family = AF_INET;
+      memcpy(&origin.ipv4_sin_addr, &(addr_in->sin_addr), 4);    
   		break;
   	}
   	case AF_INET6: 
@@ -123,6 +126,8 @@ static int collect(kr_layer_t *ctx)
   		struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)res;
   		s = malloc(INET6_ADDRSTRLEN);
   		inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
+      origin.family = AF_INET6;
+      memcpy(&origin.ipv6_sin_addr, &(addr_in->sin6_addr), 16); 
   		break;
   	}
   	default:
@@ -174,7 +179,7 @@ static int collect(kr_layer_t *ctx)
                     logtosyslog(message);
                     
                     iprange iprange_item = {};
-                    if (cache_iprange_contains(cached_iprange, res, &iprange_item))
+                    if (cache_iprange_contains(cached_iprange, &origin, &iprange_item))
                     {
                       sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange_item.policy_id);
                       logtosyslog(message);

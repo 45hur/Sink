@@ -36,8 +36,9 @@ void hashcontainer_reinit(int count, char *domains, char *accuracy, char *flags)
 	sink_list_destroy(old);
 }
 */
-         
-char **split(char *line, char sep, int fields) {
+       
+char **split(char *line, char sep, int fields) 
+{
   char **r = (char **)malloc(fields * sizeof(char*));
 
   int lptr = 0, fptr = 0;
@@ -56,25 +57,30 @@ char **split(char *line, char sep, int fields) {
   return r;
 }
 
-int parse_addr(struct sockaddr *sa, const char *addr) {
+int parse_addr(struct ip_addr *sa, const char *addr) 
+{
+    printf("%s\n", addr);
     int family = strchr(addr, ':') ? AF_INET6 : AF_INET;
     if (family == AF_INET6)
     {
-    	struct sockaddr* ip6sto;
-    	struct sockaddr_in6 ip6to;
+    	/*struct sockaddr_in6 ip6to;
     	ip6to.sin6_family = AF_INET6;
     	ip6to.sin6_port = htons(0);
     	inet_pton(AF_INET6, addr, &ip6to.sin6_addr);
-    	sa = (struct sockaddr *)&ip6to;
+    	sa = (struct sockaddr_storage *)&ip6to;*/
+      sa->family = AF_INET6;
+    	if (inet_pton(AF_INET6, addr, &sa->ipv6_sin_addr) != 1)
+      {
+        return -1;
+      }
     }
     else
     {
-     	struct sockaddr* ip4sfrom; 
-    	struct sockaddr_in ip4from;
-    	ip4from.sin_family = AF_INET;
-    	ip4from.sin_port = htons(0);
-    	inet_pton(AF_INET, addr, &ip4from.sin_addr);
-    	sa = (struct sockaddr *)&ip4from;
+    	sa->family = AF_INET;
+    	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) != 1)
+      {
+        return -1;
+      }
     }
         
     return 0;
@@ -171,8 +177,8 @@ int loader_loadranges()
 	{
 		char **fields = split(line, ',', 4);
     
-    struct sockaddr from;
-    struct sockaddr to;
+    struct ip_addr from;
+    struct ip_addr to;
     char *ipfrom = fields[0];
     char *ipto = fields[1];
 

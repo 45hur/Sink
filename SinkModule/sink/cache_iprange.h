@@ -35,8 +35,8 @@ typedef struct
 	int capacity;
 	int index;
 	_Atomic int searchers;
-	struct sockaddr **low;
-  struct sockaddr **high;
+	struct ip_addr **low;
+  struct ip_addr **high;
 	char **identity;
   int *policy_id;
 } cache_iprange;
@@ -58,8 +58,8 @@ cache_iprange* cache_iprange_init(int count)
 	item->capacity = count;
 	item->index = 0;
 	item->searchers = 0;
-	item->low = (struct sockaddr **)malloc(item->capacity * sizeof(struct sockaddr *));
-  item->high = (struct sockaddr **)malloc(item->capacity * sizeof(struct sockaddr *));
+	item->low = (struct ip_addr **)malloc(item->capacity * sizeof(struct ip_addr *));
+  item->high = (struct ip_addr **)malloc(item->capacity * sizeof(struct ip_addr *));
   item->identity = (char **)malloc(item->capacity * sizeof(char *));
   item->policy_id = (int *)malloc(item->capacity * sizeof(int));
   if (item->low == NULL || item->high == NULL || item->identity == NULL || item->policy_id == NULL)
@@ -117,21 +117,21 @@ void cache_iprange_destroy(cache_iprange *cache)
 }
 
 
-int cache_iprange_add(cache_iprange* cache, struct sockaddr *low, struct sockaddr *high, char *identity, int policy_id)
+int cache_iprange_add(cache_iprange* cache, struct ip_addr *low, struct ip_addr *high, char *identity, int policy_id)
 {
 	if (cache->index > cache->capacity)
 		return -1;
 
-  struct sockaddr* xlow = (struct sockaddr*)malloc(sizeof(struct sockaddr));
-  struct sockaddr* xhigh = (struct sockaddr*)malloc(sizeof(struct sockaddr));
+  struct ip_addr* xlow = (struct ip_addr*)malloc(sizeof(struct ip_addr));
+  struct ip_addr* xhigh = (struct ip_addr*)malloc(sizeof(struct ip_addr));
   char* xidentity = (char *)malloc(strlen(identity));
   if (xlow == NULL || xhigh == NULL || xidentity == NULL)
   {
     return -1;    
   }
 
-  memcpy(xlow, low, sizeof(struct sockaddr));
-  memcpy(xhigh, high, sizeof(struct sockaddr));
+  memcpy(xlow, low, sizeof(struct ip_addr));
+  memcpy(xhigh, high, sizeof(struct ip_addr));
   memcpy(xidentity, identity, strlen(identity));
 	cache->low[cache->index] = xlow;
 	cache->high[cache->index] = xhigh;
@@ -142,7 +142,7 @@ int cache_iprange_add(cache_iprange* cache, struct sockaddr *low, struct sockadd
 	return 0;
 }
 
-int cache_iprange_contains(cache_iprange* cache, const struct sockaddr * ip, iprange *item)
+int cache_iprange_contains(cache_iprange* cache, const struct ip_addr * ip, iprange *item)
 {
 	cache->searchers++;
   int result = 0;
@@ -152,8 +152,8 @@ int cache_iprange_contains(cache_iprange* cache, const struct sockaddr * ip, ipr
 	{
     if ((result = is_ip_in_range(
       ip,
-      (const struct sockaddr *)cache->low[position],
-      (const struct sockaddr *)cache->high[position]
+      (const struct ip_addr *)cache->low[position],
+      (const struct ip_addr *)cache->high[position]
       )) == 1)
       {
         item->identity = cache->identity[position]; 
