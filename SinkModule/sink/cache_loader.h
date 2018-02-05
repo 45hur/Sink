@@ -84,11 +84,12 @@ int parse_addr(struct ip_addr *sa, const char *addr)
     else
     {
     	sa->family = AF_INET;
-      printf("inet_pton addr %s", addr);      
+      printf("inet_pton addr %s\n", addr);      
     	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) == 1)
       {
+        printf("nibble %x => ", sa->ipv4_sin_addr);
         sa->ipv4_sin_addr = reverse_nibbles(sa->ipv4_sin_addr);        
-
+        printf("%x\n", sa->ipv4_sin_addr);
         return 0;
       }
     }
