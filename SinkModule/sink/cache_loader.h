@@ -74,7 +74,7 @@ int parse_addr(struct ip_addr *sa, const char *addr)
     	sa->family = AF_INET;
     	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) != 1)
       {
-        char little[4];
+        char little[5] = {0};
         char *big_ptr = (char *)&sa->ipv4_sin_addr;
         
         little[0] = big_ptr[3];
@@ -189,11 +189,11 @@ int loader_loadranges()
 
     if (parse_addr(&from, ipfrom) != 0)
     {
-      printf("can't parse addr from '%s", ipfrom);
+      printf("can't parse addr from '%s'\n", ipfrom);
     }
     if (parse_addr(&to, ipto) != 0)
     {
-      printf("can't parse addr to '%s", ipto);
+      printf("can't parse addr to '%s\n", ipto);
     }
 
     char *identity = fields[2];
