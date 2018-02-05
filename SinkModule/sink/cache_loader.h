@@ -66,7 +66,7 @@ int parse_addr(struct ip_addr *sa, const char *addr)
       sa->family = AF_INET6;
     	if (inet_pton(AF_INET6, addr, &sa->ipv6_sin_addr) != 1)
       {
-        return -1;
+        return 0;
       }
     }
     else
@@ -74,16 +74,19 @@ int parse_addr(struct ip_addr *sa, const char *addr)
     	sa->family = AF_INET;
     	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) != 1)
       {
-        sa->ipv4_sin_addr = 
-          ((sa->ipv4_sin_addr>>24)&0xff) | // move byte 3 to byte 0
-          ((sa->ipv4_sin_addr<<8)&0xff0000) | // move byte 1 to byte 2
-          ((sa->ipv4_sin_addr>>8)&0xff00) | // move byte 2 to byte 1
-          ((sa->ipv4_sin_addr<<24)&0xff000000); // byte 0 to byte 3
-        return -1;
+        char little[4];
+        char *big_ptr = (char *)&sa->ipv4_sin_addr;
+        
+        little[0] = big_ptr[3];
+        little[1] = big_ptr[2];
+        little[2] = big_ptr[1];
+        little[3] = big_ptr[0];
+        memcpy(&sa->ipv4_sin_addr, &little, 4);
+        return 0;
       }
     }
         
-    return 0;
+    return -1;
 }
 
 int countchar(char separator, char *string)
@@ -182,8 +185,14 @@ int loader_loadranges()
     char *ipfrom = fields[0];
     char *ipto = fields[1];
 
-    parse_addr(&from, ipfrom);
-    parse_addr(&to, ipto);
+    if (parse_addr(&from, ipfrom) != 0)
+    {
+      printf("can't parse addr from '%s", ipfrom);
+    }
+    if (parse_addr(&to, ipto) != 0)
+    {
+      printf("can't parse addr to '%s", ipto);
+    }
 
     char *identity = fields[2];
     int policy_id = atoi(fields[3]);    
