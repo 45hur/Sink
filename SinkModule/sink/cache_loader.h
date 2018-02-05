@@ -63,11 +63,6 @@ int parse_addr(struct ip_addr *sa, const char *addr)
     int family = strchr(addr, ':') ? AF_INET6 : AF_INET;
     if (family == AF_INET6)
     {
-    	/*struct sockaddr_in6 ip6to;
-    	ip6to.sin6_family = AF_INET6;
-    	ip6to.sin6_port = htons(0);
-    	inet_pton(AF_INET6, addr, &ip6to.sin6_addr);
-    	sa = (struct sockaddr_storage *)&ip6to;*/
       sa->family = AF_INET6;
     	if (inet_pton(AF_INET6, addr, &sa->ipv6_sin_addr) != 1)
       {
@@ -79,6 +74,11 @@ int parse_addr(struct ip_addr *sa, const char *addr)
     	sa->family = AF_INET;
     	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) != 1)
       {
+        sa->ipv4_sin_addr = 
+          ((sa->ipv4_sin_addr>>24)&0xff) | // move byte 3 to byte 0
+          ((sa->ipv4_sin_addr<<8)&0xff0000) | // move byte 1 to byte 2
+          ((sa->ipv4_sin_addr>>8)&0xff00) | // move byte 2 to byte 1
+          ((sa->ipv4_sin_addr<<24)&0xff000000); // byte 0 to byte 3
         return -1;
       }
     }
