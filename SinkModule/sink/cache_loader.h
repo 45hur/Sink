@@ -59,7 +59,6 @@ char **split(char *line, char sep, int fields)
 
 int parse_addr(struct ip_addr *sa, const char *addr) 
 {
-    printf("%s\n", addr);
     int family = strchr(addr, ':') ? AF_INET6 : AF_INET;
     if (family == AF_INET6)
     {
@@ -72,6 +71,7 @@ int parse_addr(struct ip_addr *sa, const char *addr)
     else
     {
     	sa->family = AF_INET;
+      printf("inet_pton addr %s", addr);      
     	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) == 0)
       {
         char little[5] = {0};
@@ -193,7 +193,7 @@ int loader_loadranges()
     }
     if (parse_addr(&to, ipto) != 0)
     {
-      printf("can't parse addr to '%s\n", ipto);
+      printf("can't parse addr to '%s'\n", ipto);
     }
 
     char *identity = fields[2];
