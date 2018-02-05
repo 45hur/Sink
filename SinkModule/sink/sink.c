@@ -293,6 +293,11 @@ static int collect(kr_layer_t *ctx)
                         }     
                       }
                     }
+                    else
+                    {
+                      sprintf(message, "no match to iprange");
+                      logtosyslog(message);                    
+                    }
                 }
             }
         }

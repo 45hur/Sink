@@ -65,6 +65,8 @@ int parse_addr(struct ip_addr *sa, const char *addr)
       sa->family = AF_INET6;
     	if (inet_pton(AF_INET6, addr, &sa->ipv6_sin_addr) == 1)
       {
+        //TODO check ipv6 format
+        
         return 0;
       }
     }
@@ -82,8 +84,7 @@ int parse_addr(struct ip_addr *sa, const char *addr)
         little[2] = big_ptr[1];
         little[3] = big_ptr[0];
         memcpy(&sa->ipv4_sin_addr, &little, 4);
-        printf("little %x", little);
-        printf("big %x", big_ptr);
+
         return 0;
       }
     }

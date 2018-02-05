@@ -25,11 +25,7 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
 		unsigned int addr_fr = from->ipv4_sin_addr;
 		unsigned int addr_to = to->ipv4_sin_addr;
     
-      printf("%x => %x <= %x\n", 
-      addr_fr, 
-      addr_ip, 
-      addr_to 
-      );
+    //printf("%x => %x <= %x\n", addr_fr, addr_ip, addr_to);
     
 		result = (addr_ip >= addr_fr) && (addr_ip <= addr_to);
 		break;
