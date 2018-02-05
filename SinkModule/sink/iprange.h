@@ -21,6 +21,11 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
     
 	switch (ip->family) {
 	case AF_INET: {
+
+    printf("ip nibble %x => ", ip->ipv4_sin_addr);
+    ip->ipv4_sin_addr = reverse_nibbles(ip->ipv4_sin_addr);        
+    printf("%x\n", ip->ipv4_sin_addr);  
+  
 		unsigned int addr_ip = ip->ipv4_sin_addr;
 		unsigned int addr_fr = from->ipv4_sin_addr;
 		unsigned int addr_to = to->ipv4_sin_addr;
