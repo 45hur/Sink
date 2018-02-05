@@ -57,17 +57,6 @@ char **split(char *line, char sep, int fields)
   return r;
 }
 
-unsigned int reverse_nibbles(unsigned int x)
-{
-  unsigned int out = 0, i;
-  for(i = 0; i < 4; ++i)
-  {
-    const unsigned int byte = (x >> 8 * i) & 0xff;
-    out |= byte << (24 - 8 * i);
-  }
-  return out;
-}
-
 int parse_addr(struct ip_addr *sa, const char *addr) 
 {
     int family = strchr(addr, ':') ? AF_INET6 : AF_INET;

@@ -13,6 +13,17 @@ struct ip_addr
    unsigned __int128 ipv6_sin_addr;
 };
 
+unsigned int reverse_nibbles(unsigned int x)
+{
+  unsigned int out = 0, i;
+  for(i = 0; i < 4; ++i)
+  {
+    const unsigned int byte = (x >> 8 * i) & 0xff;
+    out |= byte << (24 - 8 * i);
+  }
+  return out;
+}
+
 int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const struct ip_addr *to)
 {
 	int result = 0;
