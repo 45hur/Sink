@@ -38,7 +38,7 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
     ip_nibbled.ipv4_sin_addr = reverse_nibbles(ip->ipv4_sin_addr);        
     printf("%x\n", ip_nibbled.ipv4_sin_addr);  
   
-		unsigned int addr_ip = ip->ipv4_sin_addr;
+		unsigned int addr_ip = ip_nibbled.ipv4_sin_addr;
 		unsigned int addr_fr = from->ipv4_sin_addr;
 		unsigned int addr_to = to->ipv4_sin_addr;
     
