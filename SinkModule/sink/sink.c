@@ -232,12 +232,12 @@ static int collect(kr_layer_t *ctx)
                         {
                           sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                           logtosyslog(message);
-                          if (domain.accuracy >= policy_item.block)
+                          if (domain_item.accuracy >= policy_item.block)
                           {
                             return redirect(request, last);  
                           } 
                           else 
-                          if (domain.accuracy > policy_item.audit)
+                          if (domain_item.accuracy > policy_item.audit)
                           {
                             sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
                             logtoaudit(message);
