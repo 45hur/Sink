@@ -229,7 +229,12 @@ static int collect(kr_layer_t *ctx)
                       policy policy_item = {}; 
                       if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
                       {  
-                        int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);                      
+                        int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
+                        if (domain_flags == 0)
+                        {
+                          sprintf(message, "policy has strategy flags_none");
+                          logtosyslog(message);
+                        }
                         if (domain_flags & flags_accuracy) 
                         {
                           sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
