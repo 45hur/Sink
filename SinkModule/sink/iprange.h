@@ -34,7 +34,7 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
 	case AF_INET: {
 
     printf("ip nibble %x => ", ip->ipv4_sin_addr);
-    ip_addr ip_nibbled;
+    struct ip_addr ip_nibbled = {};
     ip_nibbled.ipv4_sin_addr = reverse_nibbles(ip->ipv4_sin_addr);        
     printf("%x\n", ip_nibbled.ipv4_sin_addr);  
   
