@@ -64,7 +64,7 @@ int parse_addr(struct ip_addr *sa, const char *addr)
     if (family == AF_INET6)
     {
       sa->family = AF_INET6;
-    	if (inet_pton(AF_INET6, addr, &sa->ipv6_sin_addr) != 1)
+    	if (inet_pton(AF_INET6, addr, &sa->ipv6_sin_addr) == 0)
       {
         return 0;
       }
@@ -72,7 +72,7 @@ int parse_addr(struct ip_addr *sa, const char *addr)
     else
     {
     	sa->family = AF_INET;
-    	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) != 1)
+    	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) == 0)
       {
         char little[5] = {0};
         char *big_ptr = (char *)&sa->ipv4_sin_addr;
