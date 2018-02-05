@@ -57,6 +57,17 @@ char **split(char *line, char sep, int fields)
   return r;
 }
 
+unsigned int reverse_nibbles(unsigned int x)
+{
+  unsigned int out = 0, i;
+  for(i = 0; i < 4; ++i)
+  {
+    const unsigned int byte = (x >> 8 * i) & 0xff;
+    out |= byte << (24 - 8 * i);
+  }
+  return out;
+}
+
 int parse_addr(struct ip_addr *sa, const char *addr) 
 {
     int family = strchr(addr, ':') ? AF_INET6 : AF_INET;
@@ -76,14 +87,7 @@ int parse_addr(struct ip_addr *sa, const char *addr)
       printf("inet_pton addr %s", addr);      
     	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) == 1)
       {
-        char little[5] = {0};
-        char *big_ptr = (char *)&sa->ipv4_sin_addr;
-        
-        little[0] = big_ptr[3];
-        little[1] = big_ptr[2];
-        little[2] = big_ptr[1];
-        little[3] = big_ptr[0];
-        memcpy(&sa->ipv4_sin_addr, &little, 4);
+        sa->ipv4_sin_addr = reverse_nibbles(sa->ipv4_sin_addr);        
 
         return 0;
       }
