@@ -83,7 +83,7 @@ int parse_addr(struct ip_addr *sa, const char *addr)
         little[3] = big_ptr[0];
         memcpy(&sa->ipv4_sin_addr, &little, 4);
         printf("little %x", little);
-        printf("big %x", big);
+        printf("big %x", big_ptr);
         return 0;
       }
     }
