@@ -223,6 +223,8 @@ static int collect(kr_layer_t *ctx)
                           return KNOT_STATE_DONE;
                         }
                       }
+                      sprintf(message, "no identity match, checking policy..");
+                      logtosyslog(message);
                      
                       policy policy_item = {}; 
                       if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
@@ -266,7 +268,8 @@ static int collect(kr_layer_t *ctx)
                         if (domain_flags & flags_accuracy)
                         {
                             sprintf(message, "'%s' no-policy => domain-policy =>'accuracy'", querieddomain);
-                            logtosyslog(message);
+                            logtosyslog(message);                                                           
+                            sprintf(message, "auditing '%s' no-policy => domain-policy =>'accuracy'", querieddomain);
                             logtoaudit(message);
                         }
                         if (domain_flags & flags_blacklist)
@@ -289,11 +292,6 @@ static int collect(kr_layer_t *ctx)
                             //TODO
                         }     
                       }
-                                            
-                                                                  
-                      
-
-
                     }
                 }
             }
