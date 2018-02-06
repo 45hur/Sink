@@ -32,5 +32,9 @@ namespace Kres.Man
         {
             return Convert.ToInt32(GetValue("redelivery_interval"));
         }
+        internal static int GetUdpPort()
+        {
+            return Convert.ToInt32(GetValue("redelivery_interval"));
+        }
     }
 }

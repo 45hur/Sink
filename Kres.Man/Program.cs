@@ -26,6 +26,9 @@ namespace Kres.Man
 
             var listener = new Listener();
             listener.Listen();
+
+            UdpServer.Listen();
+
         }
     }
 }

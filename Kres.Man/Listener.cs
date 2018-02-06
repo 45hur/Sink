@@ -16,7 +16,7 @@ namespace Kres.Man
     {
         private ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Listener));
-        private Thread tLoop;
+        public Thread tLoop;
 
         [Mapping("health")]
         public object getHealthHandler(string postData)
@@ -60,7 +60,7 @@ namespace Kres.Man
             }
 
             TcpClient client = new TcpClient();
-            client.Client.Connect(IPAddress.Parse(server/*Configuration.GetServer()*/), 8888);
+            client.Client.Connect(IPAddress.Parse(server), 8888);
 
             var messageType = (ulong)0;
             var messageSize = (ulong)message.Length;
@@ -118,116 +118,112 @@ namespace Kres.Man
         {
             log.Info("Starting thread.");
 
-            while (true)
-            {
-                //log.Info($"Starting loop.");
-
-                Thread.Sleep(Configuration.GetRedeliveryInterval());
-            }
-        }
-
-        public void Listen()
-        {
             try
             {
-                tLoop = new Thread(ThreadProc);
-                tLoop.Start();
-
-                log.Info($"Starting listener.");
-                HttpListener listener = new HttpListener();
-                
-                listener.Prefixes.Add(Configuration.GetListener());
-                listener.Start();
                 while (true)
                 {
-                    log.Info($"Waiting for listener context.");
-                    HttpListenerContext ctx = listener.GetContext();
+                    log.Info($"Starting listener.");
+                    HttpListener listener = new HttpListener();
 
-                    ThreadPool.QueueUserWorkItem((_) =>
+                    listener.Prefixes.Add(Configuration.GetListener());
+                    listener.Start();
+                    while (true)
                     {
-                        try
+                        log.Info($"Waiting for listener context.");
+                        HttpListenerContext ctx = listener.GetContext();
+
+                        ThreadPool.QueueUserWorkItem((_) =>
                         {
-                            string methodName = ctx.Request.Url.Segments[1].Replace("/", "");
-                            string[] strParams = ctx.Request.Url
-                                                    .Segments
-                                                    .Skip(2)
-                                                    .Select(s => s.Replace("/", ""))
-                                                    .ToArray();
-
-                            var method = this.GetType()
-                                                .GetMethods()
-                                                .Where(mi => mi.GetCustomAttributes(true).Any(attr => attr is Mapping && ((Mapping)attr).Map == methodName))
-                                                .First();
-
-                            var args = method.GetParameters().Skip(1).Select((p, i) => Convert.ChangeType(strParams[i], p.ParameterType));
-                            var @params = new object[args.Count() + 1];
-
-                            var inLength = ctx.Request.ContentLength64;
-                            log.Info($"Content len = {inLength}.");
-                            var inBuffer = new byte[4096];
-                            var buffer = new byte[inLength];
-                            int totalBytesRead = 0;
-                            int bytesRead = 0;
-                            while (true)
-                            {
-                                bytesRead = ctx.Request.InputStream.Read(inBuffer, 0, inBuffer.Length);
-                                if (bytesRead == 0 || bytesRead == -1)
-                                {
-                                    log.Info($"Nothing to read len = {totalBytesRead}.");
-                                    break;
-                                }
-
-                                Array.Copy(inBuffer, 0, buffer, totalBytesRead, bytesRead);
-                                totalBytesRead += bytesRead;
-
-                                if (totalBytesRead == inLength)
-                                {
-                                    log.Info($"Read finished to read len = {totalBytesRead}.");
-                                    break;
-                                }
-                            }
-
-                            var content = Encoding.UTF8.GetString(buffer);
-                            @params[0] = content;
-                            Array.Copy(args.ToArray(), 0, @params, 1, args.Count());
-
-                            log.Info($"Invoking {method.Name}");
                             try
                             {
-                                var ret = method.Invoke(this, @params);
-                                var retstr = JsonConvert.SerializeObject(ret);
+                                string methodName = ctx.Request.Url.Segments[1].Replace("/", "");
+                                string[] strParams = ctx.Request.Url
+                                                        .Segments
+                                                        .Skip(2)
+                                                        .Select(s => s.Replace("/", ""))
+                                                        .ToArray();
 
-                                var outBuffer = Encoding.UTF8.GetBytes(retstr);
-                                ctx.Response.ContentLength64 = outBuffer.LongLength;
-                                ctx.Response.OutputStream.Write(outBuffer, 0, outBuffer.Length);
-                                ctx.Response.OutputStream.Close();
+                                var method = this.GetType()
+                                                    .GetMethods()
+                                                    .Where(mi => mi.GetCustomAttributes(true).Any(attr => attr is Mapping && ((Mapping)attr).Map == methodName))
+                                                    .First();
+
+                                var args = method.GetParameters().Skip(1).Select((p, i) => Convert.ChangeType(strParams[i], p.ParameterType));
+                                var @params = new object[args.Count() + 1];
+
+                                var inLength = ctx.Request.ContentLength64;
+                                log.Info($"Content len = {inLength}.");
+                                var inBuffer = new byte[4096];
+                                var buffer = new byte[inLength];
+                                int totalBytesRead = 0;
+                                int bytesRead = 0;
+                                while (true)
+                                {
+                                    bytesRead = ctx.Request.InputStream.Read(inBuffer, 0, inBuffer.Length);
+                                    if (bytesRead == 0 || bytesRead == -1)
+                                    {
+                                        log.Info($"Nothing to read len = {totalBytesRead}.");
+                                        break;
+                                    }
+
+                                    Array.Copy(inBuffer, 0, buffer, totalBytesRead, bytesRead);
+                                    totalBytesRead += bytesRead;
+
+                                    if (totalBytesRead == inLength)
+                                    {
+                                        log.Info($"Read finished to read len = {totalBytesRead}.");
+                                        break;
+                                    }
+                                }
+
+                                var content = Encoding.UTF8.GetString(buffer);
+                                @params[0] = content;
+                                Array.Copy(args.ToArray(), 0, @params, 1, args.Count());
+
+                                log.Info($"Invoking {method.Name}");
+                                try
+                                {
+                                    var ret = method.Invoke(this, @params);
+                                    var retstr = JsonConvert.SerializeObject(ret);
+
+                                    var outBuffer = Encoding.UTF8.GetBytes(retstr);
+                                    ctx.Response.ContentLength64 = outBuffer.LongLength;
+                                    ctx.Response.OutputStream.Write(outBuffer, 0, outBuffer.Length);
+                                    ctx.Response.OutputStream.Close();
+                                }
+                                catch (HttpException ex)
+                                {
+                                    log.Warn($"{ex}");
+
+                                    ctx.Response.StatusCode = (int)ex.Status;
+                                    ctx.Response.ContentType = "text/plain";
+
+                                    var outBuffer = Encoding.UTF8.GetBytes(ex.Message);
+                                    ctx.Response.ContentLength64 = outBuffer.LongLength;
+                                    ctx.Response.OutputStream.Write(outBuffer, 0, outBuffer.Length);
+                                    ctx.Response.OutputStream.Close();
+                                }
                             }
-                            catch (HttpException ex)
+                            catch (Exception ex)
                             {
-                                log.Warn($"{ex}");
-
-                                ctx.Response.StatusCode = (int)ex.Status;
-                                ctx.Response.ContentType = "text/plain";
-
-                                var outBuffer = Encoding.UTF8.GetBytes(ex.Message);
-                                ctx.Response.ContentLength64 = outBuffer.LongLength;
-                                ctx.Response.OutputStream.Write(outBuffer, 0, outBuffer.Length);
-                                ctx.Response.OutputStream.Close();
+                                log.Error($"{ex}");
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            log.Error($"{ex}");
-                        }
-                    });
+                        });
+                    }
                 }
             }
             catch (Exception ex)
             {
                 tLoop = null;
-
                 log.Fatal($"{ex}");
             }
+        }
+        
+
+        public void Listen()
+        {
+            tLoop = new Thread(ThreadProc);
+            tLoop.Start();
         }
     }
 }
