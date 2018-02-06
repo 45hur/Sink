@@ -24,10 +24,19 @@ namespace Kres.Man
             LoadLogConfig();
             log.Info("Main");
 
+            log.Info("Starting UDP Server");
+            UdpServer.Listen();
+
+            log.Info("Starting Knot-Resolver Updater");
+            CoreClient.Start();
+
+            log.Info("Starting Knot-Resolver Updater");
+            KresUpdater.Start();
+
+            log.Info("Starting HTTP Listener");
             var listener = new Listener();
             listener.Listen();
 
-            UdpServer.Listen();
 
         }
     }

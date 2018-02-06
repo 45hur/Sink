@@ -34,7 +34,17 @@ namespace Kres.Man
         }
         internal static int GetUdpPort()
         {
-            return Convert.ToInt32(GetValue("redelivery_interval"));
+            return Convert.ToInt32(GetValue("udpport"));
         }
+        internal static string GetCoreUrl()
+        {
+            return GetValue("core");
+        }
+        internal static string GetCoreToken()
+        {
+            return GetValue("coretoken");
+        }
+
+        
     }
 }

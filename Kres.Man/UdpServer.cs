@@ -7,21 +7,21 @@ using System.Threading;
 
 namespace Kres.Man
 {
-    class UdpServer
+    internal class UdpServer
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(UdpServer));
         private const int listenPort = 11000;
-        private static Thread tUdpLoop;
+        public static Thread tUdpLoop;
 
         private static void ThreadProc()
         {
-            bool done = false;
+            log.Info("Starting UDP Server thread.");
 
             UdpClient listener = new UdpClient(Configuration.GetUdpPort());
             IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, listenPort);
             try
             {
-                while (!done)
+                while (true)
                 {
                     log.Info("Waiting for broadcast");
                     byte[] bytes = listener.Receive(ref groupEP);
@@ -31,27 +31,19 @@ namespace Kres.Man
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                log.Fatal(ex);
             }
             finally
             {
                 listener.Close();
                 tUdpLoop = null;
-                done = true;
             }
         }
 
-        public static int Listen()
+        public static void Listen()
         {
             tUdpLoop = new Thread(ThreadProc);
             tUdpLoop.Start();
-
-            while (tUdpLoop != null)
-            {
-                Thread.Sleep(1000);
-            }
-
-            return 0;
         }
     }
 }
