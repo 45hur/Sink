@@ -27,7 +27,7 @@ namespace Kres.Man
             log.Info("Starting UDP Server");
             UdpServer.Listen();
 
-            log.Info("Starting Knot-Resolver Updater");
+            log.Info("Starting CoreClient Updater");
             CoreClient.Start();
 
             log.Info("Starting Knot-Resolver Updater");

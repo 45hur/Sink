@@ -11,13 +11,13 @@ namespace Kres.Man
 {
     internal class CoreClient
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(UdpServer));
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CoreClient));
         public static Thread tCoreLoop;
         private static ConcurrentDictionary<Tuple<BigMath.Int128, BigMath.Int128>, Models.CacheIPRanges> Cache2 {get; set;} 
 
         private static void ThreadProc()
         {
-            log.Info("Starting Listener thread.");
+            log.Info("Starting CoreClient thread.");
 
             try
             {
