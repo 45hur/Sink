@@ -5,7 +5,7 @@ using ProtoBuf;
 namespace Kres.Man.Models
 {
     [ProtoContract]
-    public class CacheIPRanges
+    public class CacheIPRange
     {
         [ProtoMember(1)]
         public Int128 IpFrom { get; set; }

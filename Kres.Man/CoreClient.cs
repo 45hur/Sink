@@ -13,7 +13,7 @@ namespace Kres.Man
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CoreClient));
         public static Thread tCoreLoop;
-        private static ConcurrentDictionary<Tuple<BigMath.Int128, BigMath.Int128>, Models.CacheIPRanges> Cache2 {get; set;} 
+        private static ConcurrentDictionary<Tuple<BigMath.Int128, BigMath.Int128>, Models.CacheIPRange> Cache2 {get; set;} 
 
         private static void ThreadProc()
         {
@@ -23,7 +23,7 @@ namespace Kres.Man
             {
                 while (true)
                 {
-                    GetCoreCache();
+                    //GetCoreCache();
 
                     Thread.Sleep(60000);
                 }

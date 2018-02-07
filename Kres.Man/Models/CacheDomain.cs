@@ -6,15 +6,15 @@ using ProtoBuf;
 namespace Kres.Man.Models
 {
     [ProtoContract]
-    public class CacheDomains
+    public class CacheDomain
     {
         [ProtoMember(1)]
-        public UInt64 crc64 { get; set; }
+        public UInt64 Crc64 { get; set; }
 
         [ProtoMember(2)]
-        public Int32 accuracy { get; set; }
+        public Int32 Accuracy { get; set; }
 
         [ProtoMember(3)]
-        public IEnumerable<byte> flags { get; set; }
+        public IEnumerable<byte> Flags { get; set; }
     }
 }

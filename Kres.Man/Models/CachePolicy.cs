@@ -11,7 +11,7 @@ namespace Kres.Man.Models
         public Int32 Policy_id { get; set; }
 
         [ProtoMember(2)]
-        public Int32 Accuracy { get; set; }
+        public Int32 Strategy { get; set; }
 
         [ProtoMember(3)]
         public Int32 Audit { get; set; }

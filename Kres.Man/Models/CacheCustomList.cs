@@ -5,7 +5,7 @@ using ProtoBuf;
 namespace Kres.Man.Models
 {
     [ProtoContract]
-    public class CacheCustomLists
+    public class CacheCustomList
     {
         [ProtoMember(1)]
         public string Identity { get; set; }

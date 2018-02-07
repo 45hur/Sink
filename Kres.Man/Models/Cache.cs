@@ -7,15 +7,15 @@ namespace Kres.Man.Models
     public class Cache
     {
         [ProtoMember(1)]
-        public IEnumerable<CacheCustomLists> CustomList { get; set; }
+        public IEnumerable<CacheCustomList> CustomLists { get; set; }
 
         [ProtoMember(2)]
-        public IEnumerable<CacheDomains> Domains { get; set; }
+        public IEnumerable<CacheDomain> Domains { get; set; }
 
         [ProtoMember(3)]
-        public IEnumerable<CacheIPRanges> IPRanges { get; set; }
+        public IEnumerable<CacheIPRange> IPRanges { get; set; }
 
         [ProtoMember(4)]
-        public IEnumerable<CachePolicy> Policy { get; set; }
+        public IEnumerable<CachePolicy> Policies { get; set; }
     }
 }

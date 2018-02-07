@@ -9,6 +9,6 @@ namespace Kres.Man
     internal class CacheStorage
     {
         private Cache CoreCache;
-        private CacheIPRanges UdtCache;
+        private CacheIPRange UdtCache;
     }
 }
