@@ -6,6 +6,7 @@ WORKDIR /app
 COPY /Kres.Man/*.csproj ./
 COPY /Kres.Man/appsettings.json ./
 COPY /Kres.Man/log4net.config ./
+COPY /Kres.Man/*.csv ./
 RUN dotnet restore
 
 COPY . ./
