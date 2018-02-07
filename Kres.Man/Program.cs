@@ -25,7 +25,7 @@ namespace Kres.Man
             log.Info("Main");
 
             log.Info("Load CSVs.");
-            CsvLoader.LoadCacheFromCsv();
+            //CsvLoader.LoadCacheFromCsv();
 
             log.Info("Starting UDP Server");
             UdpServer.Listen();
