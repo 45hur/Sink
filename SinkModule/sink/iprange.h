@@ -39,10 +39,10 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
 		 unsigned __int128 addr6_fr = ip->ipv6_sin_addr;
 		 unsigned __int128 addr6_to = ip->ipv6_sin_addr;
 
-      printf("%x => %x <= %x\n", 
-      addr_fr, 
-      addr_ip, 
-      addr_to 
+      printf("%llx => %llx <= %llx\n", 
+      (unsigned long long)(addr6_fr& 0xFFFFFFFFFFFFFFFF), 
+      (unsigned long long)(addr6_ip& 0xFFFFFFFFFFFFFFFF), 
+      (unsigned long long)(addr6_to& 0xFFFFFFFFFFFFFFFF) 
       );
         
 		result = memcmp(&addr6_ip, &addr6_fr, 16) >= 0 && memcmp(&addr6_ip, &addr6_to, 16) <= 0;
