@@ -44,7 +44,11 @@ namespace Kres.Man
         {
             return GetValue("coretoken");
         }
+        internal static string GetKres()
+        {
+            return GetValue("kres");
+        }
 
-        
+
     }
 }

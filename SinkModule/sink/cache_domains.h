@@ -102,7 +102,7 @@ cache_domain* cache_domain_init(int count)
 	return item;    
 }
 
-cache_domain* cache_domain_init_ex(char *domains, char *accuracy, char *flags, int count)
+cache_domain* cache_domain_init_ex(unsigned long long *domains, short *accuracy, unsigned long long *flags, int count)
 {
 	cache_domain *item = (cache_domain *)calloc(1, sizeof(cache_domain));
   if (item == NULL)
@@ -126,6 +126,7 @@ cache_domain* cache_domain_init_ex(char *domains, char *accuracy, char *flags, i
 
 void cache_domain_destroy(cache_domain *cache)
 {
+  printf(" free domain start\n");
   while(cache->searchers > 0)
   {
     usleep(50000);
@@ -133,20 +134,24 @@ void cache_domain_destroy(cache_domain *cache)
 
 	if (cache->base)
 	{
+    printf(" free domain base\n");
 		free(cache->base);
     cache->base = NULL;
 	}
 	if (cache->accuracy)
 	{
+    printf(" free domain accuracy\n");
 		free(cache->accuracy);
     cache->accuracy = NULL;
   }
 	if (cache->flags)
 	{
+    printf(" free domain flags\n");
 		free(cache->flags);
     cache->flags = NULL;
   }
 
+  printf(" free cache domains\n");
 	free(cache);  
   cache = NULL;
 }

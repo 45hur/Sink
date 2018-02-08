@@ -59,31 +59,26 @@ char **split(char *line, char sep, int fields)
 
 int parse_addr(struct ip_addr *sa, const char *addr) 
 {
+    printf("%s\n", addr);
     int family = strchr(addr, ':') ? AF_INET6 : AF_INET;
     if (family == AF_INET6)
     {
       sa->family = AF_INET6;
-    	if (inet_pton(AF_INET6, addr, &sa->ipv6_sin_addr) == 1)
+    	if (inet_pton(AF_INET6, addr, &sa->ipv6_sin_addr) != 1)
       {
-        //TODO check ipv6 format
-        
-        return 0;
+        return -1;
       }
     }
     else
     {
     	sa->family = AF_INET;
-      printf("inet_pton addr %s\n", addr);      
-    	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) == 1)
+    	if (inet_pton(AF_INET, addr, &sa->ipv4_sin_addr) != 1)
       {
-        printf("nibble %x => ", sa->ipv4_sin_addr);
-        sa->ipv4_sin_addr = reverse_nibbles(sa->ipv4_sin_addr);        
-        printf("%x\n", sa->ipv4_sin_addr);
-        return 0;
+        return -1;
       }
     }
         
-    return -1;
+    return 0;
 }
 
 int countchar(char separator, char *string)
@@ -182,19 +177,13 @@ int loader_loadranges()
     char *ipfrom = fields[0];
     char *ipto = fields[1];
 
-    if (parse_addr(&from, ipfrom) != 0)
-    {
-      printf("can't parse addr from '%s'\n", ipfrom);
-    }
-    if (parse_addr(&to, ipto) != 0)
-    {
-      printf("can't parse addr to '%s'\n", ipto);
-    }
+    parse_addr(&from, ipfrom);
+    parse_addr(&to, ipto);
 
     char *identity = fields[2];
     int policy_id = atoi(fields[3]);    
     
-		if (cache_iprange_add(cached_iprange, &from, &to, identity, policy_id) != 0)
+		if (cache_iprange_add(cached_iprange, &from, &to, identity, &policy_id) != 0)
     {
       puts("not enough memory to add to ip range cache");
       return -1;      

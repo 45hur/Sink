@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Linq;
 using System.IO;
 using System.Text;
+
+
 
 namespace Kres.Man
 {
@@ -69,10 +73,40 @@ namespace Kres.Man
 
             while (csv.Read())
             {
+                var ipfrom = csv.GetField(0);
+                IPAddress ipaddrfrom;
+                if (!IPAddress.TryParse(ipfrom, out ipaddrfrom))
+                {
+                    break;
+                }
+
+                var ipto = csv.GetField(1);
+                IPAddress ipaddrto;
+                if (!IPAddress.TryParse(ipfrom, out ipaddrto))
+                {
+                    break;
+                }
+
+                var fromlist = ipaddrfrom.GetAddressBytes().ToList();
+                var tolist = ipaddrto.GetAddressBytes().ToList();
+                BigMath.Int128 outFrom;
+                BigMath.Int128 outTo;
+                if (fromlist.Count == 4)
+                {
+                     outFrom = new BigMath.Int128(BitConverter.ToUInt32(fromlist.Take(4).ToArray(), 0));
+                     outTo = new BigMath.Int128(BitConverter.ToUInt32(tolist.Take(4).ToArray(), 0));
+                }
+                else
+                {
+                    outFrom = new BigMath.Int128(BitConverter.ToUInt64(tolist.Take(8).ToArray(), 0), BitConverter.ToUInt64(fromlist.Skip(8).Take(8).ToArray(), 0));
+                    outTo = new BigMath.Int128(BitConverter.ToUInt64(tolist.Take(8).ToArray(), 0), BitConverter.ToUInt64(tolist.Take(8).ToArray(), 0));
+                }
+
+
                 var item = new Models.CacheIPRange
                 {
-                    IpFrom = new Models.Int128(),
-                    IpTo = new Models.Int128(),
+                    IpFrom = Kres.Man.Models.Int128.Convert(outFrom),
+                    IpTo = Kres.Man.Models.Int128.Convert(outTo),
                     Identity = csv.GetField(2),
                     PolicyId = Convert.ToInt32(csv.GetField(3))
                 };

@@ -10,3 +10,5 @@ Debug/
 \.vs/Sink_vs15/v15/
 
 Kres\.Man/obj/
+
+Kres\.Man/Kres\.Man\.log.*

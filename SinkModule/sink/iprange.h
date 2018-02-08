@@ -13,17 +13,6 @@ struct ip_addr
    unsigned __int128 ipv6_sin_addr;
 };
 
-unsigned int reverse_nibbles(unsigned int x)
-{
-  unsigned int out = 0, i;
-  for(i = 0; i < 4; ++i)
-  {
-    const unsigned int byte = (x >> 8 * i) & 0xff;
-    out |= byte << (24 - 8 * i);
-  }
-  return out;
-}
-
 int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const struct ip_addr *to)
 {
 	int result = 0;
@@ -32,23 +21,17 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
     
 	switch (ip->family) {
 	case AF_INET: {
-
-    printf("ip nibble %x => ", ip->ipv4_sin_addr);
-    struct ip_addr ip_nibbled = {};
-    ip_nibbled.ipv4_sin_addr = reverse_nibbles(ip->ipv4_sin_addr);        
-    printf("%x\n", ip_nibbled.ipv4_sin_addr);  
-  
-		unsigned int addr_ip = ip_nibbled.ipv4_sin_addr;
+		unsigned int addr_ip = ip->ipv4_sin_addr;
 		unsigned int addr_fr = from->ipv4_sin_addr;
 		unsigned int addr_to = to->ipv4_sin_addr;
     
-    printf("%x => %x <= %x", addr_fr, addr_ip, addr_to);
+      printf("%x => %x <= %x\n", 
+      addr_fr, 
+      addr_ip, 
+      addr_to 
+      );
     
 		result = (addr_ip >= addr_fr) && (addr_ip <= addr_to);
-    if (result)
-      printf(" matched\n");
-    else
-      printf(" not matched\n");
 		break;
 	}
 	case AF_INET6: {

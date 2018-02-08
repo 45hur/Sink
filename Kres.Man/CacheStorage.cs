@@ -6,9 +6,9 @@ using Kres.Man.Models;
 
 namespace Kres.Man
 {
-    internal class CacheStorage
+    internal class CacheLiveStorage
     {
-        private Cache CoreCache;
-        private CacheIPRange UdtCache;
+        public static Cache CoreCache { get; set; }
+        public static CacheIPRange UdtCache { get; set; }
     }
 }

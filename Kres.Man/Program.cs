@@ -25,7 +25,7 @@ namespace Kres.Man
             log.Info("Main");
 
             log.Info("Load CSVs.");
-            CsvLoader.LoadCacheFromCsv();
+            CacheLiveStorage.CoreCache = CsvLoader.LoadCacheFromCsv();
 
             log.Info("Starting UDP Server");
             UdpServer.Listen();
@@ -33,11 +33,13 @@ namespace Kres.Man
             log.Info("Starting CoreClient Updater");
             CoreClient.Start();
 
-            log.Info("Starting Knot-Resolver Updater");
-            KresUpdater.Start();
-
             log.Info("Starting HTTP Listener");
             var listener = new Listener();
+            var kresUpdater = new KresUpdater();
+
+            log.Info("Starting Knot-Resolver Updater");
+            kresUpdater.Start(listener);
+
             listener.Listen();
 
 

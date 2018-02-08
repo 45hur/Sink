@@ -1,37 +1,175 @@
-2018-02-07 00:51:27,558 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 00:52:59,369 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 00:53:14,854 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 00:57:42,730 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 00:57:49,852 [2] INFO  Kres.Man.CsvLoader [(null)] - Field with names ['Domain'] at index '0' was not found. 
-2018-02-07 00:57:49,853 [2] INFO  Kres.Man.CsvLoader [(null)] - Field with names ['Accuracy'] at index '0' was not found. 
-2018-02-07 00:57:49,854 [2] INFO  Kres.Man.CsvLoader [(null)] - Field with names ['Flags'] at index '0' was not found. 
-2018-02-07 00:58:23,055 [2] INFO  Kres.Man.CsvLoader [(null)] - Field with names ['Domain'] at index '0' was not found. 
-2018-02-07 00:58:23,055 [2] INFO  Kres.Man.CsvLoader [(null)] - Field with names ['Accuracy'] at index '0' was not found. 
-2018-02-07 00:58:23,055 [2] INFO  Kres.Man.CsvLoader [(null)] - Field with names ['Flags'] at index '0' was not found. 
-2018-02-07 00:58:23,062 [2] INFO  Kres.Man.CsvLoader [(null)] - Field with names ['Domain'] at index '0' was not found. 
-2018-02-07 00:58:23,062 [2] INFO  Kres.Man.CsvLoader [(null)] - Field with names ['Accuracy'] at index '0' was not found. 
-2018-02-07 00:58:23,062 [2] INFO  Kres.Man.CsvLoader [(null)] - Field with names ['Flags'] at index '0' was not found. 
-2018-02-07 00:58:55,108 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 00:59:41,314 [2] INFO  Kres.Man.Program [(null)] - Starting UDP Server
-2018-02-07 00:59:41,315 [2] INFO  Kres.Man.Program [(null)] - Starting CoreClient Updater
-2018-02-07 00:59:41,317 [2] INFO  Kres.Man.Program [(null)] - Starting Knot-Resolver Updater
-2018-02-07 00:59:41,342 [4] INFO  Kres.Man.CoreClient [(null)] - Starting CoreClient thread.
-2018-02-07 00:59:41,342 [2] INFO  Kres.Man.Program [(null)] - Starting HTTP Listener
-2018-02-07 00:59:41,344 [5] INFO  Kres.Man.KresUpdater [(null)] - Starting KresUpdater thread.
-2018-02-07 00:59:41,345 [3] INFO  Kres.Man.UdpServer [(null)] - Starting UDP Server thread.
-2018-02-07 00:59:41,357 [6] INFO  Kres.Man.Listener [(null)] - Starting Listener thread.
-2018-02-07 00:59:41,357 [6] INFO  Kres.Man.Listener [(null)] - Starting listener.
-2018-02-07 00:59:41,453 [3] INFO  Kres.Man.UdpServer [(null)] - Waiting for broadcast
-2018-02-07 00:59:41,489 [6] FATAL Kres.Man.Listener [(null)] - System.Net.HttpListenerException (0x80004005): Access is denied
-   at System.Net.HttpListener.AddPrefixCore(String registeredPrefix)
-   at System.Net.HttpListener.AddAllPrefixes()
-   at System.Net.HttpListener.Start()
-   at Kres.Man.Listener.ThreadProc()
-2018-02-07 00:59:54,323 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 01:02:11,818 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 01:03:07,847 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 01:06:49,234 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 01:40:01,729 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 01:41:03,797 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 01:41:33,279 [2] INFO  Kres.Man.Program [(null)] - Main
-2018-02-07 01:41:49,591 [2] INFO  Kres.Man.Program [(null)] - Main
+2018-02-08 21:58:50,726 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:50,738 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 5 bytes
+2018-02-08 21:58:50,739 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:50,747 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:50,747 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:50,747 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:50,748 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 5 bytes
+2018-02-08 21:58:50,748 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:50,748 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:50,748 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:50,748 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:50,748 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:50,749 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:50,749 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype iprangepolicyid
+2018-02-08 21:58:50,749 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:50,749 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:50,749 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:50,749 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:50,750 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 4 bytes
+2018-02-08 21:58:50,750 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:50,750 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:50,750 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:50,750 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:50,751 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 4 bytes
+2018-02-08 21:58:50,751 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:50,751 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:50,751 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:50,751 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:50,751 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 4 bytes
+2018-02-08 21:58:50,751 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:50,752 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:50,752 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:50,752 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:50,752 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:50,753 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:50,753 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype swapcache
+2018-02-08 21:58:50,753 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:50,753 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:50,753 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:50,753 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:50,754 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:50,754 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:51,754 [5] INFO  Kres.Man.KresUpdater [(null)] - Updating 5 crc domains.
+2018-02-08 21:58:51,754 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype domainCrcBuffer
+2018-02-08 21:58:51,755 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:51,755 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:51,756 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:51,756 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:51,756 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 40 bytes
+2018-02-08 21:58:51,756 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,756 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,756 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,757 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,757 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:51,757 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:51,757 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype domainAccuracyBuffer
+2018-02-08 21:58:51,757 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:51,757 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:51,758 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:51,758 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:51,758 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 10 bytes
+2018-02-08 21:58:51,758 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,758 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,759 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,759 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,759 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:51,759 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:51,759 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype domainFlagsBuffer
+2018-02-08 21:58:51,760 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:51,760 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:51,760 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:51,760 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:51,760 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 40 bytes
+2018-02-08 21:58:51,760 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,761 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,761 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,761 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,761 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:51,761 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:51,761 [5] INFO  Kres.Man.KresUpdater [(null)] - Updating 3 ip ranges.
+2018-02-08 21:58:51,762 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype iprangeipfrom
+2018-02-08 21:58:51,762 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:51,762 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:51,762 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:51,762 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:51,762 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 22 bytes
+2018-02-08 21:58:51,763 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,763 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,763 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,763 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,763 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 22 bytes
+2018-02-08 21:58:51,765 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,766 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,768 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,768 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,770 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 22 bytes
+2018-02-08 21:58:51,771 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,771 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,771 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,771 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,771 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:51,771 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:51,772 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype iprangeipto
+2018-02-08 21:58:51,772 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:51,772 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:51,773 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:51,773 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:51,773 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 22 bytes
+2018-02-08 21:58:51,773 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,773 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,774 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,774 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,775 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 22 bytes
+2018-02-08 21:58:51,775 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,775 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,775 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,775 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,775 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 22 bytes
+2018-02-08 21:58:51,776 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,776 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,776 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,776 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,776 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:51,777 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:51,777 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype iprangeidentity
+2018-02-08 21:58:51,777 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:51,777 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:51,778 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:51,778 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:51,782 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 5 bytes
+2018-02-08 21:58:51,782 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,783 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,783 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,784 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,784 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 5 bytes
+2018-02-08 21:58:51,784 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,784 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,784 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,784 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,785 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 5 bytes
+2018-02-08 21:58:51,785 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,785 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,785 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,786 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,786 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:51,786 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:51,786 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype iprangepolicyid
+2018-02-08 21:58:51,787 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:51,787 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:51,788 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:51,788 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:51,795 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 4 bytes
+2018-02-08 21:58:51,797 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,797 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,797 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,797 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,797 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 4 bytes
+2018-02-08 21:58:51,798 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,798 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,798 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,798 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,798 [5] INFO  Kres.Man.KresUpdater [(null)] - Written 16 header size, message 4 bytes
+2018-02-08 21:58:51,798 [5] INFO  Kres.Man.KresUpdater [(null)] - Write message.
+2018-02-08 21:58:51,799 [5] INFO  Kres.Man.KresUpdater [(null)] - Message written.
+2018-02-08 21:58:51,799 [5] INFO  Kres.Man.KresUpdater [(null)] - Read response
+2018-02-08 21:58:51,799 [5] INFO  Kres.Man.KresUpdater [(null)] - Message was sent successfully.
+2018-02-08 21:58:51,799 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:51,799 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.
+2018-02-08 21:58:51,799 [5] INFO  Kres.Man.KresUpdater [(null)] - Push buftype swapcache
+2018-02-08 21:58:51,800 [5] INFO  Kres.Man.KresUpdater [(null)] - Get stream
+2018-02-08 21:58:51,800 [5] INFO  Kres.Man.KresUpdater [(null)] - Written header
+2018-02-08 21:58:51,800 [5] INFO  Kres.Man.KresUpdater [(null)] - Read header response
+2018-02-08 21:58:51,800 [5] INFO  Kres.Man.KresUpdater [(null)] - Header understood
+2018-02-08 21:58:51,800 [5] INFO  Kres.Man.KresUpdater [(null)] - Closing stream.
+2018-02-08 21:58:51,800 [5] INFO  Kres.Man.KresUpdater [(null)] - Return.

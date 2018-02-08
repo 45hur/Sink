@@ -38,7 +38,7 @@ typedef struct
 	struct ip_addr **low;
   struct ip_addr **high;
 	char **identity;
-  int *policy_id;
+  int **policy_id;
 } cache_iprange;
 
 typedef struct
@@ -61,7 +61,7 @@ cache_iprange* cache_iprange_init(int count)
 	item->low = (struct ip_addr **)malloc(item->capacity * sizeof(struct ip_addr *));
   item->high = (struct ip_addr **)malloc(item->capacity * sizeof(struct ip_addr *));
   item->identity = (char **)malloc(item->capacity * sizeof(char *));
-  item->policy_id = (int *)malloc(item->capacity * sizeof(int));
+  item->policy_id = (int **)malloc(item->capacity * sizeof(int *));
   if (item->low == NULL || item->high == NULL || item->identity == NULL || item->policy_id == NULL)
   {
     return NULL;
@@ -69,6 +69,30 @@ cache_iprange* cache_iprange_init(int count)
   
 	return item;
 }
+
+cache_iprange* cache_iprange_init_ex(struct ip_addr ** low, struct ip_addr ** high, char ** identity, int ** policy_id, int count)
+{
+	cache_iprange *item = (cache_iprange *)calloc(1, sizeof(cache_iprange));
+  if (item == NULL)
+  {
+    return NULL;
+  }  
+  
+	item->capacity = count;
+	item->index = 0;
+	item->searchers = 0;
+	item->low = low;
+  item->high = high;
+  item->identity = identity;
+  item->policy_id = policy_id;
+  if (item->low == NULL || item->high == NULL || item->identity == NULL || item->policy_id == NULL)
+  {
+    return NULL;
+  }  
+  
+	return item;
+}
+
 
 void cache_iprange_destroy(cache_iprange *cache)
 {
@@ -91,6 +115,10 @@ void cache_iprange_destroy(cache_iprange *cache)
     if (cache->identity[position] != NULL)
   	{
   		free(cache->identity[position]);
+  	}
+    if (cache->policy_id[position] != NULL)
+  	{
+  		free(cache->policy_id[position]);
   	}
   }
   
@@ -117,15 +145,16 @@ void cache_iprange_destroy(cache_iprange *cache)
 }
 
 
-int cache_iprange_add(cache_iprange* cache, struct ip_addr *low, struct ip_addr *high, char *identity, int policy_id)
+int cache_iprange_add(cache_iprange* cache, struct ip_addr *low, struct ip_addr *high, char *identity, int *policy_id)
 {
 	if (cache->index > cache->capacity)
 		return -1;
 
   struct ip_addr* xlow = (struct ip_addr*)malloc(sizeof(struct ip_addr));
   struct ip_addr* xhigh = (struct ip_addr*)malloc(sizeof(struct ip_addr));
-  char* xidentity = (char *)calloc(strlen(identity) + 1, sizeof(char));
-  if (xlow == NULL || xhigh == NULL || xidentity == NULL)
+  char* xidentity = (char *)malloc(strlen(identity));
+  int* xpolicy_id = (int *)malloc(sizeof(int));
+  if (xlow == NULL || xhigh == NULL || xidentity == NULL || xpolicy_id == NULL)
   {
     return -1;    
   }
@@ -133,6 +162,7 @@ int cache_iprange_add(cache_iprange* cache, struct ip_addr *low, struct ip_addr 
   memcpy(xlow, low, sizeof(struct ip_addr));
   memcpy(xhigh, high, sizeof(struct ip_addr));
   memcpy(xidentity, identity, strlen(identity));
+  memcpy(xpolicy_id, policy_id, sizeof(int));
 	cache->low[cache->index] = xlow;
 	cache->high[cache->index] = xhigh;
 	cache->identity[cache->index] = xidentity;
@@ -157,7 +187,7 @@ int cache_iprange_contains(cache_iprange* cache, const struct ip_addr * ip, ipra
       )) == 1)
       {
         item->identity = cache->identity[position]; 
-        item->policy_id = cache->policy_id[position];       
+        item->policy_id = *cache->policy_id[position];       
         break;
       }
 	} 

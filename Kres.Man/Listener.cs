@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Text;
@@ -33,10 +34,59 @@ namespace Kres.Man
             return null;
         }
 
-        [Mapping("push")]
-        public object getPushHandler(string postData, string server)
+
+        [Mapping("pushswapcaches")]
+        public object pushSwapCaches(List<byte[]> buffer)
         {
-            return KresUpdater.Push(server, postData); ;
+            return KresUpdater.Push(bufferType.swapcache, buffer);
+        }
+
+        [Mapping("pushfreecaches")]
+        public object pushFreeCaches(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.swapfreebuffers, buffer);
+        }
+
+        [Mapping("pushdomaincrcbuffer")]
+        public object pushDomainCrcBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.domainCrcBuffer, buffer); 
+        }
+
+        [Mapping("pushdomainaccuracybuffer")]
+        public object pushDomainAccuracyBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.domainAccuracyBuffer, buffer); 
+        }
+
+        [Mapping("pushdomainflagsbuffer")]
+        public object pushDomainFlagsBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.domainFlagsBuffer, buffer); 
+        }
+
+        [Mapping("pushiprangefrombuffer")]
+        public object pushIPRangeFromBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.iprangeipfrom, buffer);
+        }
+
+        [Mapping("pushiprangetobuffer")]
+        public object pushIPRangeToBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.iprangeipto, buffer);
+        }
+
+        [Mapping("pushiprangeidentitybuffer")]
+        public object pushIPRangeIdentityBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.iprangeidentity, buffer);
+        }
+
+        [Mapping("pushiprangepolicybuffer")]
+        public object pushIPRangePolicyBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.iprangepolicyid, buffer);
         }
 
         private static string Base64Decode(string base64EncodedData)
