@@ -137,30 +137,10 @@ void *connection_handler(void *socket_desc)
          goto flush;
       } 
          
-      //Calculate crc
-      /*
-      crc = crc64(0, (const unsigned char *)bufferPtr, sizeof(uint64_t));
-      printf("crc %" PRIx64 "\n", crc);    
-      printf("hdr %" PRIx64 "\n", messageHeader.msgcrc);
-      sprintf(client_message, (messageHeader.msgcrc == crc) ? "1" : "0");
-      if (messageHeader.msgcrc == crc)                                
-      {                     
-          printf("crc2 succ\n");
-          write(sock , client_message , 1);
-      }
-      else
-      {
-          printf("crc2 failed\n");
-          write(sock , client_message , 1);
-          
-          goto flush; 
-      }
-      printf("malloc %d - %llu - %d\n", i, messageHeader.length, bytesRead);
       if (messageHeader.length == 0)
       {
-        continue;
+        puts(" empty message");
       }
-      */
       
       char *bufferMsg = (char *)malloc(messageHeader.length);
       if (bufferMsg == NULL)
@@ -279,7 +259,7 @@ void *connection_handler(void *socket_desc)
             swapiprange_policy_id_len);
           goto flush;          
         }
-        printf(" iprange init %llu'items\n", swapiprange_low_len);
+        printf(" iprange init %llu items\n", swapiprange_low_len);
         
         
         puts("init domain");

@@ -79,7 +79,7 @@ cache_iprange* cache_iprange_init_ex(struct ip_addr ** low, struct ip_addr ** hi
   }  
   
 	item->capacity = count;
-	item->index = 0;
+	item->index = count;
 	item->searchers = 0;
 	item->low = low;
   item->high = high;
