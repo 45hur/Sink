@@ -264,7 +264,7 @@ void *connection_handler(void *socket_desc)
     if (primeHeader.action == bufferType_swapcache)
     {
         puts("reinit");
-        if ((swapdomain_crc_len != swapdomain_crc_len) || (swapdomain_crc_len != swapdomain_crc_len))
+        if ((swapdomain_crc_len != swapdomain_accuracy_len) || (swapdomain_crc_len != swapdomain_flags_len))
         {
           printf("domain cache is corrupted");
           goto flush;          
