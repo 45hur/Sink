@@ -142,7 +142,7 @@ void *connection_handler(void *socket_desc)
         puts(" empty message");
       }
       
-      char *bufferMsg = (char *)malloc(messageHeader.length);
+      char *bufferMsg = (char *)calloc(messageHeader.length + 1);
       if (bufferMsg == NULL)
       {
         puts("not enough memory to create message buffer");
@@ -231,7 +231,7 @@ void *connection_handler(void *socket_desc)
         {
           if (swapiprange_identity == NULL)   
           {
-            swapiprange_identity = (char **)calloc(1, 1 + sizeof(char *) * primeHeader.buffercount);
+            swapiprange_identity = (char **)malloc(sizeof(char *) * primeHeader.buffercount);
           }
           swapiprange_identity[swapiprange_identity_len++] = bufferMsg;
           break;
