@@ -231,7 +231,7 @@ void *connection_handler(void *socket_desc)
         {
           if (swapiprange_identity == NULL)   
           {
-            swapiprange_identity = (char **)malloc(sizeof(char *) * primeHeader.buffercount);
+            swapiprange_identity = (char **)calloc(1, 1 + sizeof(char *) * primeHeader.buffercount);
           }
           swapiprange_identity[swapiprange_identity_len++] = bufferMsg;
           break;
