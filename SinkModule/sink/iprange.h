@@ -6,26 +6,35 @@
 #include <netinet/in.h>
 #include <arpa/inet.h> //inet_addr
 
+struct ipaddr
+{
+  uint16_t family:16;
+  uint32_t ipv4_sin_addr:32;
+  uint64_t ipv6_sin_addr_hi:64;
+  uint64_t ipv6_sin_addr_low:64;
+};
+
 struct ip_addr 
 {
-   uint8_t family; // socket family type
+   uint32_t family;// socket family type
    unsigned int ipv4_sin_addr;
    unsigned __int128 ipv6_sin_addr;
 };
 
 int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const struct ip_addr *to)
 {
+   
 	int result = 0;
   if (ip->family != from->family || ip->family != to->family)
     return result;
-    
+  
 	switch (ip->family) {
 	case AF_INET: {
 		unsigned int addr_ip = ip->ipv4_sin_addr;
 		unsigned int addr_fr = from->ipv4_sin_addr;
 		unsigned int addr_to = to->ipv4_sin_addr;
     
-      printf("%x => %x <= %x\n", 
+      printf("%08x => %08x <= %08x\n", 
       addr_fr, 
       addr_ip, 
       addr_to 
@@ -45,7 +54,7 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
       (unsigned long long)(addr6_to& 0xFFFFFFFFFFFFFFFF) 
       );
         
-		result = memcmp(&addr6_ip, &addr6_fr, 16) >= 0 && memcmp(&addr6_ip, &addr6_to, 16) <= 0;
+		  result = memcmp(&addr6_ip, &addr6_fr, 16) >= 0 && memcmp(&addr6_ip, &addr6_to, 16) <= 0;
   		break;
 	}
 	default:

@@ -180,7 +180,7 @@ int cache_iprange_contains(cache_iprange* cache, const struct ip_addr * ip, ipra
           
 	while (--position >= 0)
 	{
-    printf(" checking %d", position);
+    printf(" checking %d\n", position);
     if ((result = is_ip_in_range(
       ip,
       (const struct ip_addr *)cache->low[position],

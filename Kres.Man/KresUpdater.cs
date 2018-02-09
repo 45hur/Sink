@@ -57,7 +57,7 @@ namespace Kres.Man
                     SendBuffers(stream, data);
                 }
 
-                log.Info($"Closing stream.");
+                log.Info($"Closingip stream.");
                 stream.Flush();
                 stream.Close();
             }
@@ -183,8 +183,8 @@ namespace Kres.Man
             var cachePolicy = new List<byte[]>(count);
             for (var i = 0; i < count; i++)
             {
-                var IPFrom = new byte[sizeof(short) + sizeof(int) + 16 /* sizeof(Int128)*/ ];
-                var IPTo = new byte[sizeof(short) + sizeof(int) + 16 /* sizeof(Int128)*/ ];
+                var IPFrom = new byte[sizeof(UInt32) + sizeof(UInt32) + 16 /* sizeof(Int128)*/ ];
+                var IPTo = new byte[sizeof(UInt32) + sizeof(UInt32) + 16 /* sizeof(Int128)*/ ];
 
                 var Identity = new byte[ipRange[i].Identity.Length];
                 var PolicyId = new byte[sizeof(UInt32)];
@@ -194,33 +194,33 @@ namespace Kres.Man
 
                 if (ipRange[i].IpFrom.Hi != 0)
                 {
-                    Array.Copy(BitConverter.GetBytes(10), 0, IPFrom, 0, sizeof(short));
-                    Array.Copy(BitConverter.GetBytes((uint)ipRange[i].IpFrom.Hi), 0, IPFrom, sizeof(short), sizeof(UInt32));
-                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpFrom.Hi), 0, IPFrom, sizeof(short) + sizeof(UInt32), sizeof(UInt64));
-                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpFrom.Low), 0, IPFrom, sizeof(short) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
+                    Array.Copy(BitConverter.GetBytes(10), 0, IPFrom, 0, sizeof(UInt32));
+                    Array.Copy(BitConverter.GetBytes((uint)ipRange[i].IpFrom.Hi), 0, IPFrom, sizeof(UInt32), sizeof(UInt32));
+                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpFrom.Hi), 0, IPFrom, sizeof(UInt32) + sizeof(UInt32), sizeof(UInt64));
+                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpFrom.Low), 0, IPFrom, sizeof(UInt32) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
                 }
                 else
                 {
-                    Array.Copy(BitConverter.GetBytes(2), 0, IPFrom, 0, sizeof(short));
-                    Array.Copy(BitConverter.GetBytes((uint)ipRange[i].IpFrom.Low), 0, IPFrom, sizeof(short), sizeof(UInt32));
-                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpFrom.Hi), 0, IPFrom, sizeof(short) + sizeof(UInt32), sizeof(UInt64));
-                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpFrom.Low), 0, IPFrom, sizeof(short) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
+                    Array.Copy(BitConverter.GetBytes(2), 0, IPFrom, 0, sizeof(UInt32));
+                    Array.Copy(BitConverter.GetBytes((uint)ipRange[i].IpFrom.Low), 0, IPFrom, sizeof(UInt32), sizeof(UInt32));
+                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpFrom.Hi), 0, IPFrom, sizeof(UInt32) + sizeof(UInt32), sizeof(UInt64));
+                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpFrom.Low), 0, IPFrom, sizeof(UInt32) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
                 }
                 cacheIPFrom.Add(IPFrom);
-
+                
                 if (ipRange[i].IpTo.Hi != 0)
                 {
-                    Array.Copy(BitConverter.GetBytes(10), 0, IPTo, 0, sizeof(short));
-                    Array.Copy(BitConverter.GetBytes((uint)ipRange[i].IpTo.Hi), 0, IPTo, sizeof(short), sizeof(UInt32));
-                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Hi), 0, IPTo, sizeof(short) + sizeof(UInt32), sizeof(UInt64));
-                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Low), 0, IPTo, sizeof(short) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
+                    Array.Copy(BitConverter.GetBytes(10), 0, IPTo, 0, sizeof(UInt32));
+                    Array.Copy(BitConverter.GetBytes((uint)ipRange[i].IpTo.Hi), 0, IPTo, sizeof(UInt32), sizeof(UInt32));
+                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Hi), 0, IPTo, sizeof(UInt32) + sizeof(UInt32), sizeof(UInt64));
+                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Low), 0, IPTo, sizeof(UInt32) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
                 }
                 else
                 {
-                    Array.Copy(BitConverter.GetBytes(2), 0, IPTo, 0, sizeof(short));
-                    Array.Copy(BitConverter.GetBytes((uint)ipRange[i].IpTo.Low), 0, IPTo, sizeof(short), sizeof(UInt32));
-                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Hi), 0, IPTo, sizeof(short) + sizeof(UInt32), sizeof(UInt64));
-                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Low), 0, IPTo, sizeof(short) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
+                    Array.Copy(BitConverter.GetBytes(2), 0, IPTo, 0, sizeof(UInt32));
+                    Array.Copy(BitConverter.GetBytes((uint)ipRange[i].IpTo.Low), 0, IPTo, sizeof(UInt32), sizeof(UInt32));
+                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Hi), 0, IPTo, sizeof(UInt32) + sizeof(UInt32), sizeof(UInt64));
+                    Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Low), 0, IPTo, sizeof(UInt32) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
                 }
                 cacheIPTo.Add(IPTo);
                 

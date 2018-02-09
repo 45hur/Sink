@@ -207,7 +207,7 @@ void *connection_handler(void *socket_desc)
             printf("malloc ip %d\n", primeHeader.buffercount);
             swapiprange_low = (struct ip_addr **)malloc(sizeof(struct ip_addr *) * primeHeader.buffercount);
           }
-          printf("access %llu\n", swapiprange_low_len);
+          
           swapiprange_low[swapiprange_low_len++] = (struct ip_addr *)bufferMsg;
           break;
         }
@@ -217,6 +217,13 @@ void *connection_handler(void *socket_desc)
           {
             swapiprange_high = (struct ip_addr **)malloc(sizeof(struct ip_addr *) * primeHeader.buffercount);
           }
+          
+          unsigned char* p = (unsigned char*)&primeHeader;
+          struct ip_addr *x = (struct ip_addr *)&bufferMsg;
+          printf("%08x\n", x->family);
+          printf("%08x\n", x->ipv4_sin_addr);
+          //printf("%08x\n", x->ipv6_sin_addr);
+          
           swapiprange_high[swapiprange_high_len++] = (struct ip_addr *)bufferMsg; 
           break;
         }
@@ -259,7 +266,7 @@ void *connection_handler(void *socket_desc)
             swapiprange_policy_id_len);
           goto flush;          
         }
-        printf(" iprange init %llu items\n", swapiprange_low_len);
+        printf(" iprange init %llu items\n", swapiprange_low_len);     
         
         
         puts("init domain");
