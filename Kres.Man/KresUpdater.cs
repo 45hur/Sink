@@ -37,32 +37,35 @@ namespace Kres.Man
         public static object Push(bufferType buftype, IEnumerable<byte[]> data)
         {
             log.Info($"Push buftype {buftype}");
-            TcpClient client = new TcpClient();
-            client.Client.Connect(IPAddress.Parse(Configuration.GetKres()), 8888);
-
-            var messageType = (int)buftype;
-
-            //+ 8 bytes (= last crc64 bytes)
-            var header = BitConverter.GetBytes(messageType)             // 4 bytes -> message type
-                .Concat(BitConverter.GetBytes(data.Count()));            // 4 bytes -> how many buffers
-
-            var headerCrc = Crc64.Compute(0, header.ToArray());
-            header = header.Concat(BitConverter.GetBytes(headerCrc));   // 8 byte -> crc of this header
-
-            log.Info($"Get stream");
-            using (var stream = client.GetStream())
+            using (var client = new TcpClient())
             {
-                if (SendHeader(stream, header))
+                client.Client.Connect(IPAddress.Parse(Configuration.GetKres()), 8888);
+
+                var messageType = (int)buftype;
+
+                //+ 8 bytes (= last crc64 bytes)
+                var header = BitConverter.GetBytes(messageType)             // 4 bytes -> message type
+                    .Concat(BitConverter.GetBytes(data.Count()));            // 4 bytes -> how many buffers
+
+                var headerCrc = Crc64.Compute(0, header.ToArray());
+                header = header.Concat(BitConverter.GetBytes(headerCrc));   // 8 byte -> crc of this header
+
+                log.Info($"Get stream");
+                using (var stream = client.GetStream())
                 {
-                    SendBuffers(stream, data);
+                    if (SendHeader(stream, header))
+                    {
+                        SendBuffers(stream, data);
+                    }
+
+                    log.Info($"Closingip stream.");
+                    stream.Flush();
+                    stream.Close();
                 }
+                client.Close();
 
-                log.Info($"Closingip stream.");
-                stream.Flush();
-                stream.Close();
+                log.Info($"Return.");
             }
-
-            log.Info($"Return.");
             return null;
         }
 
@@ -129,15 +132,15 @@ namespace Kres.Man
             {
                 while (true)
                 {
+                    FreeCaches();
+
                     UpdateDomains();
 
                     UpdateIPRanges();
-
-                    
+                   
                     SwapCaches();
-                    //FreeCaches();
-
-                    Thread.Sleep(1000);
+                    
+                    Thread.Sleep(10000);
                 }
             }
             catch (Exception ex)
