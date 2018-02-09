@@ -142,7 +142,7 @@ void *connection_handler(void *socket_desc)
         puts(" empty message");
       }
       
-      char *bufferMsg = (char *)calloc(messageHeader.length + 1);
+      char *bufferMsg = (char *)calloc(1, messageHeader.length + 1);
       if (bufferMsg == NULL)
       {
         puts("not enough memory to create message buffer");
