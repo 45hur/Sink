@@ -12,3 +12,7 @@ Debug/
 Kres\.Man/obj/
 
 Kres\.Man/Kres\.Man\.log.*
+
+Kres\.Man/Kres\.Man\.log
+
+*.log

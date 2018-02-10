@@ -135,12 +135,13 @@ namespace Kres.Man
                     FreeCaches();
 
                     UpdateDomains();
-
                     UpdateIPRanges();
-                   
+                    UpdatePolicies();
+                    UpdateCustomLists();
+
                     SwapCaches();
                     
-                    Thread.Sleep(10000);
+                    Thread.Sleep(100);
                 }
             }
             catch (Exception ex)
@@ -183,14 +184,14 @@ namespace Kres.Man
             var cacheIPFrom = new List<byte[]>(count);
             var cacheIPTo = new List<byte[]>(count);
             var cacheIdentity = new List<byte[]>(count);
-            var cachePolicy = new List<byte[]>(count);
+            var cachePolicy = new byte [count * sizeof(UInt32)];
             for (var i = 0; i < count; i++)
             {
                 var IPFrom = new byte[sizeof(UInt32) + sizeof(UInt32) + 16 /* sizeof(Int128)*/ ];
                 var IPTo = new byte[sizeof(UInt32) + sizeof(UInt32) + 16 /* sizeof(Int128)*/ ];
 
                 var Identity = new byte[ipRange[i].Identity.Length];
-                var PolicyId = new byte[sizeof(UInt32)];
+                
 
                 //#define AF_INET		2
                 //#define AF_INET6	    10
@@ -230,14 +231,69 @@ namespace Kres.Man
                 Array.Copy(ASCIIEncoding.ASCII.GetBytes(ipRange[i].Identity), 0, Identity, 0, ipRange[i].Identity.Length);
                 cacheIdentity.Add(Identity);
 
-                Array.Copy(BitConverter.GetBytes(ipRange[i].PolicyId), 0, PolicyId, 0, sizeof(UInt32));
-                cachePolicy.Add(PolicyId);
+                Array.Copy(BitConverter.GetBytes(ipRange[i].PolicyId), 0, cachePolicy, i * (sizeof(UInt32)), sizeof(UInt32));
             }
 
             listener.pushIPRangeFromBuffer(cacheIPFrom);
             listener.pushIPRangeToBuffer(cacheIPTo);
             listener.pushIPRangeIdentityBuffer(cacheIdentity);
-            listener.pushIPRangePolicyBuffer(cachePolicy);
+            listener.pushIPRangePolicyBuffer(new List<byte[]>() { cachePolicy });
+        }
+
+        private void UpdatePolicies()
+        {
+            var policies = CacheLiveStorage.CoreCache.Policies.ToArray();
+            var count = policies.Count();
+
+            log.Info($"Updating {count} policies.");
+            var cachePolicyId = new byte[(count * sizeof(UInt32))];
+            var cachePolicyStrategy = new byte[(count * sizeof(UInt32))];
+            var cachePolicyAudit = new byte[(count * sizeof(UInt32))];
+            var cachePolicyBlock = new byte[(count * sizeof(UInt32))];
+
+            for (var i = 0; i < count; i++)
+            {
+                Array.Copy(BitConverter.GetBytes(policies[i].Policy_id), 0, cachePolicyId, i * sizeof(UInt32), sizeof(UInt32));
+                Array.Copy(BitConverter.GetBytes(policies[i].Strategy), 0, cachePolicyStrategy, i * sizeof(UInt32), sizeof(UInt32));
+                Array.Copy(BitConverter.GetBytes(policies[i].Audit), 0, cachePolicyAudit, i * sizeof(UInt32), sizeof(UInt32));
+                Array.Copy(BitConverter.GetBytes(policies[i].Block), 0, cachePolicyBlock, i * sizeof(UInt32), sizeof(UInt32));
+            }
+
+            listener.pushPolicyIDBuffer(new List<byte[]>() { cachePolicyId });
+            listener.pushPolicyStrategyBuffer(new List<byte[]>() { cachePolicyStrategy });
+            listener.pushPolicyAuditBuffer(new List<byte[]>() { cachePolicyAudit });
+            listener.pushPolicyBlockBuffer(new List<byte[]>() { cachePolicyBlock });
+        }
+
+        private void UpdateCustomLists()
+        {
+            var customlist = CacheLiveStorage.CoreCache.CustomLists.ToArray();
+            var count = customlist.Count();
+
+            log.Info($"Updating {count} custom lists.");
+            for (var i = 0; i < count; i++)
+            {
+                var cacheIdentity = new byte[customlist[i].Identity.Length];
+                Array.Copy(ASCIIEncoding.ASCII.GetBytes(customlist[i].Identity), 0, cacheIdentity, 0, customlist[i].Identity.Length);
+
+                var cachecustomlist_whitelist = new byte[(customlist[i].WhiteList.Count() * sizeof(UInt64))];
+                var wlarray = customlist[i].WhiteList.ToArray();
+                for (var j = 0; j < customlist[i].WhiteList.Count(); j++)
+                {
+                    Array.Copy(ASCIIEncoding.ASCII.GetBytes(wlarray[j]), 0, cachecustomlist_whitelist, j * sizeof(UInt64), sizeof(UInt64));
+                }
+
+                var cachecustomlist_blacklist = new byte[(customlist[i].BlackList.Count() * sizeof(UInt64))];
+                var blarray = customlist[i].BlackList.ToArray();
+                for (var j = 0; j < customlist[i].BlackList.Count(); j++)
+                {
+                    Array.Copy(ASCIIEncoding.ASCII.GetBytes(blarray[j]), 0, cachecustomlist_blacklist, j * sizeof(UInt64), sizeof(UInt64));
+                }
+
+                listener.pushCustomListIdentityBuffer(new List<byte[]>() { cacheIdentity });
+                listener.pushCustomListWhitelistBuffer(new List<byte[]>() { cachecustomlist_whitelist });
+                listener.pushCustomListBlacklistBuffer(new List<byte[]>() { cachecustomlist_blacklist });
+            }
         }
 
         private void SwapCaches()

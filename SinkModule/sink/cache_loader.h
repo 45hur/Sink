@@ -17,27 +17,8 @@ cache_iprange* cached_iprange = NULL;
 cache_policy* cached_policy = NULL;
 cache_customlist* cached_customlist = NULL;
 
-/*
-bool hashcontainer_contains(char * value)
-{
-	if (!hashtable)
-		return false;
-
-	unsigned long long crc = crc64(0, (const unsigned char*)value, strlen(value));
-	cache1item cache;
-	return sink_list_contains(hashtable, crc, &cache);
-}
-  */
-    /*
-void hashcontainer_reinit(int count, char *domains, char *accuracy, char *flags)
-{
-	list *old = hashtable;
-	hashtable = sink_list_init_ex(domains, accuracy, flags, count);
-	sink_list_destroy(old);
-}
-*/
        
-char **split(char *line, char sep, int fields) 
+char **split(char *line, char sep, int fields)                                   
 {
   char **r = (char **)malloc(fields * sizeof(char*));
 
@@ -183,7 +164,7 @@ int loader_loadranges()
     char *identity = fields[2];
     int policy_id = atoi(fields[3]);    
     
-		if (cache_iprange_add(cached_iprange, &from, &to, identity, &policy_id) != 0)
+		if (cache_iprange_add(cached_iprange, &from, &to, identity, policy_id) != 0)
     {
       puts("not enough memory to add to ip range cache");
       return -1;      

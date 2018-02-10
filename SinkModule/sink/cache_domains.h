@@ -28,7 +28,7 @@ void usleep(__int64 usec)
 
 #endif
 
-typedef struct
+struct cache_domain
 {
 	int capacity;
 	int index;
@@ -36,14 +36,16 @@ typedef struct
 	unsigned long long *base;
 	short *accuracy;
 	unsigned long long *flags;
-} cache_domain;
+};
+typedef struct cache_domain cache_domain;
 
-typedef struct 
+struct domain 
 {
   unsigned long long  crc;
 	short accuracy;
 	unsigned long long flags;
-} domain;
+};
+typedef struct domain domain;
 
 enum 
 {
@@ -115,7 +117,7 @@ cache_domain* cache_domain_init_ex(unsigned long long *domains, short *accuracy,
 	item->searchers = 0;
 	item->base = (unsigned long long *)domains;
 	item->accuracy = (short *)accuracy;
-	item->flags = (unsigned long long *)flags;
+	item->flags = (unsigned long long *)flags;           
   if (item->base == NULL || item->accuracy == NULL || item->flags == NULL)
   {
     return NULL;
@@ -123,6 +125,30 @@ cache_domain* cache_domain_init_ex(unsigned long long *domains, short *accuracy,
   
 	return item;
 }
+
+cache_domain* cache_domain_init_ex2(unsigned long long *domains, int count)
+{
+	cache_domain *item = (cache_domain *)calloc(1, sizeof(cache_domain));
+  if (item == NULL)
+  {
+    return NULL;
+  }
+    
+	item->capacity = count;
+	item->index = count;
+	item->searchers = 0;
+	item->base = (unsigned long long *)domains;
+	item->accuracy = NULL;
+	item->flags = NULL;
+  if (item->base == NULL)
+  {
+    return NULL;
+  }
+  
+	return item;
+}
+
+
 
 void cache_domain_destroy(cache_domain *cache)
 {
@@ -151,9 +177,13 @@ void cache_domain_destroy(cache_domain *cache)
     cache->flags = NULL;
   }
 
-  printf(" free cache domains\n");
-	free(cache);  
-  cache = NULL;
+//  printf(" free cache domains\n");
+//  if (cache != NULL)
+//  {
+//	  free(cache);  
+//    cache = NULL;
+//  }
+  printf(" cache domains freed\n"); 
 }
 
 int cache_domain_add(cache_domain* cache, unsigned long long value, short accuracy, unsigned long long flags)

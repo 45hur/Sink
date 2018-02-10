@@ -40,12 +40,6 @@ typedef struct
   cache_domain **blacklist;
 } cache_customlist;
 
-typedef struct
-{
-  char **whitelist;
-  char **blacklist;
-} customlist;
-
 cache_customlist* cache_customlist_init(int count)
 {
 	cache_customlist *item = (cache_customlist *)calloc(1, sizeof(cache_customlist));
@@ -65,7 +59,28 @@ cache_customlist* cache_customlist_init(int count)
     return NULL;
   }
   
+	return item;
+}
 
+cache_customlist* cache_customlist_init_ex(char ** identity, struct cache_domain **whitelist, struct cache_domain **blacklist, int count)
+{
+	cache_customlist *item = (cache_customlist *)calloc(1, sizeof(cache_customlist));
+  if (item == NULL)
+  {
+    return NULL;
+  }
+  
+	item->capacity = count;                                
+	item->index = count;
+	item->searchers = 0;
+	item->identity = identity;
+  item->whitelist = whitelist;
+  item->blacklist = blacklist;
+  if (item->identity == NULL || item->whitelist == NULL || item->blacklist == NULL)
+  {
+    return NULL;
+  }
+  
 	return item;
 }
          
@@ -82,35 +97,41 @@ void cache_customlist_destroy(cache_customlist *cache)
     if (cache->identity[position] != NULL)
   	{
   		free(cache->identity[position]);
+      cache->identity[position] = NULL;
   	}
     
     if (cache->whitelist[position] != NULL)
   	{
-  		cache_domain_destroy(cache->whitelist[position]);
+  		//cache_domain_destroy(cache->whitelist[position]);
+      cache->whitelist[position] = NULL;
   	}    
 
     if (cache->blacklist[position] != NULL)
   	{
-  		cache_domain_destroy(cache->blacklist[position]);
+  		//cache_domain_destroy(cache->blacklist[position]);
+      cache->blacklist[position] = NULL;
   	}    
   }
     
   if (cache->identity != NULL)
   {
-    free(cache->identity);
+    //free(cache->identity);
+    cache->identity = NULL;
   }
   if (cache->whitelist != NULL)
   {
-    free(cache->whitelist);
-  }
+    //free(cache->whitelist);
+    cache->whitelist = NULL;
+  }            
   if (cache->blacklist != NULL)
   {
-    free(cache->blacklist);
+    //free(cache->blacklist);
+    cache->blacklist = NULL;
   }
-  if (cache != NULL)
+  /*if (cache != NULL)
   {
     free(cache);
-  } 
+  }*/ 
 }
 
 int cache_customlist_add(cache_customlist* cache, char *identity, cache_domain *whitelist, cache_domain *blacklist)

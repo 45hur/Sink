@@ -89,6 +89,49 @@ namespace Kres.Man
             return KresUpdater.Push(bufferType.iprangepolicyid, buffer);
         }
 
+        [Mapping("pushpolicyidbuffer")]
+        public object pushPolicyIDBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.policyid, buffer);
+        }
+
+        [Mapping("pushpolicystrategybuffer")]
+        public object pushPolicyStrategyBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.policystrategy, buffer);
+        }
+
+        [Mapping("pushpolicyauditbuffer")]
+        public object pushPolicyAuditBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.policyaudit, buffer);
+        }
+
+        [Mapping("pushpolicyblockbuffer")]
+        public object pushPolicyBlockBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.policyblock, buffer);
+        }
+
+        [Mapping("pushcustomlistidentitkbuffer")]
+        public object pushCustomListIdentityBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.identitybuffer, buffer);
+        }
+        [Mapping("pushcustomlistwhitelistbuffer")]
+        public object pushCustomListWhitelistBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.identitybufferwhitelist, buffer);
+        }
+        [Mapping("pushcustomlistblacklistbuffer")]
+        public object pushCustomListBlacklistBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.identitybufferblacklist, buffer);
+        }
+
+
+        
+
         private static string Base64Decode(string base64EncodedData)
         {
             var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
