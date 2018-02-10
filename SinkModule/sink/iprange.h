@@ -34,11 +34,11 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
 		unsigned int addr_fr = from->ipv4_sin_addr;
 		unsigned int addr_to = to->ipv4_sin_addr;
     
-      printf("%08x => %08x <= %08x\n", 
-      addr_fr, 
-      addr_ip, 
-      addr_to 
-      );
+//      printf("%08x => %08x <= %08x\n", 
+//      addr_fr, 
+//     addr_ip, 
+//      addr_to 
+//      );
     
 		result = (addr_ip >= addr_fr) && (addr_ip <= addr_to);
 		break;
@@ -48,11 +48,11 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
 		 unsigned __int128 addr6_fr = ip->ipv6_sin_addr;
 		 unsigned __int128 addr6_to = ip->ipv6_sin_addr;
 
-      printf("%llx => %llx <= %llx\n", 
-      (unsigned long long)(addr6_fr& 0xFFFFFFFFFFFFFFFF), 
-      (unsigned long long)(addr6_ip& 0xFFFFFFFFFFFFFFFF), 
-      (unsigned long long)(addr6_to& 0xFFFFFFFFFFFFFFFF) 
-      );
+//      printf("%llx => %llx <= %llx\n", 
+//      (unsigned long long)(addr6_fr& 0xFFFFFFFFFFFFFFFF), 
+//      (unsigned long long)(addr6_ip& 0xFFFFFFFFFFFFFFFF), 
+//      (unsigned long long)(addr6_to& 0xFFFFFFFFFFFFFFFF) 
+//      );
         
 		  result = memcmp(&addr6_ip, &addr6_fr, 16) >= 0 && memcmp(&addr6_ip, &addr6_to, 16) <= 0;
   		break;
