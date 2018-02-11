@@ -36,7 +36,7 @@ namespace Kres.Man
 
         public static object Push(bufferType buftype, IEnumerable<byte[]> data)
         {
-            log.Info($"Push buftype {buftype}");
+            log.Debug($"Push buftype {buftype}");
             using (var client = new TcpClient())
             {
                 client.Client.Connect(IPAddress.Parse(Configuration.GetKres()), 8888);
@@ -50,7 +50,7 @@ namespace Kres.Man
                 var headerCrc = Crc64.Compute(0, header.ToArray());
                 header = header.Concat(BitConverter.GetBytes(headerCrc));   // 8 byte -> crc of this header
 
-                log.Info($"Get stream");
+                log.Debug($"Get stream");
                 using (var stream = client.GetStream())
                 {
                     if (SendHeader(stream, header))
@@ -58,13 +58,13 @@ namespace Kres.Man
                         SendBuffers(stream, data);
                     }
 
-                    log.Info($"Closingip stream.");
+                    log.Debug($"Closing ip stream.");
                     stream.Flush();
                     stream.Close();
                 }
                 client.Close();
 
-                log.Info($"Return.");
+                log.Debug($"Return.");
             }
             return null;
         }
@@ -74,21 +74,21 @@ namespace Kres.Man
             var headerBytes = header.ToArray();
             stream.Write(headerBytes, 0, headerBytes.Length);
 
-            log.Info($"Written header");
+            log.Debug($"Written header");
 
             var response = new byte[1];
             var bytesRead = stream.Read(response, 0, 1);
 
-            log.Info($"Read header response");
+            log.Debug($"Read header response");
             if (bytesRead == 1 && response[0] == '1')
             {
-                log.Info($"Header understood");
+                log.Debug($"Header understood");
 
                 return true;
             }
             else
             {
-                log.Info($"Header not unmakederstood");
+                log.Debug($"Header not unmakederstood");
             }
 
             return false;
@@ -105,17 +105,17 @@ namespace Kres.Man
                 Array.Copy(BitConverter.GetBytes(Crc64.Compute(0, message)), 0, header, 8, sizeof(UInt64));            //8 bytes
 
                 stream.Write(header, 0, header.Length);
-                log.Info($"Written {header.Length} header size, message {message.LongLength} bytes");
+                log.Debug($"Written {header.Length} header size, message {message.LongLength} bytes");
 
-                log.Info($"Write message.");
+                log.Debug($"Write message.");
                 stream.Write(message, 0, message.Length);
-                log.Info($"Message written.");
+                log.Debug($"Message written.");
 
                 var bytesRead = stream.Read(response, 0, 1);
-                log.Info($"Read response");
+                log.Debug($"Read response");
                 if (bytesRead == 1 && response[0] == '1')
                 {
-                    log.Info($"Message was sent successfully.");
+                    log.Debug($"Message was sent successfully.");
                 }
                 else
                 {
@@ -132,6 +132,11 @@ namespace Kres.Man
             {
                 while (true)
                 {
+                    log.Info("KresUpdater loop.");
+
+                    log.Info("Load CSVs.");
+                    CacheLiveStorage.CoreCache = CsvLoader.LoadCacheFromCsv();
+
                     FreeCaches();
 
                     UpdateDomains();
@@ -141,7 +146,7 @@ namespace Kres.Man
 
                     SwapCaches();
                     
-                    Thread.Sleep(100);
+                    Thread.Sleep(10000);
                 }
             }
             catch (Exception ex)
@@ -156,7 +161,7 @@ namespace Kres.Man
             var domains = CacheLiveStorage.CoreCache.Domains.ToArray();
             var count = domains.Count();
 
-            log.Info($"Updating {count} crc domains.");
+            log.Debug($"Updating {count} crc domains.");
             var cacheDomainsCrc = new byte[(count * sizeof(UInt64))];
             var cacheAccuracy = new byte[(count * sizeof(UInt16))];
             var cacheFlags = new byte[(count * sizeof(UInt64))];
@@ -180,7 +185,7 @@ namespace Kres.Man
             var ipRange = CacheLiveStorage.CoreCache.IPRanges.ToArray();
             var count = ipRange.Count();
 
-            log.Info($"Updating {count} ip ranges.");
+            log.Debug($"Updating {count} ip ranges.");
             var cacheIPFrom = new List<byte[]>(count);
             var cacheIPTo = new List<byte[]>(count);
             var cacheIdentity = new List<byte[]>(count);
@@ -245,7 +250,7 @@ namespace Kres.Man
             var policies = CacheLiveStorage.CoreCache.Policies.ToArray();
             var count = policies.Count();
 
-            log.Info($"Updating {count} policies.");
+            log.Debug($"Updating {count} policies.");
             var cachePolicyId = new byte[(count * sizeof(UInt32))];
             var cachePolicyStrategy = new byte[(count * sizeof(UInt32))];
             var cachePolicyAudit = new byte[(count * sizeof(UInt32))];
@@ -270,7 +275,7 @@ namespace Kres.Man
             var customlist = CacheLiveStorage.CoreCache.CustomLists.ToArray();
             var count = customlist.Count();
 
-            log.Info($"Updating {count} custom lists.");
+            log.Debug($"Updating {count} custom lists.");
             for (var i = 0; i < count; i++)
             {
                 var cacheIdentity = new byte[customlist[i].Identity.Length];
@@ -280,14 +285,16 @@ namespace Kres.Man
                 var wlarray = customlist[i].WhiteList.ToArray();
                 for (var j = 0; j < customlist[i].WhiteList.Count(); j++)
                 {
-                    Array.Copy(ASCIIEncoding.ASCII.GetBytes(wlarray[j]), 0, cachecustomlist_whitelist, j * sizeof(UInt64), sizeof(UInt64));
+                    var crc = Crc64.Compute(0, ASCIIEncoding.ASCII.GetBytes(wlarray[j]));
+                    Array.Copy(BitConverter.GetBytes(crc), 0, cachecustomlist_whitelist, j * sizeof(UInt64), sizeof(UInt64));
                 }
 
                 var cachecustomlist_blacklist = new byte[(customlist[i].BlackList.Count() * sizeof(UInt64))];
                 var blarray = customlist[i].BlackList.ToArray();
                 for (var j = 0; j < customlist[i].BlackList.Count(); j++)
                 {
-                    Array.Copy(ASCIIEncoding.ASCII.GetBytes(blarray[j]), 0, cachecustomlist_blacklist, j * sizeof(UInt64), sizeof(UInt64));
+                    var crc = Crc64.Compute(0, ASCIIEncoding.ASCII.GetBytes(blarray[j]));
+                    Array.Copy(BitConverter.GetBytes(crc), 0, cachecustomlist_blacklist, j * sizeof(UInt64), sizeof(UInt64));
                 }
 
                 listener.pushCustomListIdentityBuffer(new List<byte[]>() { cacheIdentity });

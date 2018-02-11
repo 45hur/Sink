@@ -317,7 +317,7 @@ void *connection_handler(void *socket_desc)
           }         
           
           cache_domain *blacklist = cache_domain_init_ex2((unsigned long long *)bufferMsg, messageHeader.length / sizeof(unsigned long long));
-          swapcustomlist_blacklist[swapcustomlist_whitelist_len++] = (struct cache_domain *)blacklist;  
+          swapcustomlist_blacklist[swapcustomlist_blacklist_len++] = (struct cache_domain *)blacklist;  
           break;
         }                                   
       }
@@ -325,7 +325,7 @@ void *connection_handler(void *socket_desc)
     
     if (primeHeader.action == bufferType_swapcache)
     {
-        puts("reinit");
+        //puts("reinit");
         if ((swapdomain_crc_len != swapdomain_accuracy_len) || (swapdomain_crc_len != swapdomain_flags_len))
         {
           printf("domain cache is corrupted %llu %llu %llu", swapdomain_crc_len, swapdomain_accuracy_len, swapdomain_flags_len);
@@ -341,6 +341,7 @@ void *connection_handler(void *socket_desc)
             swapiprange_policy_id_len);
           goto flush;          
         }
+        printf(" iprange init %llu items\n", swapiprange_identity_len);
         if ((swappolicy_policy_id_len != swappolicy_strategy_len) || (swappolicy_strategy_len != swappolicy_audit_len) || (swappolicy_audit_len != swappolicy_block_len))
         {
           printf("policy cache is corrupted\n policy_id=%llu\n strategy=%llu\n audit=%llu\n block=%llu",
@@ -373,7 +374,6 @@ void *connection_handler(void *socket_desc)
         //puts("initex policy");
         cache_policy *old_policy = cached_policy;
         cached_policy = cache_policy_init_ex(swappolicy_policy_id, swappolicy_strategy, swappolicy_audit, swappolicy_block, swappolicy_policy_id_len);
-        printf("%d", cached_policy->capacity);
         
         //puts("initex custom");
         cache_customlist *old_customlist = cached_customlist;
@@ -411,37 +411,37 @@ void *connection_handler(void *socket_desc)
         swapcustomlist_whitelist_len = 0;
         swapcustomlist_blacklist_len = 0;        
                 
-        puts("destroy domain");
+        //puts("destroy domain");
         cache_domain_destroy(old_domain);
-        puts("destroy_iprange");                
+        //puts("destroy_iprange");                
         cache_iprange_destroy(old_iprange);
-        puts("destroy policy");
+        //puts("destroy policy");
         cache_policy_destroy(old_policy);
-        puts("destroy customlist");
-        //cache_customlist_destroy(old_customlist);        
+        //puts("destroy customlist");
+        cache_customlist_destroy(old_customlist);        
     }
     if (primeHeader.action == bufferType_freeswaps)
     {
-        printf("free\n");
+        //printf("free\n");
 
         // Domains        
         if (swapdomain_crc != NULL)
         {
-          printf(" domain crc\n");
+          //printf(" domain crc\n");
           free (swapdomain_crc);
           swapdomain_crc = NULL;
           swapdomain_crc_len = 0;
         }
         if (swapdomain_accuracy != NULL)
         {          
-          printf(" domain accuracy\n");
+          //printf(" domain accuracy\n");
           free (swapdomain_accuracy);
           swapdomain_accuracy = NULL;
           swapdomain_accuracy_len = 0;
         }
         if (swapdomain_flags != NULL)
         {
-          printf(" domain flags\n");
+          //printf(" domain flags\n");
           free (swapdomain_flags);
           swapdomain_flags = NULL;
           swapdomain_flags_len = 0;          
@@ -450,7 +450,7 @@ void *connection_handler(void *socket_desc)
         // IP Ranges
         if (swapiprange_low != NULL)
         {
-          printf(" iprange low\n");
+          //printf(" iprange low\n");
           for (int i = 0; i < swapiprange_low_len; i++)
           {
             free (swapiprange_low[i]);
@@ -462,7 +462,7 @@ void *connection_handler(void *socket_desc)
         }
         if (swapiprange_high != NULL)
         {
-          printf(" iprange high\n");  
+          //printf(" iprange high\n");  
           for (int i = 0; i < swapiprange_high_len; i++)
           {
             free (swapiprange_high[i]);
@@ -474,7 +474,7 @@ void *connection_handler(void *socket_desc)
         }
         if (swapiprange_identity != NULL)
         {
-          printf(" iprange identity\n");
+          //printf(" iprange identity\n");
           for (int i = 0; i < swapiprange_identity_len; i++)
           {
             free (swapiprange_identity[i]);
@@ -486,7 +486,7 @@ void *connection_handler(void *socket_desc)
         } 
         if (swapiprange_policy_id != NULL)
         {
-          printf(" iprange policy_id\n");
+          //printf(" iprange policy_id\n");
           free (swapiprange_policy_id);
           swapiprange_policy_id = NULL;
           swapiprange_policy_id_len = 0;
@@ -495,28 +495,28 @@ void *connection_handler(void *socket_desc)
         // Policy
         if (swappolicy_policy_id != NULL)
         {
-          printf(" policy policy_id\n");
+          //printf(" policy policy_id\n");
           free (swappolicy_policy_id);
           swappolicy_policy_id = NULL;
           swappolicy_policy_id_len = 0;
         }
         if (swappolicy_strategy != NULL)
         {
-          printf(" policy strategy\n");
+          //printf(" policy strategy\n");
           free (swappolicy_strategy);
           swappolicy_strategy = NULL;
           swappolicy_strategy_len = 0;
         }
         if (swappolicy_audit != NULL)
         {
-          printf(" policy audit\n");
+          //printf(" policy audit\n");
           free (swappolicy_audit);
           swappolicy_audit = NULL;
           swappolicy_audit_len = 0;
         }
         if (swappolicy_block != NULL)
         {
-          printf(" policy blopraock\n");
+          //printf(" policy blopraock\n");
           free (swappolicy_policy_id);
           swappolicy_block = NULL;
           swappolicy_block_len = 0;
@@ -525,22 +525,22 @@ void *connection_handler(void *socket_desc)
         // Customlist
         if (swapcustomlist_identity != NULL)
         {
-          printf(" customlist identity\n");
-          //free (swapcustomlist_identity);
+          //printf(" customlist identity\n");
+          free (swapcustomlist_identity);
           swapcustomlist_identity = NULL;
           swapcustomlist_identity = 0;
         }
         if (swapcustomlist_whitelist != NULL)
         {
-          printf(" customlist whitelist\n");
-          //free (swapcustomlist_whitelist);
+          //printf(" customlist whitelist\n");
+          free (swapcustomlist_whitelist);
           swapcustomlist_whitelist = NULL;
           swapcustomlist_whitelist_len = 0;
         }
         if (swapcustomlist_blacklist != NULL)
         {
-          printf(" customlist blacklist\n");
-          //free (swapcustomlist_blacklist);
+          //printf(" customlist blacklist\n");
+          free (swapcustomlist_blacklist);
           swapcustomlist_blacklist = NULL;
           swapcustomlist_blacklist = 0;
         }     
@@ -589,7 +589,7 @@ static void* socket_server(void *arg)
     c = sizeof(struct sockaddr_in);
     while( (new_socket = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c)) )
     {
-        puts("connection accepted");
+        //puts("connection accepted");
          
         pthread_t sniffer_thread;
         new_sock = malloc(1);
@@ -602,7 +602,7 @@ static void* socket_server(void *arg)
         }
          
         pthread_join( sniffer_thread , NULL);
-        puts("handler assigned");
+        //puts("handler assigned");
     }
      
     if (new_socket < 0)

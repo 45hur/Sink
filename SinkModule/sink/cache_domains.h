@@ -152,7 +152,7 @@ cache_domain* cache_domain_init_ex2(unsigned long long *domains, int count)
 
 void cache_domain_destroy(cache_domain *cache)
 {
-  printf(" free domain start\n");
+  //printf(" free domain start\n");
   while(cache->searchers > 0)
   {
     usleep(50000);
@@ -160,19 +160,19 @@ void cache_domain_destroy(cache_domain *cache)
 
 	if (cache->base)
 	{
-    printf(" free domain base\n");
+    //printf(" free domain base\n");
 		free(cache->base);
     cache->base = NULL;
 	}
 	if (cache->accuracy)
 	{
-    printf(" free domain accuracy\n");
+    //printf(" free domain accuracy\n");
 		free(cache->accuracy);
     cache->accuracy = NULL;
   }
 	if (cache->flags)
 	{
-    printf(" free domain flags\n");
+    //printf(" free domain flags\n");
 		free(cache->flags);
     cache->flags = NULL;
   }
@@ -183,7 +183,7 @@ void cache_domain_destroy(cache_domain *cache)
 //	  free(cache);  
 //    cache = NULL;
 //  }
-  printf(" cache domains freed\n"); 
+  //printf(" cache domains freed\n"); 
 }
 
 int cache_domain_add(cache_domain* cache, unsigned long long value, short accuracy, unsigned long long flags)
