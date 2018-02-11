@@ -133,14 +133,14 @@ static int collect(kr_layer_t *ctx)
 	}
 
 	const struct sockaddr *res = request->qsource.addr;
-	char *s = NULL;
+	//char *s = NULL;
   struct ip_addr origin = {};
 	switch (res->sa_family) {
   	case AF_INET: 
     {
   		struct sockaddr_in *addr_in = (struct sockaddr_in *)res;
-  		s = malloc(INET_ADDRSTRLEN);
-  		inet_ntop(AF_INET, &(addr_in->sin_addr), s, INET_ADDRSTRLEN);
+  		//s = malloc(INET_ADDRSTRLEN);
+  		//inet_ntop(AF_INET, &(addr_in->sin_addr), s, INET_ADDRSTRLEN);
       origin.family = AF_INET;
       memcpy(&origin.ipv4_sin_addr, &(addr_in->sin_addr), 4);    
   		break;
@@ -148,8 +148,8 @@ static int collect(kr_layer_t *ctx)
   	case AF_INET6: 
     {
   		struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)res;
-  		s = malloc(INET6_ADDRSTRLEN);
-  		inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
+  		//s = malloc(INET6_ADDRSTRLEN);
+  		//inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
       origin.family = AF_INET6;
       memcpy(&origin.ipv6_sin_addr, &(addr_in6->sin6_addr), 16); 
   		break;
@@ -164,7 +164,7 @@ static int collect(kr_layer_t *ctx)
 	}
 	//sprintf(message, "[%s] request", s);
 	//logtosyslog(message);
-	free(s);
+	//free(s);
 
     char qname_str[KNOT_DNAME_MAXLEN];
     if (rplan->resolved.len > 0)
