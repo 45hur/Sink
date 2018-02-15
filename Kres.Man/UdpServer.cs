@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
+using System.Threading.Tasks;
 using System.Threading;
+using System.Text;
+
 
 namespace Kres.Man
 {
@@ -13,30 +15,53 @@ namespace Kres.Man
         private const int listenPort = 11000;
         public static Thread tUdpLoop;
 
-        private static void ThreadProc()
+        private static async void ThreadProc()
         {
             log.Info("Starting UDP Server thread.");
 
-            UdpClient listener = new UdpClient(Configuration.GetUdpPort());
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, listenPort);
+            using (UdpClient listener = new UdpClient(Configuration.GetUdpPort()))
+            {
+                IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 1813);
+                try
+                {
+                    while (true)
+                    {
+                        var receivedResult = await listener.ReceiveAsync();
+                        Task.Run(() => { ProcessResult(receivedResult); });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.Fatal(ex);
+                }
+                finally
+                {
+                    listener.Close();
+                    tUdpLoop = null;
+                }
+            }
+        }
+
+        private static void ProcessResult(UdpReceiveResult receivedResult)
+        {
             try
             {
-                while (true)
+                var receivedPacket = new FP.Radius.RadiusPacket(receivedResult.Buffer);
+                if (receivedPacket.Valid)
                 {
-                    log.Info("Waiting for broadcast");
-                    byte[] bytes = listener.Receive(ref groupEP);
-                    var len = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
-                    log.Info($"Received broadcast from {groupEP.ToString()} :\n length={len}\n");
+                    var ipaddress = receivedPacket.Attributes.Where(t => t.Type == FP.Radius.RadiusAttributeType.FRAMED_IP_ADDRESS).First();
+                    var sessionid = ASCIIEncoding.ASCII.GetString(receivedPacket.Attributes.Where(t => t.Type == FP.Radius.RadiusAttributeType.ACCT_SESSION_ID).First().Data);
+
+                    log.Info($"Processed {ipaddress} for {sessionid}.");
+                }
+                else
+                {
+                    log.Info("Unable to process UDP packet.");
                 }
             }
             catch (Exception ex)
             {
-                log.Fatal(ex);
-            }
-            finally
-            {
-                listener.Close();
-                tUdpLoop = null;
+                log.Error(ex);
             }
         }
 
