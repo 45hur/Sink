@@ -119,9 +119,32 @@ static int redirect(struct kr_request * request, struct kr_query *last)
   return KNOT_STATE_DONE;
 }
 
-static int search(const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last)
+static int explode(kr_layer_t *ctx, char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last)
+{
+  char *ptr = (char *)&querieddomain;
+  ptr += strlen(domain);
+  int found = 0;
+    
+  while (ptr-- != (char *)&domain)
+  {
+    if (ptr[0] == '.')
+    {   
+      if (++found > 1)
+      {        
+        search(ctx, ptr + 1, origin, request, last);
+      }
+    }
+    else if (ptr == (char *)&domain)
+    {
+      search(ctx, ptr, origin, request, last);
+    }
+  }
+}
+
+static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last)
 {
   char message[KNOT_DNAME_MAXLEN] = {};
+   
   unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
   domain domain_item = {};
   if (cache_domain_contains(cached_domain, crc, &domain_item))
@@ -231,6 +254,8 @@ static int search(const char * querieddomain, struct ip_addr * origin, struct kr
         //logtosyslog(message);                    
       }
   }
+  
+  return ctx->state;
 }
 
 static int collect(kr_layer_t *ctx)
@@ -308,7 +333,7 @@ static int collect(kr_layer_t *ctx)
                   querieddomain[domainLen - 1] = '\0';
               }
               
-              return search((const char *)&querieddomain, &origin, request, last); 
+              return explode(ctx, (const char *)&querieddomain, &origin, request, last); 
             }
         }
     }
