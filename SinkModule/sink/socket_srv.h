@@ -154,46 +154,48 @@ void *connection_handler(void *socket_desc)
          goto flush;
       } 
          
+      char *bufferMsg = (char *)calloc(1, messageHeader.length + 1);
       if (messageHeader.length == 0)
       {
         puts(" empty message");
       }
-      
-      char *bufferMsg = (char *)calloc(1, messageHeader.length + 1);
-      if (bufferMsg == NULL)
-      {
-        puts("not enough memory to create message buffer");
-        return (void *)-1;
-      }
-    
-      char *bufferMsgPtr = bufferMsg;
-      bytesRead = 0;
-      while( (read_size = recv(sock , client_message , 4096 , 0)) > 0 )
-      {
-          bytesRead += read_size;
-          memcpy(bufferMsgPtr, client_message, read_size);
-          bufferMsgPtr += read_size; 
-  
-          if (read_size == -1 || read_size == 0 || bytesRead >= messageHeader.length)
-              break; 
-      }
-      //printf("  recv2 bytes read %d, expecting %lu\n", bytesRead, messageHeader.length);
-  
-      //Verify and acknowledge the message to the sender
-      crc = crc64(0, (const unsigned char *)bufferMsg, messageHeader.length);
-      //printf("  crc %" PRIx64 "\n", crc);    
-      //printf("  hdr %" PRIx64 "\n", messageHeader.msgcrc);
-      sprintf(client_message, (messageHeader.msgcrc == crc) ? "1" : "0");
-      if (messageHeader.msgcrc == crc)
-      {
-          //printf("   crc3 succ\n");
-          write(sock , client_message , 1);
-      }
       else
       {
-          //printf("   crc3 fail\n");
-          write(sock , client_message , 1);
-          goto flush;
+        if (bufferMsg == NULL)
+        {
+          puts("not enough memory to create message buffer");
+          return (void *)-1;
+        }
+      
+        char *bufferMsgPtr = bufferMsg;
+        bytesRead = 0;
+        while( (read_size = recv(sock , client_message , 4096 , 0)) > 0 )
+        {
+            bytesRead += read_size;
+            memcpy(bufferMsgPtr, client_message, read_size);
+            bufferMsgPtr += read_size; 
+    
+            if (read_size == -1 || read_size == 0 || bytesRead >= messageHeader.length)
+                break; 
+        }
+        //printf("  recv2 bytes read %d, expecting %lu\n", bytesRead, messageHeader.length);
+    
+        //Verify and acknowledge the message to the sender
+        crc = crc64(0, (const unsigned char *)bufferMsg, messageHeader.length);
+        //printf("  crc %" PRIx64 "\n", crc);    
+        //printf("  hdr %" PRIx64 "\n", messageHeader.msgcrc);
+        sprintf(client_message, (messageHeader.msgcrc == crc) ? "1" : "0");
+        if (messageHeader.msgcrc == crc)
+        {
+            //printf("   crc3 succ\n");
+            write(sock , client_message , 1);
+        }
+        else
+        {
+            //printf("   crc3 fail\n");
+            write(sock , client_message , 1);
+            goto flush;
+        }
       }
       
       //printf("action: %d\n", primeHeader.action);
@@ -367,7 +369,7 @@ void *connection_handler(void *socket_desc)
         cache_domain *old_domain = cached_domain;
         cached_domain = cache_domain_init_ex(swapdomain_crc, swapdomain_accuracy, swapdomain_flags, swapdomain_crc_len);
         
-        //puts("initex iprange");
+        //puts("initex iprange");                   
         cache_iprange *old_iprange = cached_iprange;
         cached_iprange = cache_iprange_init_ex(swapiprange_low, swapiprange_high, swapiprange_identity, swapiprange_policy_id, swapiprange_high_len); 
         
