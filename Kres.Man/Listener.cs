@@ -118,19 +118,91 @@ namespace Kres.Man
         {
             return KresUpdater.Push(bufferType.identitybuffer, buffer);
         }
+
         [Mapping("pushcustomlistwhitelistbuffer")]
         public object pushCustomListWhitelistBuffer(List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.identitybufferwhitelist, buffer);
         }
+
         [Mapping("pushcustomlistblacklistbuffer")]
         public object pushCustomListBlacklistBuffer(List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.identitybufferblacklist, buffer);
         }
 
+        [Mapping("bypass")]
+        public object Bypass(string postdata, string ipaddress, string domainToWhitelist)
+        {
+            string identity = ipaddress.GetHashCode().ToString("X");
+            
 
-        
+            IPAddress ip;
+            if (!IPAddress.TryParse(ipaddress, out ip))
+            {
+                return new Exception($"unable to parse ip address {ipaddress}.");
+            }
+
+            var bytes = ip.GetAddressBytes();
+            BigMath.Int128 intip;
+            if (bytes.Length == 4)
+            {
+                intip = new BigMath.Int128(0, BitConverter.ToUInt32(bytes, 0));
+            }
+            else if (bytes.Length == 16)
+            {
+                intip = new BigMath.Int128(BitConverter.ToUInt64(bytes, 0), BitConverter.ToUInt64(bytes, 8));
+            }
+            else
+            {
+                return new Exception($"unable to parse ip address {ipaddress}.");
+            }
+            var kip = Kres.Man.Models.Int128.Convert(intip);
+
+            var ipranges = CacheLiveStorage.CoreCache.IPRanges.ToList();
+            var customlists = CacheLiveStorage.CoreCache.CustomLists.ToList();
+            ipranges.Add(new Models.CacheIPRange()
+            {
+                Identity = identity,
+                IpFrom = kip,
+                IpTo = kip,
+                PolicyId = 0
+            });
+            var item = customlists.FirstOrDefault(t => string.Compare(t.Identity, identity, StringComparison.OrdinalIgnoreCase) == 0);
+            if (item == null || item.WhiteList == null)
+            {
+                item = new Models.CacheCustomList()
+                {
+                    Identity = identity,
+                    WhiteList = new List<string>() { domainToWhitelist }
+                };
+            }
+            else
+            {
+                if (item.WhiteList.Contains(domainToWhitelist))
+                {
+                    log.Info($"Identity {identity} has {domainToWhitelist} already whitelisted.");
+                    return null;
+                }
+
+                var list = item.WhiteList.ToList();
+                list.Add(domainToWhitelist);
+                item.WhiteList = list;
+            }
+            customlists.RemoveAll(t => string.Compare(t.Identity, identity, StringComparison.OrdinalIgnoreCase) == 0);
+            customlists.Add(item);
+
+            log.Info($"Identity {identity} now has {domainToWhitelist} whitelisted.");
+
+            CacheLiveStorage.CoreCache.IPRanges = ipranges;
+            CacheLiveStorage.CoreCache.CustomLists = customlists;
+
+            KresUpdater.UpdateNow();
+
+            return null;
+        }
+
+
 
         private static string Base64Decode(string base64EncodedData)
         {

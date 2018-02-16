@@ -33,6 +33,7 @@ namespace Kres.Man
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(KresUpdater));
         public static Thread tKresLoop;
         private Listener listener;
+        private static EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         public static object Push(bufferType buftype, IEnumerable<byte[]> data)
         {
@@ -130,12 +131,12 @@ namespace Kres.Man
 
             try
             {
+                log.Info("Load CSVs.");
+                CacheLiveStorage.CoreCache = CsvLoader.LoadCacheFromCsv();
+
                 while (true)
                 {
                     log.Info("KresUpdater loop.");
-
-                    log.Info("Load CSVs.");
-                    CacheLiveStorage.CoreCache = CsvLoader.LoadCacheFromCsv();
 
                     FreeCaches();
 
@@ -145,8 +146,15 @@ namespace Kres.Man
                     UpdateCustomLists();
 
                     SwapCaches();
-                    
-                    Thread.Sleep(10000);
+
+                    if (waitHandle.WaitOne(Configuration.GetKresUpdateInterval(), true))
+                    {
+                        log.Info("KresUpdate reloading on request.");
+                    }
+                    else
+                    {
+                        log.Info("KresUpdate reloading on timeout.");
+                    }
                 }
             }
             catch (Exception ex)
@@ -154,6 +162,11 @@ namespace Kres.Man
                 tKresLoop = null;
                 log.Fatal($"{ex}");
             }
+        }
+
+        public static void UpdateNow()
+        {
+            waitHandle.Set();
         }
 
         private void UpdateDomains()
