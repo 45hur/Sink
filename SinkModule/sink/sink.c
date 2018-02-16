@@ -121,6 +121,7 @@ static int redirect(struct kr_request * request, struct kr_query *last)
 
 static int search(const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last)
 {
+  char message[KNOT_DNAME_MAXLEN] = {};
   unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
   domain domain_item = {};
   if (cache_domain_contains(cached_domain, crc, &domain_item))
@@ -129,7 +130,7 @@ static int search(const char * querieddomain, struct ip_addr * origin, struct kr
       //logtosyslog(message);
       
       iprange iprange_item = {};
-      if (cache_iprange_contains(cached_iprange, &origin, &iprange_item))
+      if (cache_iprange_contains(cached_iprange, origin, &iprange_item))
       {                                          
         //sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange_item.policy_id);
         //logtosyslog(message);
@@ -234,13 +235,12 @@ static int search(const char * querieddomain, struct ip_addr * origin, struct kr
 
 static int collect(kr_layer_t *ctx)
 {
-  char message[KNOT_DNAME_MAXLEN] = {};
   struct kr_request *request = (struct kr_request *)ctx->req;
   struct kr_rplan *rplan = &request->rplan;
 
 	if (!request->qsource.addr) {
-		sprintf(message, "request has no source address");
-		logtosyslog(message);
+		//sprintf(message, "request has no source address");
+		//logtosyslog(message);
 
 		return ctx->state;
 	}
@@ -269,8 +269,8 @@ static int collect(kr_layer_t *ctx)
   	}
   	default:
   	{
-  		sprintf(message, "qsource is invalid");
-  		logtosyslog(message);
+  		//sprintf(message, "qsource is invalid");
+  		//logtosyslog(message);
   		return ctx->state;
   		break;
   	}
@@ -308,7 +308,7 @@ static int collect(kr_layer_t *ctx)
                   querieddomain[domainLen - 1] = '\0';
               }
               
-              return search(&querieddomain, &origin, request, last); 
+              return search((const char *)&querieddomain, &origin, request, last); 
             }
         }
     }
