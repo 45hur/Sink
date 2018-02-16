@@ -186,129 +186,134 @@ static int collect(kr_layer_t *ctx)
 
             if (rr->type == KNOT_RRTYPE_A || rr->type == KNOT_RRTYPE_AAAA)
             {
-                char querieddomain[KNOT_DNAME_MAXLEN];
-                knot_dname_to_str(querieddomain, rr->owner, KNOT_DNAME_MAXLEN);
-
-                int domainLen = strlen(querieddomain);
-                if(querieddomain[domainLen - 1] == '.')
-                {
-                    querieddomain[domainLen - 1] = '\0';
-                }
-
-                unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
-	              domain domain_item = {};
-                if (cache_domain_contains(cached_domain, crc, &domain_item))
-                {
-                    //sprintf(message, "detected '%s'", querieddomain);
-                    //logtosyslog(message);
-                    
-                    iprange iprange_item = {};
-                    if (cache_iprange_contains(cached_iprange, &origin, &iprange_item))
-                    {                                          
-                      //sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange_item.policy_id);
-                      //logtosyslog(message);
-                      
-                      if (strlen(iprange_item.identity) > 0)
-                      {
-                        if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc))
-                        {
-                          //sprintf(message, "identity '%s' got '%s' blacklisted.", iprange_item.identity, querieddomain);
-                          //logtosyslog(message);
-                          return redirect(request, last);                          
-                        }
-                        if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc))
-                        {
-                          //sprintf(message, "identity '%s' got '%s' whitelisted.", iprange_item.identity, querieddomain);
-                          //logtosyslog(message);
-                          return KNOT_STATE_DONE;
-                        }
-                      }
-                      //sprintf(message, "no identity match, checking policy..");
-                      //logtosyslog(message);
-                     
-                      policy policy_item = {}; 
-                      if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
-                      {  
-                        int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
-                        if (domain_flags == 0)
-                        {
-                          //sprintf(message, "policy has strategy flags_none");
-                          //logtosyslog(message);
-                        }
-                        if (domain_flags & flags_accuracy) 
-                        {
-                          //sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-                          //logtosyslog(message);
-                          if (domain_item.accuracy >= policy_item.block)
-                          {
-                            return redirect(request, last);  
-                          } 
-                          else 
-                          if (domain_item.accuracy > policy_item.audit)
-                          {
-                            sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-                            logtoaudit(message);
-                          }
-                        }
-                        if (domain_flags & flags_blacklist) 
-                        {
-                          //sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-                          //logtosyslog(message);
-                          return redirect(request, last);                             
-                        }
-                        if (domain_flags & flags_whitelist) 
-                        {
-                          //sprintf(message, "policy '%d' strategy=>'whitelist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-                          //logtosyslog(message);
-                        }
-                        if (domain_flags & flags_drop) 
-                        {
-                          //sprintf(message, "policy '%d' strategy=>'drop' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-                          //logtosyslog(message);
-                        }
-                      }
-                      else                      
-                      {
-                        int domain_flags = cache_domain_get_flags(domain_item.flags, 0);
-                        if (domain_flags & flags_accuracy)
-                        {
-                            //sprintf(message, "'%s' no-policy => domain-policy =>'accuracy'", querieddomain);
-                            //logtosyslog(message);                                                           
-                            sprintf(message, "auditing '%s' no-policy => domain-policy =>'accuracy'", querieddomain);
-                            logtoaudit(message);
-                        }
-                        if (domain_flags & flags_blacklist)
-                        {
-                            //sprintf(message, "'%s' no-policy => domain-policy =>'blacklist'", querieddomain);
-                            //logtosyslog(message);
-                            return redirect(request, last); 
-                        }
-                        if (domain_flags & flags_whitelist)
-                        {
-                            //sprintf(message, "'%s' no-policy => domain-policy =>'whitelist'", querieddomain);
-                            //logtosyslog(message);
-                            return KNOT_STATE_DONE;
-                        }
-                        if (domain_flags & flags_drop)
-                        {
-                            //sprintf(message, "'%s' no-policy => domain-policy =>'drop'", querieddomain);
-                            //logtosyslog(message);
-                            
-                            //TODO
-                        }     
-                      }
-                    }
-                    else
-                    {
-                      //sprintf(message, "no match to iprange");
-                      //logtosyslog(message);                    
-                    }
-                }
+              char querieddomain[KNOT_DNAME_MAXLEN];
+              knot_dname_to_str(querieddomain, rr->owner, KNOT_DNAME_MAXLEN);
+              
+              return search(&querieddomain); 
             }
         }
     }
 
     return ctx->state;
+}
+
+static int search(const char * querieddomain)
+{
+  int domainLen = strlen(querieddomain);
+  if (querieddomain[domainLen - 1] == '.')
+  {
+      querieddomain[domainLen - 1] = '\0';
+  }
+
+  unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
+  domain domain_item = {};
+  if (cache_domain_contains(cached_domain, crc, &domain_item))
+  {
+      //sprintf(message, "detected '%s'", querieddomain);
+      //logtosyslog(message);
+      
+      iprange iprange_item = {};
+      if (cache_iprange_contains(cached_iprange, &origin, &iprange_item))
+      {                                          
+        //sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange_item.policy_id);
+        //logtosyslog(message);
+        
+        if (strlen(iprange_item.identity) > 0)
+        {
+          if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc))
+          {
+            //sprintf(message, "identity '%s' got '%s' blacklisted.", iprange_item.identity, querieddomain);
+            //logtosyslog(message);
+            return redirect(request, last);                          
+          }
+          if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc))
+          {
+            //sprintf(message, "identity '%s' got '%s' whitelisted.", iprange_item.identity, querieddomain);
+            //logtosyslog(message);
+            return KNOT_STATE_DONE;
+          }
+        }
+        //sprintf(message, "no identity match, checking policy..");
+        //logtosyslog(message);
+       
+        policy policy_item = {}; 
+        if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
+        {  
+          int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
+          if (domain_flags == 0)
+          {
+            //sprintf(message, "policy has strategy flags_none");
+            //logtosyslog(message);
+          }
+          if (domain_flags & flags_accuracy) 
+          {
+            //sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+            //logtosyslog(message);
+            if (domain_item.accuracy >= policy_item.block)
+            {
+              return redirect(request, last);  
+            } 
+            else 
+            if (domain_item.accuracy > policy_item.audit)
+            {
+              sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+              logtoaudit(message);
+            }
+          }
+          if (domain_flags & flags_blacklist) 
+          {
+            //sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+            //logtosyslog(message);
+            return redirect(request, last);                             
+          }
+          if (domain_flags & flags_whitelist) 
+          {
+            //sprintf(message, "policy '%d' strategy=>'whitelist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+            //logtosyslog(message);
+          }
+          if (domain_flags & flags_drop) 
+          {
+            //sprintf(message, "policy '%d' strategy=>'drop' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
+            //logtosyslog(message);
+          }
+        }
+        else                      
+        {
+          int domain_flags = cache_domain_get_flags(domain_item.flags, 0);
+          if (domain_flags & flags_accuracy)
+          {
+              //sprintf(message, "'%s' no-policy => domain-policy =>'accuracy'", querieddomain);
+              //logtosyslog(message);                                                           
+              sprintf(message, "auditing '%s' no-policy => domain-policy =>'accuracy'", querieddomain);
+              logtoaudit(message);
+          }
+          if (domain_flags & flags_blacklist)
+          {
+              //sprintf(message, "'%s' no-policy => domain-policy =>'blacklist'", querieddomain);
+              //logtosyslog(message);
+              return redirect(request, last); 
+          }
+          if (domain_flags & flags_whitelist)
+          {
+              //sprintf(message, "'%s' no-policy => domain-policy =>'whitelist'", querieddomain);
+              //logtosyslog(message);
+              return KNOT_STATE_DONE;
+          }
+          if (domain_flags & flags_drop)
+          {
+              //sprintf(message, "'%s' no-policy => domain-policy =>'drop'", querieddomain);
+              //logtosyslog(message);
+              
+              //TODO
+          }     
+        }
+      }
+      else
+      {
+        //sprintf(message, "no match to iprange");
+        //logtosyslog(message);                    
+      }
+  }
 }
 
 KR_EXPORT
