@@ -123,7 +123,7 @@ static int explode(kr_layer_t *ctx, char * querieddomain, struct ip_addr * origi
 {
   char *ptr = (char *)&querieddomain;
   ptr += strlen(domain);
-  int found = 0;
+  int result = ctx->state;
     
   while (ptr-- != (char *)&domain)
   {
@@ -131,14 +131,22 @@ static int explode(kr_layer_t *ctx, char * querieddomain, struct ip_addr * origi
     {   
       if (++found > 1)
       {        
-        search(ctx, ptr + 1, origin, request, last);
+        if ((result = search(ctx, ptr + 1, origin, request, last)) == KNOT_STATE_DONE)
+        {
+          return result;
+        }
       }
     }
     else if (ptr == (char *)&domain)
     {
-      search(ctx, ptr, origin, request, last);
+      if ((result = search(ctx, ptr, origin, request, last)) == KNOT_STATE_DONE)
+      {
+        return result;
+      }
     }
   }
+  
+  return ctx->state;
 }
 
 static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last)
@@ -255,7 +263,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
       }
   }
   
-  return ctx->state;
+  return KNOT_STATE_NOOP;
 }
 
 static int collect(kr_layer_t *ctx)
