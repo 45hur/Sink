@@ -119,36 +119,6 @@ static int redirect(struct kr_request * request, struct kr_query *last)
   return KNOT_STATE_DONE;
 }
 
-static int explode(kr_layer_t *ctx, char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last)
-{
-  char *ptr = (char *)&querieddomain;
-  ptr += strlen(domain);
-  int result = ctx->state;
-    
-  while (ptr-- != (char *)&domain)
-  {
-    if (ptr[0] == '.')
-    {   
-      if (++found > 1)
-      {        
-        if ((result = search(ctx, ptr + 1, origin, request, last)) == KNOT_STATE_DONE)
-        {
-          return result;
-        }
-      }
-    }
-    else if (ptr == (char *)&domain)
-    {
-      if ((result = search(ctx, ptr, origin, request, last)) == KNOT_STATE_DONE)
-      {
-        return result;
-      }
-    }
-  }
-  
-  return ctx->state;
-}
-
 static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last)
 {
   char message[KNOT_DNAME_MAXLEN] = {};
@@ -266,6 +236,36 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
   return KNOT_STATE_NOOP;
 }
 
+static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last)
+{
+  char *ptr = (char *)&querieddomain;
+  ptr += strlen(domain);
+  int result = ctx->state;
+  int found = 0;    
+  while (ptr-- != (char *)domain)
+  {
+    if (ptr[0] == '.')
+    {   
+      if (++found > 1)
+      {        
+        if ((result = search(ctx, ptr + 1, origin, request, last)) == KNOT_STATE_DONE)
+        {
+          return result;
+        }
+      }
+    }
+    else if (ptr == (char *)&domain)
+    {
+      if ((result = search(ctx, ptr, origin, request, last)) == KNOT_STATE_DONE)
+      {
+        return result;
+      }
+    }
+  }
+  
+  return ctx->state;
+}
+
 static int collect(kr_layer_t *ctx)
 {
   struct kr_request *request = (struct kr_request *)ctx->req;
@@ -341,7 +341,7 @@ static int collect(kr_layer_t *ctx)
                   querieddomain[domainLen - 1] = '\0';
               }
               
-              return explode(ctx, (const char *)&querieddomain, &origin, request, last); 
+              return explode(ctx, (char *)&querieddomain, &origin, request, last); 
             }
         }
     }
