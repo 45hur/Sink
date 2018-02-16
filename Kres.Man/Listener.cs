@@ -169,12 +169,13 @@ namespace Kres.Man
                 PolicyId = 0
             });
             var item = customlists.FirstOrDefault(t => string.Compare(t.Identity, identity, StringComparison.OrdinalIgnoreCase) == 0);
-            if (item == null || item.WhiteList == null)
+            if (item == null)
             {
                 item = new Models.CacheCustomList()
                 {
                     Identity = identity,
-                    WhiteList = new List<string>() { domainToWhitelist }
+                    WhiteList = new List<string>() { domainToWhitelist },
+                    BlackList = new List<string>()
                 };
             }
             else
