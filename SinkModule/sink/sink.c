@@ -119,92 +119,8 @@ static int redirect(struct kr_request * request, struct kr_query *last)
   return KNOT_STATE_DONE;
 }
 
-static int collect(kr_layer_t *ctx)
+static int search(const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last)
 {
-    char message[KNOT_DNAME_MAXLEN] = {};
-    struct kr_request *request = (struct kr_request *)ctx->req;
-    struct kr_rplan *rplan = &request->rplan;
-
-	if (!request->qsource.addr) {
-		sprintf(message, "request has no source address");
-		logtosyslog(message);
-
-		return ctx->state;
-	}
-
-	const struct sockaddr *res = request->qsource.addr;
-	//char *s = NULL;
-  struct ip_addr origin = {};
-	switch (res->sa_family) {
-  	case AF_INET: 
-    {
-  		struct sockaddr_in *addr_in = (struct sockaddr_in *)res;
-  		//s = malloc(INET_ADDRSTRLEN);
-  		//inet_ntop(AF_INET, &(addr_in->sin_addr), s, INET_ADDRSTRLEN);
-      origin.family = AF_INET;
-      memcpy(&origin.ipv4_sin_addr, &(addr_in->sin_addr), 4);    
-  		break;
-  	}
-  	case AF_INET6: 
-    {
-  		struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)res;
-  		//s = malloc(INET6_ADDRSTRLEN);
-  		//inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
-      origin.family = AF_INET6;
-      memcpy(&origin.ipv6_sin_addr, &(addr_in6->sin6_addr), 16); 
-  		break;
-  	}
-  	default:
-  	{
-  		sprintf(message, "qsource is invalid");
-  		logtosyslog(message);
-  		return ctx->state;
-  		break;
-  	}
-	}
-	//sprintf(message, "[%s] request", s);
-	//logtosyslog(message);
-	//free(s);
-
-    char qname_str[KNOT_DNAME_MAXLEN];
-    if (rplan->resolved.len > 0)
-    {
-        bool sinkit = false;
-        uint16_t rclass = 0;
-        struct kr_query *last = array_tail(rplan->resolved);
-        const knot_pktsection_t *ns = knot_pkt_section(request->answer, KNOT_ANSWER);
-
-        if (ns == NULL)
-        {
-            logtosyslog("ns = NULL");
-            return ctx->state;
-        }
-
-        for (unsigned i = 0; i < ns->count; ++i)
-        {
-            const knot_rrset_t *rr = knot_pkt_rr(ns, i);
-
-            if (rr->type == KNOT_RRTYPE_A || rr->type == KNOT_RRTYPE_AAAA)
-            {
-              char querieddomain[KNOT_DNAME_MAXLEN];
-              knot_dname_to_str(querieddomain, rr->owner, KNOT_DNAME_MAXLEN);
-              
-              return search(&querieddomain); 
-            }
-        }
-    }
-
-    return ctx->state;
-}
-
-static int search(const char * querieddomain)
-{
-  int domainLen = strlen(querieddomain);
-  if (querieddomain[domainLen - 1] == '.')
-  {
-      querieddomain[domainLen - 1] = '\0';
-  }
-
   unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
   domain domain_item = {};
   if (cache_domain_contains(cached_domain, crc, &domain_item))
@@ -314,6 +230,90 @@ static int search(const char * querieddomain)
         //logtosyslog(message);                    
       }
   }
+}
+
+static int collect(kr_layer_t *ctx)
+{
+  char message[KNOT_DNAME_MAXLEN] = {};
+  struct kr_request *request = (struct kr_request *)ctx->req;
+  struct kr_rplan *rplan = &request->rplan;
+
+	if (!request->qsource.addr) {
+		sprintf(message, "request has no source address");
+		logtosyslog(message);
+
+		return ctx->state;
+	}
+
+	const struct sockaddr *res = request->qsource.addr;
+	//char *s = NULL;
+  struct ip_addr origin = {};
+	switch (res->sa_family) {
+  	case AF_INET: 
+    {
+  		struct sockaddr_in *addr_in = (struct sockaddr_in *)res;
+  		//s = malloc(INET_ADDRSTRLEN);
+  		//inet_ntop(AF_INET, &(addr_in->sin_addr), s, INET_ADDRSTRLEN);
+      origin.family = AF_INET;
+      memcpy(&origin.ipv4_sin_addr, &(addr_in->sin_addr), 4);    
+  		break;
+  	}
+  	case AF_INET6: 
+    {
+  		struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)res;
+  		//s = malloc(INET6_ADDRSTRLEN);
+  		//inet_ntop(AF_INET6, &(addr_in6->sin6_addr), s, INET6_ADDRSTRLEN);
+      origin.family = AF_INET6;
+      memcpy(&origin.ipv6_sin_addr, &(addr_in6->sin6_addr), 16); 
+  		break;
+  	}
+  	default:
+  	{
+  		sprintf(message, "qsource is invalid");
+  		logtosyslog(message);
+  		return ctx->state;
+  		break;
+  	}
+	}
+	//sprintf(message, "[%s] request", s);
+	//logtosyslog(message);
+	//free(s);
+
+    char qname_str[KNOT_DNAME_MAXLEN];
+    if (rplan->resolved.len > 0)
+    {
+        bool sinkit = false;
+        uint16_t rclass = 0;
+        struct kr_query *last = array_tail(rplan->resolved);
+        const knot_pktsection_t *ns = knot_pkt_section(request->answer, KNOT_ANSWER);
+
+        if (ns == NULL)
+        {
+            logtosyslog("ns = NULL");
+            return ctx->state;
+        }
+
+        for (unsigned i = 0; i < ns->count; ++i)
+        {
+            const knot_rrset_t *rr = knot_pkt_rr(ns, i);
+
+            if (rr->type == KNOT_RRTYPE_A || rr->type == KNOT_RRTYPE_AAAA)
+            {
+              char querieddomain[KNOT_DNAME_MAXLEN];
+              knot_dname_to_str(querieddomain, rr->owner, KNOT_DNAME_MAXLEN);
+              
+              int domainLen = strlen(querieddomain);
+              if (querieddomain[domainLen - 1] == '.')
+              {
+                  querieddomain[domainLen - 1] = '\0';
+              }
+              
+              return search(&querieddomain, &origin, request, last); 
+            }
+        }
+    }
+
+    return ctx->state;
 }
 
 KR_EXPORT
