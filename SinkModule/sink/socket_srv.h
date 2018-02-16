@@ -158,6 +158,8 @@ void *connection_handler(void *socket_desc)
       if (messageHeader.length == 0)
       {
         puts(" empty message");
+        sprintf(client_message, "1");
+        write(sock , client_message , 1);
       }
       else
       {
