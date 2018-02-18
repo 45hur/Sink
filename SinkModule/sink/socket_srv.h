@@ -575,15 +575,23 @@ static void* socket_server(void *arg)
     //Prepare the sockaddr_in structure
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons( 8888 );
-     
-    //Bind
-    if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
+    for (int port = 8880; port < 8896; port++)
     {
-        puts("bind failed");
-        return (void*)-1;
+      server.sin_port = htons( port );                   
+      //Bind
+      if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
+      {
+          printf("bind failed on port %d\n", port);
+          if (port == 8895)
+          {
+            return (void*)-1;
+          }
+          
+          continue;
+      }
+      printf("bind succeeded on port %d\n", port);
+      break;
     }
-    puts("bind succeeded");
      
     //Listen
     listen(socket_desc , 3);

@@ -38,34 +38,45 @@ namespace Kres.Man
         public static object Push(bufferType buftype, IEnumerable<byte[]> data)
         {
             log.Debug($"Push buftype {buftype}");
-            using (var client = new TcpClient())
+
+            for (var port = 8880; port < 8896; port++)
             {
-                client.Client.Connect(IPAddress.Parse(Configuration.GetKres()), 8888);
-
-                var messageType = (int)buftype;
-
-                //+ 8 bytes (= last crc64 bytes)
-                var header = BitConverter.GetBytes(messageType)             // 4 bytes -> message type
-                    .Concat(BitConverter.GetBytes(data.Count()));            // 4 bytes -> how many buffers
-
-                var headerCrc = Crc64.Compute(0, header.ToArray());
-                header = header.Concat(BitConverter.GetBytes(headerCrc));   // 8 byte -> crc of this header
-
-                log.Debug($"Get stream");
-                using (var stream = client.GetStream())
+                try
                 {
-                    if (SendHeader(stream, header))
+                    using (var client = new TcpClient())
                     {
-                        SendBuffers(stream, data);
+                        client.Client.Connect(IPAddress.Parse(Configuration.GetKres()), port);
+
+                        var messageType = (int)buftype;
+
+                        //+ 8 bytes (= last crc64 bytes)
+                        var header = BitConverter.GetBytes(messageType)             // 4 bytes -> message type
+                            .Concat(BitConverter.GetBytes(data.Count()));            // 4 bytes -> how many buffers
+
+                        var headerCrc = Crc64.Compute(0, header.ToArray());
+                        header = header.Concat(BitConverter.GetBytes(headerCrc));   // 8 byte -> crc of this header
+
+                        log.Debug($"Get stream");
+                        using (var stream = client.GetStream())
+                        {
+                            if (SendHeader(stream, header))
+                            {
+                                SendBuffers(stream, data);
+                            }
+
+                            log.Debug($"Closing ip stream.");
+                            stream.Flush();
+                            stream.Close();
+                        }
+                        client.Close();
+
+                        log.Debug($"Return.");
                     }
-
-                    log.Debug($"Closing ip stream.");
-                    stream.Flush();
-                    stream.Close();
                 }
-                client.Close();
-
-                log.Debug($"Return.");
+                catch
+                {
+                    log.Debug($"Unable to connect to kres on port {port}.");
+                }
             }
             return null;
         }
