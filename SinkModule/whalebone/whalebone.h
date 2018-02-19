@@ -17,7 +17,7 @@
 
 static __inline void logtosyslog(char *text)
 {
-    openlog("sink", LOG_CONS | LOG_PID, LOG_USER);
+    openlog("whalebone", LOG_CONS | LOG_PID, LOG_USER);
     syslog(LOG_INFO, "%s", text);
     closelog();
     memset(text, 0, strlen(text));
@@ -25,7 +25,7 @@ static __inline void logtosyslog(char *text)
 
 static __inline void logtoaudit(char *text)
 {
-    openlog("sink-audit", LOG_CONS | LOG_PID, LOG_USER);
+    openlog("whalebone-audit", LOG_CONS | LOG_PID, LOG_USER);
     syslog(LOG_INFO, "%s", text);
     closelog();
     memset(text, 0, strlen(text));

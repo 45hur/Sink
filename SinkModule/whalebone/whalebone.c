@@ -1,24 +1,24 @@
 /* Convenience macro to declare module API. */
-#define C_MOD_SINK "\x08""mod-sink"
+#define C_MOD_WHALEBONE "\x09""whalebone"
 
 #include "lib/module.h"
 #include <pthread.h>
 #include <syslog.h>
 #include <lib/rplan.h>
 
-#include "sink.h"
+#include "whalebone.h"
 
 static void* observe(void *arg)
 {
   /* ... do some observing ... */
-  openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+  openlog("whalebone",  LOG_CONS | LOG_PID, LOG_USER);
   syslog(LOG_INFO, "Loading");
   closelog();
 
   unsigned long long ret = 0;
   if ((ret = loader_init()) != 0)
   {
-  	openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+  	openlog("whalebone",  LOG_CONS | LOG_PID, LOG_USER);
   	syslog(LOG_INFO, "CSV load failed");
   	closelog();
   	return (void *)-1;
@@ -27,13 +27,13 @@ static void* observe(void *arg)
   pthread_t thr_id;
   if ((ret = pthread_create(&thr_id, NULL, &socket_server, NULL)) != 0) 
   {
-  	openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+  	openlog("whalebone",  LOG_CONS | LOG_PID, LOG_USER);
   	syslog(LOG_INFO, "Create thread failed");
   	closelog();
     return (void *)ret;  
   }
 
-  openlog("sink",  LOG_CONS | LOG_PID, LOG_USER);
+  openlog("whalebone",  LOG_CONS | LOG_PID, LOG_USER);
   syslog(LOG_INFO, "Loaded");
   closelog();
 
@@ -350,7 +350,7 @@ static int collect(kr_layer_t *ctx)
 }
 
 KR_EXPORT
-const kr_layer_api_t *sink_layer(struct kr_module *module) {
+const kr_layer_api_t *whalebone_layer(struct kr_module *module) {
         static kr_layer_api_t _layer = {
 				//.consume = &collect_rtt,
                 .finish = &collect,
@@ -361,7 +361,7 @@ const kr_layer_api_t *sink_layer(struct kr_module *module) {
 }
 
 KR_EXPORT
-int sink_init(struct kr_module *module)
+int whalebone_init(struct kr_module *module)
 {
         /* Create a thread and start it in the background. */
         pthread_t thr_id;
@@ -376,7 +376,7 @@ int sink_init(struct kr_module *module)
 }
 
 KR_EXPORT
-int sink_deinit(struct kr_module *module)
+int whalebone_deinit(struct kr_module *module)
 {
         /* ... signalize cancellation ... */
         void *res = NULL;
@@ -389,4 +389,4 @@ int sink_deinit(struct kr_module *module)
         return kr_ok();
 }
 
-KR_MODULE_EXPORT(sink)
+KR_MODULE_EXPORT(whalebone)

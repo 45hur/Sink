@@ -2,7 +2,7 @@
 @@ -1,5 +1,6 @@
  # List of built-in modules
  modules_TARGETS := hints \
-+                   sink \
++                   whalebone \
                     stats
  
  # DNS cookies
