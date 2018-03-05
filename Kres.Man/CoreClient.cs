@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Net;
 
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+
 using Newtonsoft.Json;
 
 namespace Kres.Man
@@ -23,42 +26,69 @@ namespace Kres.Man
             {
                 while (true)
                 {
-                    //GetCoreCache();
+                    GetCoreCache();
 
                     Thread.Sleep(60000);
                 }
             }
             catch (Exception ex)
-            {
+             {
                 tCoreLoop = null;
                 log.Fatal($"{ex}");
             }
         }
 
-        private static void GetCoreCache()
+        private static bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
         {
-            log.Info("GetCoreCache()");
-            var url = string.Format("{0}cache", Configuration.GetCoreUrl());
-
-            var request = WebRequest.Create(url);
-            request.Method = "GET";
-            request.ContentType = "application/x-protobuf";
-
-            request.Headers["X-Api-Authorization"] = Configuration.GetCoreToken();
-
-            try
+            if (error == SslPolicyErrors.RemoteCertificateChainErrors)
             {
-                using (var response = request.GetResponseAsync().Result)
+                var cert2 = cert as X509Certificate2;
+                if (cert2 != null)
                 {
-                    using (var stream = response.GetResponseStream())
+                    if (string.Compare(cert2.Thumbprint, "E05B94180B1C02A89BAF451BF0F6A286AC529342", StringComparison.OrdinalIgnoreCase) == 0)
                     {
-                        var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+                        return true;
                     }
                 }
             }
-            catch (Exception ex)
+
+            return false;
+        }
+
+        private static void GetCoreCache()
+        {
+            log.Info("GetCoreCache()");
+
+            string host = Configuration.GetCoreUrl();
+            string certName = Configuration.GetPfxPath();
+            string password = Configuration.GetPfxPassword();
+
+
+            X509Certificate2Collection certificates = new X509Certificate2Collection();
+            certificates.Import(certName, password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
+
+            ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(host);
+            req.ServerCertificateValidationCallback += ValidateRemoteCertificate;
+            req.AllowAutoRedirect = true;
+            req.ClientCertificates = certificates;
+            req.Method = "POST";
+            req.ContentType = "application/x-protobuf";
+            string postData = "login-form-type=cert";
+            byte[] postBytes = Encoding.UTF8.GetBytes(postData);
+            req.ContentLength = postBytes.Length;
+
+            var postStream = req.GetRequestStream();
+            postStream.Write(postBytes, 0, postBytes.Length);
+            postStream.Flush();
+            postStream.Close();
+
+            using (var response = req.GetResponseAsync().Result)
             {
-                log.Error($"{ex}");
+                using (var stream = response.GetResponseStream())
+                {
+                    var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+                }
             }
         }
 

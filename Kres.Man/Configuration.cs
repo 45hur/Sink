@@ -40,6 +40,14 @@ namespace Kres.Man
         {
             return GetValue("core");
         }
+        internal static string GetPfxPath()
+        {
+            return GetValue("pfxpath");
+        }
+        internal static string GetPfxPassword()
+        {
+            return GetValue("pfxpassword");
+        }
         internal static string GetCoreToken()
         {
             return GetValue("coretoken");
