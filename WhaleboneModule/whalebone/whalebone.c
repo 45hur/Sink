@@ -185,7 +185,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
           {
             //policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
             sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"accuracy\"}", timebuf, querieddomain, req_addr);
-            //logtosyslog(message);
+            logtosyslog(message);
             if (domain_item.accuracy >= policy_item.block)
             {
               return redirect(request, last);  
@@ -195,23 +195,28 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
             {
               sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
               logtoaudit(message);
+              sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"accuracy\"}", timebuf, querieddomain, req_addr);
+              logtosyslog(message);              
             }
           }
           if (domain_flags & flags_blacklist) 
           {
             //sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-            //logtosyslog(message);
+              sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"blacklist\"}", timebuf, querieddomain, req_addr);
+              logtosyslog(message); 
             return redirect(request, last);                             
           }
           if (domain_flags & flags_whitelist) 
           {
             //sprintf(message, "policy '%d' strategy=>'whitelist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-            //logtosyslog(message);
+              sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"whitelist\"}", timebuf, querieddomain, req_addr);
+              logtosyslog(message); 
           }
           if (domain_flags & flags_drop) 
           {
             //sprintf(message, "policy '%d' strategy=>'drop' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-            //logtosyslog(message);
+              sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"drop\"}", timebuf, querieddomain, req_addr);
+              logtosyslog(message); 
           }
         }
         else                      
