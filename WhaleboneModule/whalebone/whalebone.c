@@ -5,6 +5,10 @@
 #include <pthread.h>
 #include <syslog.h>
 #include <lib/rplan.h>
+#include <stdio.h>
+#include <sys/time.h>
+#include <time.h>
+#include <math.h>
 
 #include "whalebone.h"
 
@@ -122,6 +126,20 @@ static int redirect(struct kr_request * request, struct kr_query *last)
 static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr)
 {
   char message[KNOT_DNAME_MAXLEN] = {};
+  char timebuf[26];
+  int millisec;
+  struct tm* tm_info;
+  struct timeval tv;
+  millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+  if (millisec>=1000) { // Allow for rounding up to nearest second
+    millisec -=1000;
+    tv.tv_sec++;
+  }
+
+  tm_info = localtime(&tv.tv_sec);
+
+  strftime(timebuf, 26, "%Y/%m/%d %H:%M:%S", tm_info);
+  //printf("%s.%03d\n", timebuf, millisec);
    
   unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
   domain domain_item = {};
@@ -166,7 +184,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
           if (domain_flags & flags_accuracy) 
           {
             //policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-            sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\","domain\":\"%s\",\"action\":\"accuracy\"}", "2018/01/26 23:06:29.614601", querieddomain, req_addr);
+            sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"accuracy\"}", timebuf, querieddomain, req_addr);
             //logtosyslog(message);
             if (domain_item.accuracy >= policy_item.block)
             {
