@@ -15,5 +15,8 @@ namespace Kres.Man.Models
 
         [ProtoMember(3)]
         public IEnumerable<string> BlackList { get; set; }
+
+        [ProtoMember(4)]
+        public int PolicyId { get; set; }
     }
 }

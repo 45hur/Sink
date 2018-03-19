@@ -175,7 +175,8 @@ namespace Kres.Man
                 {
                     Identity = identity,
                     WhiteList = new List<string>() { domainToWhitelist },
-                    BlackList = new List<string>()
+                    BlackList = new List<string>(),
+                    PolicyId = 0
                 };
             }
             else

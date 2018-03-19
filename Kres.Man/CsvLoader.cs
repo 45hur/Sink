@@ -38,7 +38,8 @@ namespace Kres.Man
                 {
                     Identity = csv.GetField(0),
                     WhiteList = csv.GetField(1).Split(';'),
-                    BlackList = csv.GetField(2).Split(';')
+                    BlackList = csv.GetField(2).Split(';'),
+                    PolicyId = Convert.ToInt32(csv.GetField(3))
                 };
 
                 result.Add(item);
