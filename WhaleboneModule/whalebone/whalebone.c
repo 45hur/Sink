@@ -397,6 +397,10 @@ int whalebone_init(struct kr_module *module)
                 return kr_error(errno);
         }
 
+        char msginit[KNOT_DNAME_MAXLEN] = {};
+	sprintf(msginit, "module init");
+	logtosyslog(msginit);
+
         /* Keep it in the thread */
         module->data = (void *)thr_id;
         return kr_ok();
