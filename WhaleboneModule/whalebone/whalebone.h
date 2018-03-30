@@ -21,45 +21,48 @@ static FILE *log_whalebone = 0;
 
 static __inline void logtosyslog(char *text)
 {
-    //openlog("whalebone", LOG_CONS | LOG_PID, LOG_USER);
-    //syslog(LOG_INFO, "%s", text);
-    //closelog();
-    
     if (log_whalebone == 0) 
     {
-        log_whalebone = fopen("whalebone.log", "at");
+        log_whalebone = fopen("/var/log/whalebone/whalebone.log", "at");
         if (!log_whalebone) 
-          log_whalebone = fopen("logfile.log", "wt");
+          log_whalebone = fopen("/var/log/whalebone/logfile.log", "wt");
         if (!log_whalebone) 
         {
             return;   
         }
     }
     
-    fprintf(log_whalebone, text);
+    fputs(text, log_whalebone);
+    fflush(log_whalebone);
+
+    openlog("whalebone", LOG_CONS | LOG_PID, LOG_USER);
+    syslog(LOG_INFO, "%s", text);
+    closelog();
+
 
     memset(text, 0, strlen(text));
 }
 
 static __inline void logtoaudit(char *text)
 {
-    //openlog("whalebone-audit", LOG_CONS | LOG_PID, LOG_USER);
-    //syslog(LOG_INFO, "%s", text);
-    //closelog();
-    
     if (log_audit == 0) 
     {
-        log_audit = fopen("audit.log", "at");
+        log_audit = fopen("/var/log/whalebone/audit.log", "at");
         if (!log_audit) 
-          log_audit = fopen("audit.log", "wt");
+          log_audit = fopen("/var/log/whalebone/audit.log", "wt");
         if (!log_audit) 
         {
             return;   
         }
     }
     
-    fprintf(log_audit, text);
+    fputs(text, log_audit);
+    fflush(log_whalebone);
 
+    openlog("whalebone-audit", LOG_CONS | LOG_PID, LOG_USER);
+    syslog(LOG_INFO, "%s", text);
+    closelog();
+    
     memset(text, 0, strlen(text));
 }
  
