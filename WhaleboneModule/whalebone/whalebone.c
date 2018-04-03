@@ -108,7 +108,7 @@ static int redirect(struct kr_request * request, struct kr_query *last)
 
   struct sockaddr_storage sinkhole;
   const char *sinkit_sinkhole = getenv("SINKIP");
-  if (strlen(sinit_sinkhole) == 0)
+  if (strlen(sinkit_sinkhole) == 0)
   {
     sinkit_sinkhole = "94.237.30.217";
   }
