@@ -55,11 +55,28 @@ namespace Kres.Man
             
             while (csv.Read())
             {
+                var b0 = Convert.ToByte(csv.GetField(2));
+                var b1 = Convert.ToByte(csv.GetField(3));
+                var b2 = Convert.ToByte(csv.GetField(4));
+                var b3 = Convert.ToByte(csv.GetField(5));
+                var b4 = Convert.ToByte(csv.GetField(6));
+                var b5 = Convert.ToByte(csv.GetField(7));
+                var b6 = Convert.ToByte(csv.GetField(8));
+                var b7 = Convert.ToByte(csv.GetField(9));
+                var b8 = Convert.ToByte(csv.GetField(10));
+                var b9 = Convert.ToByte(csv.GetField(11));
+                var b10 = Convert.ToByte(csv.GetField(12));
+                var b11 = Convert.ToByte(csv.GetField(13));
+                var b12 = Convert.ToByte(csv.GetField(14));
+                var b13 = Convert.ToByte(csv.GetField(15));
+                var b14 = Convert.ToByte(csv.GetField(16));
+                var b15 = Convert.ToByte(csv.GetField(17));
+
                 var item = new Models.CacheDomain
                 {
                     Crc64 = Crc64.Compute(0, ASCIIEncoding.ASCII.GetBytes(csv.GetField(0))),
                     Accuracy = Convert.ToInt32(csv.GetField(1)),
-                    Flags = BitConverter.GetBytes(Convert.ToUInt64(csv.GetField(2)))
+                    Flags =  new [] { b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14 }
                 };
                 result.Add(item);
             }

@@ -107,8 +107,13 @@ static int redirect(struct kr_request * request, struct kr_query *last)
   knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
 
   struct sockaddr_storage sinkhole;
-  const char *sinkit_sinkhole = "94.237.30.217";
-  if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0) {
+  const char *sinkit_sinkhole = getenv("SINKIP");
+  if (strlen(sinit_sinkhole) == 0)
+  {
+    sinkit_sinkhole = "94.237.30.217";
+  }
+  if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0) 
+  {
       return kr_error(EINVAL);
   }
 

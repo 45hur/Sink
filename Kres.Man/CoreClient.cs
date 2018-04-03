@@ -22,19 +22,19 @@ namespace Kres.Man
         {
             log.Info("Starting CoreClient thread.");
 
-            try
+            while (true)
             {
-                while (true)
+                try
                 {
                     GetCoreCache();
-
-                    Thread.Sleep(60000);
                 }
-            }
-            catch (Exception ex)
-             {
-                tCoreLoop = null;
-                log.Fatal($"{ex}");
+                catch (Exception ex)
+                {
+                    tCoreLoop = null;
+                    log.Fatal($"{ex}");
+                }
+
+                Thread.Sleep(60000);
             }
         }
 

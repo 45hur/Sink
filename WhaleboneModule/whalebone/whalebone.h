@@ -25,9 +25,9 @@ static __inline void logtosyslog(char *text)
     {
         log_whalebone = fopen("/var/log/whalebone/whalebone.log", "at");
         if (!log_whalebone) 
-          log_whalebone = fopen("/var/log/whalebone/logfile.log", "wt");
+          log_whalebone = fopen("/var/log/whalebone/whalebone.log", "wt");
         if (!log_whalebone) 
-        {
+        {                                              
             return;   
         }
     }
