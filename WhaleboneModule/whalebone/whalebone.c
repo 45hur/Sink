@@ -306,6 +306,9 @@ static int collect(kr_layer_t *ctx)
   struct kr_request *request = (struct kr_request *)ctx->req;
   struct kr_rplan *rplan = &request->rplan;
 
+  sprintf(message, "collect");
+  logtosyslog(message);
+
 	if (!request->qsource.addr) {
 		sprintf(message, "request has no source address");
 		logtosyslog(message);
