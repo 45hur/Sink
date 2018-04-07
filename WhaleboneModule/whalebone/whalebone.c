@@ -267,6 +267,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 
 static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr)
 {
+  char message[KNOT_DNAME_MAXLEN] = {};
   char *ptr = domain;
   ptr += strlen(domain);
   int result = ctx->state;
@@ -277,6 +278,8 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
     {   
       if (++found > 1)
       {        
+		sprintf(message, "search %s", ptr + 1);
+		logtosyslog(message);
         if ((result = search(ctx, ptr + 1, origin, request, last, req_addr)) == KNOT_STATE_DONE)
         {
           return result;
@@ -285,7 +288,9 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
     }
     else if (ptr == (char *)&domain)
     {
-      if ((result = search(ctx, ptr, origin, request, last, req_addr)) == KNOT_STATE_DONE)
+		sprintf(message, "search %s", ptr);
+		logtosyslog(message);
+		if ((result = search(ctx, ptr, origin, request, last, req_addr)) == KNOT_STATE_DONE)
       {
         return result;
       }
@@ -301,8 +306,8 @@ static int collect(kr_layer_t *ctx)
   struct kr_rplan *rplan = &request->rplan;
 
 	if (!request->qsource.addr) {
-		//sprintf(message, "request has no source address");
-		//logtosyslog(message);
+		sprintf(message, "request has no source address");
+		logtosyslog(message);
 
 		return ctx->state;
 	}
@@ -331,14 +336,12 @@ static int collect(kr_layer_t *ctx)
   	}
   	default:
   	{
-  		//sprintf(message, "qsource is invalid");
-  		//logtosyslog(message);
+  		sprintf(message, "qsource is invalid");
+  		logtosyslog(message);
   		return ctx->state;
   		break;
   	}
 	}
-	//sprintf(message, "[%s] request", s);
-	//logtosyslog(message);
 
     char qname_str[KNOT_DNAME_MAXLEN];
     if (rplan->resolved.len > 0)
