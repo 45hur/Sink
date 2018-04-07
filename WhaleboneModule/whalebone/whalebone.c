@@ -344,6 +344,9 @@ static int collect(kr_layer_t *ctx)
   	}
 	}
 
+	sprintf(message, "request from %s", req_addr);
+	logtosyslog(message);
+
     char qname_str[KNOT_DNAME_MAXLEN];
     if (rplan->resolved.len > 0)
     {
@@ -373,6 +376,10 @@ static int collect(kr_layer_t *ctx)
                   querieddomain[domainLen - 1] = '\0';
               }
               
+			  sprintf(message, "query for %s", querieddomain);
+			  logtosyslog(message);
+
+
               ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr);
               break; 
             }
