@@ -21,6 +21,10 @@ static FILE *log_whalebone = 0;
 
 static __inline void logtosyslog(char *text)
 {
+    openlog("whalebone", LOG_CONS | LOG_PID, LOG_USER);
+    syslog(LOG_INFO, "%s", text);
+    closelog();
+
     if (log_whalebone == 0) 
     {
         log_whalebone = fopen("/var/log/whalebone/whalebone.log", "at");
@@ -35,16 +39,15 @@ static __inline void logtosyslog(char *text)
     fputs(text, log_whalebone);
     fflush(log_whalebone);
 
-    openlog("whalebone", LOG_CONS | LOG_PID, LOG_USER);
-    syslog(LOG_INFO, "%s", text);
-    closelog();
-
-
     memset(text, 0, strlen(text));
 }
 
 static __inline void logtoaudit(char *text)
 {
+    openlog("whalebone-audit", LOG_CONS | LOG_PID, LOG_USER);
+    syslog(LOG_INFO, "%s", text);
+    closelog();
+
     if (log_audit == 0) 
     {
         log_audit = fopen("/var/log/whalebone/audit.log", "at");
@@ -59,10 +62,6 @@ static __inline void logtoaudit(char *text)
     fputs(text, log_audit);
     fflush(log_whalebone);
 
-    openlog("whalebone-audit", LOG_CONS | LOG_PID, LOG_USER);
-    syslog(LOG_INFO, "%s", text);
-    closelog();
-    
     memset(text, 0, strlen(text));
 }
  
