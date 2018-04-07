@@ -398,7 +398,7 @@ cleanup:
 KR_EXPORT
 const kr_layer_api_t *whalebone_layer(struct kr_module *module) {
         static kr_layer_api_t _layer = {
-				//.consume = &collect_rtt,
+				.consume = &collect_rtt,
                 .finish = &collect,
         };
         /* Store module reference */
