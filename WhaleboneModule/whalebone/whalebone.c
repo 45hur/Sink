@@ -302,6 +302,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 
 static int collect(kr_layer_t *ctx)
 {
+	char message[KNOT_DNAME_MAXLEN] = {};
   struct kr_request *request = (struct kr_request *)ctx->req;
   struct kr_rplan *rplan = &request->rplan;
 
