@@ -406,6 +406,35 @@ static int finish(kr_layer_t *ctx)
 		{
 			sprintf(message, "query has no asnwer");
 			logtosyslog(message);
+
+			const knot_pktsection_t *au = knot_pkt_section(request->answer, KNOT_AUTHORITY);
+			for (unsigned i = 0; i < au->count; ++i)
+			{
+				const knot_rrset_t *rr = knot_pkt_rr(au, i);
+
+				if (rr->type == KNOT_RRTYPE_SOA)
+				{
+					char querieddomain[KNOT_DNAME_MAXLEN];
+					knot_dname_to_str(querieddomain, rr->owner, KNOT_DNAME_MAXLEN);
+
+					int domainLen = strlen(querieddomain);
+					if (querieddomain[domainLen - 1] == '.')
+					{
+						querieddomain[domainLen - 1] = '\0';
+					}
+
+					sprintf(message, "authority for %s", querieddomain);
+					logtosyslog(message);
+
+					//ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr);
+					//break;
+				}
+				else
+				{
+					sprintf(message, "authority rr type is not SOA [%d]", (int)rr->type);
+					logtosyslog(message);
+				}
+			}
 		}
 
         for (unsigned i = 0; i < ns->count; ++i)
