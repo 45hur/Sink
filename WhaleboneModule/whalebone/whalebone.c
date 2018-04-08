@@ -288,10 +288,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
     }
 	else 
 	{
-		sprintf(message, "else %s", ptr);
-		logtosyslog(message);
-
-		if (ptr == (char *)&domain)
+		if (ptr == (char *)domain)
 		{
 			sprintf(message, "search %s", ptr);
 			logtosyslog(message);
