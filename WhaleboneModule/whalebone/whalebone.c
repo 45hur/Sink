@@ -60,11 +60,15 @@ static int parse_addr_str(struct sockaddr_storage *sa, const char *addr) {
     return 0;
 }
 
-static int collect_rtt(kr_layer_t *ctx, knot_pkt_t *pkt)
+static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 {
     struct kr_request *req = ctx->req;
     struct kr_query *qry = req->current_query;
-    if (qry->flags.CACHED || !req->qsource.addr) {
+    if (qry->flags.CACHED || !req->qsource.addr) 
+	{
+		sprintf(message, "consume has no valid address");
+		logtosyslog(message);
+
         return ctx->state;
     }
     
@@ -91,7 +95,7 @@ static int collect_rtt(kr_layer_t *ctx, knot_pkt_t *pkt)
         }
     }
     char message[KNOT_DNAME_MAXLEN] = {};
-    sprintf(message, "IP address: %s", s);
+    sprintf(message, "consume address: %s", s);
     logtosyslog(message); 
     free(s);
 
@@ -303,13 +307,44 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
   return ctx->state;
 }
 
-static int collect(kr_layer_t *ctx)
+static int can_satisfy(qry)
+{
+	return 0;
+}
+
+static int produce(kr_layer_t *ctx, knot_pkt_t *pkt)
+{
+	char message[KNOT_DNAME_MAXLEN] = {};
+	struct kr_request *req = ctx->req;
+	struct kr_query *qry = req->current_query;
+
+	/* Query can be satisfied locally. */
+	if (can_satisfy(qry)) 
+	{
+
+		sprintf(message, "produce can satisfy");
+		logtosyslog(message);
+
+		/* This flag makes the resolver move the query
+		* to the "resolved" list. */
+		qry->flags.RESOLVED = true;
+		return KR_STATE_DONE;
+	}
+
+	sprintf(message, "produce can't satisfy");
+	logtosyslog(message);
+
+	/* Pass-through. */
+	return ctx->state;
+}
+
+static int finish(kr_layer_t *ctx)
 {
 	char message[KNOT_DNAME_MAXLEN] = {};
   struct kr_request *request = (struct kr_request *)ctx->req;
   struct kr_rplan *rplan = &request->rplan;
 
-  sprintf(message, "collect");
+  sprintf(message, "finish");
   logtosyslog(message);
 
 	if (!request->qsource.addr) {
@@ -401,8 +436,9 @@ cleanup:
 KR_EXPORT
 const kr_layer_api_t *whalebone_layer(struct kr_module *module) {
         static kr_layer_api_t _layer = {
-				.consume = &collect_rtt,
-                .finish = &collect,
+				.consume = &consume,
+				.produce = &produce,
+                .finish = &finish,
         };
         /* Store module reference */
         _layer.data = module;
