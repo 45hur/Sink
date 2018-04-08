@@ -62,6 +62,7 @@ static int parse_addr_str(struct sockaddr_storage *sa, const char *addr) {
 
 static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 {
+	char message[KNOT_DNAME_MAXLEN] = {};
     struct kr_request *req = ctx->req;
     struct kr_query *qry = req->current_query;
     if (qry->flags.CACHED || !req->qsource.addr) 
@@ -94,7 +95,6 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
             break;
         }
     }
-    char message[KNOT_DNAME_MAXLEN] = {};
     sprintf(message, "consume address: %s", s);
     logtosyslog(message); 
     free(s);
@@ -307,7 +307,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
   return ctx->state;
 }
 
-static int can_satisfy(qry)
+static int can_satisfy(struct kr_query *qry)
 {
 	return 0;
 }
@@ -319,7 +319,7 @@ static int produce(kr_layer_t *ctx, knot_pkt_t *pkt)
 	struct kr_query *qry = req->current_query;
 
 	/* Query can be satisfied locally. */
-	if (can_satisfy(qry)) 
+	if (can_satisfy(qry) == 1) 
 	{
 
 		sprintf(message, "produce can satisfy");
