@@ -431,6 +431,11 @@ static int finish(kr_layer_t *ctx)
 			}
         }
     }
+	else
+	{
+		sprintf(message, "query has no resolve plan");
+		logtosyslog(message);
+	}
     
 cleanup:
     free (req_addr);    
