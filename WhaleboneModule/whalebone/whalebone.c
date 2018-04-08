@@ -110,7 +110,7 @@ static int redirect(struct kr_request * request, struct kr_query *last)
   const char *sinkit_sinkhole = getenv("SINKIP");
   if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
   {
-    sinkit_sinkhole = "94.237.30.217";
+    sinkit_sinkhole = "0.0.0.0";
   }
   if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0) 
   {
@@ -286,15 +286,21 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
         }
       }
     }
-    else if (ptr == (char *)&domain)
-    {
-		sprintf(message, "search %s", ptr);
+	else 
+	{
+		sprintf(message, "else %s", ptr);
 		logtosyslog(message);
-		if ((result = search(ctx, ptr, origin, request, last, req_addr)) == KNOT_STATE_DONE)
-      {
-        return result;
-      }
-    }
+
+		if (ptr == (char *)&domain)
+		{
+			sprintf(message, "search %s", ptr);
+			logtosyslog(message);
+			if ((result = search(ctx, ptr, origin, request, last, req_addr)) == KNOT_STATE_DONE)
+			{
+				return result;
+			}
+		}
+	}
   }
   
   return ctx->state;
