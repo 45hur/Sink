@@ -402,6 +402,12 @@ static int finish(kr_layer_t *ctx)
             goto cleanup;
         }
 
+		if (ns->count == 0)
+		{
+			sprintf(message, "query has no asnwer");
+			logtosyslog(message);
+		}
+
         for (unsigned i = 0; i < ns->count; ++i)
         {
             const knot_rrset_t *rr = knot_pkt_rr(ns, i);
