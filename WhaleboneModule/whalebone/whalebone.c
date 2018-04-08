@@ -332,14 +332,6 @@ static int produce(kr_layer_t *ctx, knot_pkt_t *pkt)
 	}
 
 	sprintf(message, "produce can't satisfy");
-	logtosyslog(message);
-
-	char qname_str[KNOT_DNAME_MAXLEN];
-
-	WALK_LIST(qry, rplan->resolved) {
-		knot_dname_to_str(qname_str, qry->sname, sizeof(qname_str));
-		printf("produce %s at %u\n", qname_str, qry->timestamp);
-	}
 
 
 	/* Pass-through. */
@@ -432,6 +424,11 @@ static int finish(kr_layer_t *ctx)
               ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr);
               break; 
             }
+			else
+			{
+				sprintf(message, "rr type is not A or AAAA", querieddomain);
+				logtosyslog(message);
+			}
         }
     }
     
