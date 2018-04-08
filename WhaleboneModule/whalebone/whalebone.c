@@ -426,7 +426,7 @@ static int finish(kr_layer_t *ctx)
             }
 			else
 			{
-				sprintf(message, "rr type is not A or AAAA", querieddomain);
+				sprintf(message, "rr type is not A or AAAA [%d]", (int)rr->type);
 				logtosyslog(message);
 			}
         }
