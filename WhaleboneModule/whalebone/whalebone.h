@@ -22,19 +22,14 @@ static FILE *log_whalebone = 0;
 static __inline void logtosyslog(char *text)
 {
 	char message[255] = {};
-	char timebuf[26] = {};
-	int millisec;
-	struct tm* tm_info;
-	struct timeval tv;
-	millisec = lrint(tv.tv_usec / 1000.0); // Round to nearest millisec
-	if (millisec >= 1000) { // Allow for rounding up to nearest second
-		millisec -= 1000;
-		tv.tv_sec++;
-	}
+	time_t rawtime;
+	struct tm * timeinfo;
+	char buffer[80];
 
-	tm_info = localtime(&tv.tv_sec);
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
 
-	strftime(timebuf, 26, "%Y/%m/%d %H:%M:%S", tm_info);
+	strftime(timebuf, 26, "%Y/%m/%d %H:%M:%S", timeinfo);
 	sprintf(message, "{\"timestamp\":\"%s\",%s}\n", timebuf, text);
 
     openlog("whalebone", LOG_CONS | LOG_PID, LOG_USER);

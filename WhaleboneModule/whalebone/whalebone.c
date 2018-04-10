@@ -317,7 +317,7 @@ static int produce(kr_layer_t *ctx, knot_pkt_t *pkt)
 		return KR_STATE_DONE;
 	}
 
-	sprintf(message, "produce can't satisfy");
+	sprintf(message, "\"message\":\"produce can't satisfy\"");
 	logtosyslog(message);
 
 	/* Pass-through. */
