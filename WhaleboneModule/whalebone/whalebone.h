@@ -22,6 +22,7 @@ static FILE *log_whalebone = 0;
 static __inline void logtosyslog(char *text)
 {
 	char message[255] = {};
+	char timebuf[30] = {};
 	time_t rawtime;
 	struct tm * timeinfo;
 	char buffer[80];
