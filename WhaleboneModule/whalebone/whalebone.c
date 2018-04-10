@@ -15,31 +15,24 @@
 static void* observe(void *arg)
 {
   /* ... do some observing ... */
-  openlog("whalebone",  LOG_CONS | LOG_PID, LOG_USER);
-  syslog(LOG_INFO, "Loading");
-  closelog();
+	logtosyslog("\"message\":\"loading\"");
+  
 
   unsigned long long ret = 0;
   if ((ret = loader_init()) != 0)
   {
-  	openlog("whalebone",  LOG_CONS | LOG_PID, LOG_USER);
-  	syslog(LOG_INFO, "CSV load failed");
-  	closelog();
+	logtosyslog("\"message\":\"csv load failed\"");
   	return (void *)-1;
   }
 
   pthread_t thr_id;
   if ((ret = pthread_create(&thr_id, NULL, &socket_server, NULL)) != 0) 
   {
-  	openlog("whalebone",  LOG_CONS | LOG_PID, LOG_USER);
-  	syslog(LOG_INFO, "Create thread failed");
-  	closelog();
-    return (void *)ret;  
+	logtosyslog("\"message\":\"create thead failed\"");
+	return (void *)ret;  
   }
 
-  openlog("whalebone",  LOG_CONS | LOG_PID, LOG_USER);
-  syslog(LOG_INFO, "Loaded");
-  closelog();
+  logtosyslog("\"message\":\"load succeeded\"");
 
   return NULL;
 }
