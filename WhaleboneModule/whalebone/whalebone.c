@@ -67,7 +67,7 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
     struct kr_query *qry = req->current_query;
     if (qry->flags.CACHED || !req->qsource.addr) 
 	{
-		sprintf(message, "consume has no valid address");
+		sprintf(message, "\"message\":\"consume has no valid address\"");
 		logtosyslog(message);
 
         return ctx->state;
@@ -90,12 +90,12 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
         }
         default:
         {
-            logtosyslog("not valid addr");
+            logtosyslog("\"message\":\"not valid addr\"");
             return ctx->state;
             break;
         }
     }
-    sprintf(message, "consume address: %s", s);
+    sprintf(message, "\"message\":\"consume address: %s\"", s);
     logtosyslog(message); 
     free(s);
 
@@ -134,51 +134,37 @@ static int redirect(struct kr_request * request, struct kr_query *last)
 
 static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr)
 {
-  char message[KNOT_DNAME_MAXLEN] = {};
-  char timebuf[26];
-  int millisec;
-  struct tm* tm_info;
-  struct timeval tv;
-  millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
-  if (millisec>=1000) { // Allow for rounding up to nearest second
-    millisec -=1000;
-    tv.tv_sec++;
-  }
-
-  tm_info = localtime(&tv.tv_sec);
-
-  strftime(timebuf, 26, "%Y/%m/%d %H:%M:%S", tm_info);
   //printf("%s.%03d\n", timebuf, millisec);
    
   unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
   domain domain_item = {};
   if (cache_domain_contains(cached_domain, crc, &domain_item))
   {
-      sprintf(message, "detected '%s'", querieddomain);
+      sprintf(message, "\"message\":\"detected '%s'\"", querieddomain);
       logtosyslog(message);
       
       iprange iprange_item = {};
       if (cache_iprange_contains(cached_iprange, origin, &iprange_item))
       {                                          
-        sprintf(message, "detected '%s' matches ip range with ident '%s' policy '%d'", querieddomain, iprange_item.identity, iprange_item.policy_id);
+        sprintf(message, "\"message\":\"detected '%s' matches ip range with ident '%s' policy '%d'\"", querieddomain, iprange_item.identity, iprange_item.policy_id);
         logtosyslog(message);
         
         if (strlen(iprange_item.identity) > 0)
         {
           if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc))
           {
-            sprintf(message, "identity '%s' got '%s' blacklisted.", iprange_item.identity, querieddomain);
+            sprintf(message, "\"message\":\"identity '%s' got '%s' blacklisted.\"", iprange_item.identity, querieddomain);
             logtosyslog(message);
             return redirect(request, last);                          
           }
           if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc))
           {
-            sprintf(message, "identity '%s' got '%s' whitelisted.", iprange_item.identity, querieddomain);
+            sprintf(message, "\"message\":\"identity '%s' got '%s' whitelisted.\"", iprange_item.identity, querieddomain);
             logtosyslog(message);
             return KNOT_STATE_DONE;
           }
         }
-        sprintf(message, "no identity match, checking policy..\n");
+        sprintf(message, "\"message\":\"no identity match, checking policy..\"");
         logtosyslog(message);
        
         policy policy_item = {}; 
@@ -187,13 +173,13 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
           int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
           if (domain_flags == 0)
           {
-            sprintf(message, "policy has strategy flags_none");
+            sprintf(message, "\"message\":\"policy has strategy flags_none\"");
             logtosyslog(message);
           }
           if (domain_flags & flags_accuracy) 
           {
             //policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-            sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"accuracy\"}\n", timebuf, querieddomain, req_addr);
+            sprintf(message, "\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"accuracy\"", querieddomain, req_addr);
             logtosyslog(message);
             if (domain_item.accuracy >= policy_item.block)
             {
@@ -204,27 +190,27 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
             {
               sprintf(message, "policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
               logtoaudit(message);
-              sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"accuracy\"}\n", timebuf, querieddomain, req_addr);
+              sprintf(message, "\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"accuracy\"", querieddomain, req_addr);
               logtosyslog(message);              
             }
           }
           if (domain_flags & flags_blacklist) 
           {
             //sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-              sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"blacklist\"}\n", timebuf, querieddomain, req_addr);
+              sprintf(message, "\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"blacklist\"", querieddomain, req_addr);
               logtosyslog(message); 
               return redirect(request, last);                             
           }
           if (domain_flags & flags_whitelist) 
           {
             //sprintf(message, "policy '%d' strategy=>'whitelist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-              sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"whitelist\"}\n", timebuf, querieddomain, req_addr);
+              sprintf(message, "\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"whitelist\"", querieddomain, req_addr);
               logtosyslog(message); 
           }
           if (domain_flags & flags_drop) 
           {
             //sprintf(message, "policy '%d' strategy=>'drop' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
-              sprintf(message, "{\"timestamp\":\"%s\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"drop\"}\n", timebuf, querieddomain, req_addr);
+              sprintf(message, "\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"drop\"", querieddomain, req_addr);
               logtosyslog(message); 
           }
         }
@@ -233,26 +219,26 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
           int domain_flags = cache_domain_get_flags(domain_item.flags, 0);
           if (domain_flags & flags_accuracy)
           {
-              sprintf(message, "'%s' no-policy => domain-policy =>'accuracy'", querieddomain);
+              sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'accuracy'\"", querieddomain);
               logtosyslog(message);                                                           
               sprintf(message, "auditing '%s' no-policy => domain-policy =>'accuracy'", querieddomain);
               logtoaudit(message);
           }
           if (domain_flags & flags_blacklist)
           {
-              sprintf(message, "'%s' no-policy => domain-policy =>'blacklist'", querieddomain);
+              sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'blacklist'\"", querieddomain);
               logtosyslog(message);
               return redirect(request, last); 
           }
           if (domain_flags & flags_whitelist)
           {
-              sprintf(message, "'%s' no-policy => domain-policy =>'whitelist'", querieddomain);
+              sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'whitelist'\"", querieddomain);
               logtosyslog(message);
               return KNOT_STATE_DONE;
           }
           if (domain_flags & flags_drop)
           {
-              sprintf(message, "'%s' no-policy => domain-policy =>'drop'", querieddomain);
+              sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'drop'\"", querieddomain);
               logtosyslog(message);
               
               //TODO
@@ -261,7 +247,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
       }
       else
       {
-        sprintf(message, "no match to iprange");
+        sprintf(message, "\"message\":\"no match to iprange\"");
         logtosyslog(message);                    
       }
   }
@@ -282,7 +268,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
     {   
       if (++found > 1)
       {        
-		sprintf(message, "search %s", ptr + 1);
+		sprintf(message, "\"message\":\"search %s\"", ptr + 1);
 		logtosyslog(message);
         if ((result = search(ctx, ptr + 1, origin, request, last, req_addr)) == KNOT_STATE_DONE)
         {
@@ -294,7 +280,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 	{
 		if (ptr == (char *)domain)
 		{
-			sprintf(message, "search %s", ptr);
+			sprintf(message, "\"message\":\"search %s\"", ptr);
 			logtosyslog(message);
 			if ((result = search(ctx, ptr, origin, request, last, req_addr)) == KNOT_STATE_DONE)
 			{
@@ -322,7 +308,7 @@ static int produce(kr_layer_t *ctx, knot_pkt_t *pkt)
 	if (can_satisfy(qry) == 1) 
 	{
 
-		sprintf(message, "produce can satisfy");
+		sprintf(message, "\"message\":\"produce can satisfy\"");
 		logtosyslog(message);
 
 		/* This flag makes the resolver move the query
@@ -332,7 +318,7 @@ static int produce(kr_layer_t *ctx, knot_pkt_t *pkt)
 	}
 
 	sprintf(message, "produce can't satisfy");
-
+	logtosyslog(message);
 
 	/* Pass-through. */
 	return ctx->state;
@@ -344,11 +330,11 @@ static int finish(kr_layer_t *ctx)
   struct kr_request *request = (struct kr_request *)ctx->req;
   struct kr_rplan *rplan = &request->rplan;
 
-  sprintf(message, "finish");
+  sprintf(message, "\"message\":\"finish\"");
   logtosyslog(message);
 
 	if (!request->qsource.addr) {
-		sprintf(message, "request has no source address");
+		sprintf(message, "\"message\":\"request has no source address\"");
 		logtosyslog(message);
 
 		return ctx->state;
@@ -378,14 +364,14 @@ static int finish(kr_layer_t *ctx)
   	}
   	default:
   	{
-  		sprintf(message, "qsource is invalid");
+  		sprintf(message, "\"message\":\"qsource is invalid\"");
   		logtosyslog(message);
   		return ctx->state;
   		break;
   	}
 	}
 
-	sprintf(message, "request from %s", req_addr);
+	sprintf(message, "\"message\":\"request from %s\"", req_addr);
 	logtosyslog(message);
 
     char qname_str[KNOT_DNAME_MAXLEN];
@@ -398,13 +384,13 @@ static int finish(kr_layer_t *ctx)
 
         if (ns == NULL)
         {
-            logtosyslog("ns = NULL");
+            logtosyslog("\"message\":\"ns = NULL\"");
             goto cleanup;
         }
 
 		if (ns->count == 0)
 		{
-			sprintf(message, "query has no asnwer");
+			sprintf(message, "\"message\":\"query has no asnwer\"");
 			logtosyslog(message);
 
 			const knot_pktsection_t *au = knot_pkt_section(request->answer, KNOT_AUTHORITY);
@@ -423,7 +409,7 @@ static int finish(kr_layer_t *ctx)
 						querieddomain[domainLen - 1] = '\0';
 					}
 
-					sprintf(message, "authority for %s", querieddomain);
+					sprintf(message, "\"message\":\"authority for %s\"", querieddomain);
 					logtosyslog(message);
 
 					//ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr);
@@ -431,7 +417,7 @@ static int finish(kr_layer_t *ctx)
 				}
 				else
 				{
-					sprintf(message, "authority rr type is not SOA [%d]", (int)rr->type);
+					sprintf(message, "\"message\":\"authority rr type is not SOA [%d]\"", (int)rr->type);
 					logtosyslog(message);
 				}
 			}
@@ -452,7 +438,7 @@ static int finish(kr_layer_t *ctx)
                   querieddomain[domainLen - 1] = '\0';
               }
               
-			  sprintf(message, "query for %s", querieddomain);
+			  sprintf(message, "\"message\":\"query for %s\"", querieddomain);
 			  logtosyslog(message);
 
 
@@ -461,14 +447,14 @@ static int finish(kr_layer_t *ctx)
             }
 			else
 			{
-				sprintf(message, "rr type is not A or AAAA [%d]", (int)rr->type);
+				sprintf(message, "\"message\":\"rr type is not A or AAAA [%d]\"", (int)rr->type);
 				logtosyslog(message);
 			}
         }
     }
 	else
 	{
-		sprintf(message, "query has no resolve plan");
+		sprintf(message, "\"message\":\"query has no resolve plan\"");
 		logtosyslog(message);
 	}
     
@@ -501,7 +487,7 @@ int whalebone_init(struct kr_module *module)
         }
 
         char msginit[KNOT_DNAME_MAXLEN] = {};
-	sprintf(msginit, "module init");
+	sprintf(msginit, "\"message\":\"module init\"");
 	logtosyslog(msginit);
 
         /* Keep it in the thread */
