@@ -135,7 +135,7 @@ static int redirect(struct kr_request * request, struct kr_query *last)
 static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr)
 {
   //printf("%s.%03d\n", timebuf, millisec);
-   
+	char message[KNOT_DNAME_MAXLEN] = {};
   unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
   domain domain_item = {};
   if (cache_domain_contains(cached_domain, crc, &domain_item))
