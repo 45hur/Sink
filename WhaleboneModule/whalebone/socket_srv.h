@@ -350,7 +350,8 @@ void *connection_handler(void *socket_desc)
 			logtosyslog(message);
           goto flush;          
         }
-		logtosyslog("\"message\":\"domain init %llu items\"", swapdomain_crc_len);
+		sprintf(message, "\"message\":\"domain init %llu items\"", swapdomain_crc_len);
+		logtosyslog(message);
         if ((swapiprange_identity_len != swapiprange_high_len) || (swapiprange_low_len != swapiprange_high_len) || (swapiprange_low_len != swapiprange_policy_id_len))
         {
 			sprintf(message, "\"message\":\"iprange cache is corrupted\n identity=%llu\n high=%llu\n low=%llu\n policy=%llu\"",
