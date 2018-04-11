@@ -160,7 +160,7 @@ void *connection_handler(void *socket_desc)
       char *bufferMsg = (char *)calloc(1, messageHeader.length + 1);
       if (messageHeader.length == 0)
       {
-        puts(" empty message");
+        logtosyslog("\"message\":\"empty message\"");
         sprintf(client_message, "1");
         write(sock , client_message , 1);
       }
@@ -168,7 +168,7 @@ void *connection_handler(void *socket_desc)
       {
         if (bufferMsg == NULL)
         {
-          puts("not enough memory to create message buffer");
+          logtosyslog("\"message\":\"not enough memory to create message buffer\"");
           return (void *)-1;
         }
       
@@ -346,40 +346,40 @@ void *connection_handler(void *socket_desc)
         //puts("reinit");
         if ((swapdomain_crc_len != swapdomain_accuracy_len) || (swapdomain_crc_len != swapdomain_flags_len))
         {
-          printf("domain cache is corrupted %llu %llu %llu", swapdomain_crc_len, swapdomain_accuracy_len, swapdomain_flags_len);
+			logtosyslog("\"message\":\"domain cache is corrupted %llu %llu %llu\"", swapdomain_crc_len, swapdomain_accuracy_len, swapdomain_flags_len);
           goto flush;          
         }
-        printf(" domain init %llu items\n", swapdomain_crc_len);
+		logtosyslog("\"message\":\"domain init %llu items\"", swapdomain_crc_len);
         if ((swapiprange_identity_len != swapiprange_high_len) || (swapiprange_low_len != swapiprange_high_len) || (swapiprange_low_len != swapiprange_policy_id_len))
         {
-          printf("iprange cache is corrupted\n identity=%llu\n high=%llu\n low=%llu\n policy=%llu",
+			logtosyslog("\"message\":\"iprange cache is corrupted\n identity=%llu\n high=%llu\n low=%llu\n policy=%llu\"",
             swapiprange_identity_len,
             swapiprange_high_len,
             swapiprange_low_len,
             swapiprange_policy_id_len);
           goto flush;          
         }
-        printf(" iprange init %llu items\n", swapiprange_identity_len);
+		logtosyslog("\"message\":\"iprange init %llu items\"", swapiprange_identity_len);
         if ((swappolicy_policy_id_len != swappolicy_strategy_len) || (swappolicy_strategy_len != swappolicy_audit_len) || (swappolicy_audit_len != swappolicy_block_len))
         {
-          printf("policy cache is corrupted\n policy_id=%llu\n strategy=%llu\n audit=%llu\n block=%llu",
+			logtosyslog("\"message\":\"policy cache is corrupted\n policy_id=%llu\n strategy=%llu\n audit=%llu\n block=%llu\"",
             swappolicy_policy_id_len,
             swappolicy_strategy_len,
             swappolicy_audit_len,
             swappolicy_block_len);
           goto flush;          
         }        
-        printf(" policy init %llu items\n", swappolicy_policy_id_len);  
+		logtosyslog("\"message\":\"policy init %llu items\"", swappolicy_policy_id_len);
         
         if ((swapcustomlist_identity_len != swapcustomlist_whitelist_len) || (swapcustomlist_whitelist_len != swapcustomlist_blacklist_len))
         {
-          printf("ignoring error, customlist cache is corrupted\n identity=%llu\n whitelist=%llu\n blacklist=%llu\n",
+			logtosyslog("\"message\":\"ignoring error, customlist cache is corrupted\n identity=%llu\n whitelist=%llu\n blacklist=%llu\"",
             swapcustomlist_identity_len,
             swapcustomlist_whitelist_len,
             swapcustomlist_blacklist_len);
           //goto flush;          
         }        
-        printf(" customlist init %llu items\n", swapcustomlist_identity_len);            
+		logtosyslog("\"message\":\"customlist init %llu items\"", swapcustomlist_identity_len);
         
         //puts("initex domain");
         cache_domain *old_domain = cached_domain;
@@ -590,7 +590,7 @@ static void* socket_server(void *arg)
     socket_desc = socket(AF_INET , SOCK_STREAM , 0);
     if (socket_desc == -1)
     {
-        printf("Could not create socket");
+		logtosyslog("\"message\":\"Could not create socket\"");
     }
      
     //Prepare the sockaddr_in structure
@@ -602,7 +602,7 @@ static void* socket_server(void *arg)
       //Bind
       if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
       {
-          printf("bind failed on port %d\n", port);
+		  logtosyslog("\"message\":\"bind failed on port %d\"", port);
           if (port == 8895)
           {
             return (void*)-1;
@@ -610,7 +610,7 @@ static void* socket_server(void *arg)
           
           continue;
       }
-      printf("bind succeeded on port %d\n", port);
+	  logtosyslog("\"message\":\"bind succeeded on port %d\"", port);
       break;
     }
      
@@ -618,7 +618,7 @@ static void* socket_server(void *arg)
     listen(socket_desc , 3);
      
     //Accept and incoming connection
-    puts("waiting for incoming connections");
+	logtosyslog("\"message\":\"waiting for incoming connections\"");
     c = sizeof(struct sockaddr_in);
     while( (new_socket = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c)) )
     {
@@ -630,7 +630,7 @@ static void* socket_server(void *arg)
          
         if( pthread_create( &sniffer_thread , NULL ,  connection_handler , (void*) new_sock) < 0)
         {
-            perror("could not create thread");
+			logtosyslog("\"message\":\"could not create thread\"");
             return (void*)-1;
         }
          
@@ -640,7 +640,7 @@ static void* socket_server(void *arg)
      
     if (new_socket < 0)
     {
-        perror("accept failed");
+		logtosyslog("\"message\":\"accept failed\"");
         return (void*)-1;
     }
     
