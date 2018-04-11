@@ -395,7 +395,7 @@ void *connection_handler(void *socket_desc)
         
         //puts("initex custom");
         cache_customlist *old_customlist = cached_customlist;
-        cached_customlist = cache_customlist_init_ex(swapcustomlist_identity,  swapcustomlist_whitelist, swapcustomlist_blacklist, swapcustomlist_identity_len);        
+        cached_customlist = cache_customlist_init_ex(swapcustomlist_identity,  swapcustomlist_whitelist, swapcustomlist_blacklist, swapcustomlist_policyid, swapcustomlist_identity_len);
 
         swapdomain_crc = NULL;
         swapdomain_accuracy = NULL;
@@ -546,7 +546,7 @@ void *connection_handler(void *socket_desc)
           //printf(" customlist identity\n");
           free (swapcustomlist_identity);
           swapcustomlist_identity = NULL;
-          swapcustomlist_identity = 0;
+          swapcustomlist_identity_len = 0;
         }
         if (swapcustomlist_whitelist != NULL)
         {
@@ -555,14 +555,21 @@ void *connection_handler(void *socket_desc)
           swapcustomlist_whitelist = NULL;
           swapcustomlist_whitelist_len = 0;
         }
-        if (swapcustomlist_blacklist != NULL)
-        {
-          //printf(" customlist blacklist\n");
-          free (swapcustomlist_blacklist);
-          swapcustomlist_blacklist = NULL;
-          swapcustomlist_blacklist = 0;
-        }     
-    }
+		if (swapcustomlist_blacklist != NULL)
+		{
+			//printf(" customlist blacklist\n");
+			free(swapcustomlist_blacklist);
+			swapcustomlist_blacklist = NULL;
+			swapcustomlist_blacklist_len = 0;
+		}
+		if (swapcustomlist_policyid != NULL)
+		{
+			//printf(" customlist blacklist\n");
+			free(swapcustomlist_policyid);
+			swapcustomlist_policyid = NULL;
+			swapcustomlist_policyid_len = 0;
+		}
+}
     
 flush:    
     
