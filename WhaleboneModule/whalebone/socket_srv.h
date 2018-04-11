@@ -386,7 +386,7 @@ void *connection_handler(void *socket_desc)
 			logtosyslog(message);
           //goto flush;          
         }        
-		logtosyslog("\"message\":\"customlist init %llu items\"", swapcustomlist_identity_len);
+		sprintf(message, "\"message\":\"customlist init %llu items\"", swapcustomlist_identity_len);
 		logtosyslog(message);
         
         //puts("initex domain");
