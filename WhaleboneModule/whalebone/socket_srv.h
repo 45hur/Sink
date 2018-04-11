@@ -346,7 +346,7 @@ void *connection_handler(void *socket_desc)
 		char message[255] = {};
         if ((swapdomain_crc_len != swapdomain_accuracy_len) || (swapdomain_crc_len != swapdomain_flags_len))
         {
-			sprintf(message, "\"message\":\"domain cache is corrupted %llu %llu %llu\"", swapdomain_crc_len, swapdomain_accuracy_len, swapdomain_flags_len));
+			sprintf(message, "\"message\":\"domain cache is corrupted %llu %llu %llu\"", swapdomain_crc_len, swapdomain_accuracy_len, swapdomain_flags_len);
 			logtosyslog(message);
           goto flush;          
         }
@@ -361,7 +361,8 @@ void *connection_handler(void *socket_desc)
 			logtosyslog(message);
 			goto flush;
         }
-		logtosyslog("\"message\":\"iprange init %llu items\"", swapiprange_identity_len);
+		sprintf(message, "\"message\":\"iprange init %llu items\"", swapiprange_identity_len);
+		logtosyslog(message);
         if ((swappolicy_policy_id_len != swappolicy_strategy_len) || (swappolicy_strategy_len != swappolicy_audit_len) || (swappolicy_audit_len != swappolicy_block_len))
         {
 			sprintf(message, "\"message\":\"policy cache is corrupted\n policy_id=%llu\n strategy=%llu\n audit=%llu\n block=%llu\"",
@@ -372,7 +373,8 @@ void *connection_handler(void *socket_desc)
 			logtosyslog(message);
           goto flush;          
         }        
-		logtosyslog("\"message\":\"policy init %llu items\"", swappolicy_policy_id_len);
+		sprintf(message, "\"message\":\"policy init %llu items\"", swappolicy_policy_id_len);
+		logtosyslog(message);
         
         if ((swapcustomlist_identity_len != swapcustomlist_whitelist_len) || (swapcustomlist_whitelist_len != swapcustomlist_blacklist_len))
         {
