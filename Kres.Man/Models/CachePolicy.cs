@@ -8,15 +8,15 @@ namespace Kres.Man.Models
     public class CachePolicy
     {
         [ProtoMember(1)]
-        public Int32 Policy_id { get; set; }
+        public int Policy_id { get; set; }
 
         [ProtoMember(2)]
-        public Int32 Strategy { get; set; }
+        public int Strategy { get; set; }
 
         [ProtoMember(3)]
-        public Int32 Audit { get; set; }
+        public int Audit { get; set; }
 
         [ProtoMember(4)]
-        public Int32 Block { get; set; }
+        public int Block { get; set; }
     }
 }

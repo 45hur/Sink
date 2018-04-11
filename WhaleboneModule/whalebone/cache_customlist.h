@@ -38,6 +38,7 @@ typedef struct
 	char **identity;
   cache_domain **whitelist;
   cache_domain **blacklist;
+  int *policyid;
 } cache_customlist;
 
 cache_customlist* cache_customlist_init(int count)
@@ -54,7 +55,8 @@ cache_customlist* cache_customlist_init(int count)
 	item->identity = (char **)malloc(item->capacity * sizeof(char *));
   item->whitelist = (cache_domain **)malloc(item->capacity * sizeof(cache_domain *));
   item->blacklist = (cache_domain **)malloc(item->capacity * sizeof(cache_domain *));
-  if (item->identity == NULL || item->whitelist == NULL || item->blacklist == NULL)
+  item->policyid = (int *)malloc(item->capacity * sizeof(int));
+  if (item->identity == NULL || item->whitelist == NULL || item->blacklist == NULL || item->policyid == NULL)
   {
     return NULL;
   }
@@ -62,7 +64,7 @@ cache_customlist* cache_customlist_init(int count)
 	return item;
 }
 
-cache_customlist* cache_customlist_init_ex(char ** identity, struct cache_domain **whitelist, struct cache_domain **blacklist, int count)
+cache_customlist* cache_customlist_init_ex(char ** identity, struct cache_domain **whitelist, struct cache_domain **blacklist, int * policyid, int count)
 {
 	cache_customlist *item = (cache_customlist *)calloc(1, sizeof(cache_customlist));
   if (item == NULL)
@@ -76,7 +78,8 @@ cache_customlist* cache_customlist_init_ex(char ** identity, struct cache_domain
 	item->identity = identity;
   item->whitelist = whitelist;
   item->blacklist = blacklist;
-  if (item->identity == NULL || item->whitelist == NULL || item->blacklist == NULL)
+  item->policyid = policyid;
+  if (item->identity == NULL || item->whitelist == NULL || item->blacklist == NULL || item->policyid == NULL)
   {
     return NULL;
   }
@@ -128,13 +131,18 @@ void cache_customlist_destroy(cache_customlist *cache)
     //free(cache->blacklist);
     cache->blacklist = NULL;
   }
+  if (cache->policyid != NULL)
+  {
+    //free(cache->blacklist);
+    cache->policyid = NULL;
+  }  
   /*if (cache != NULL)
   {
     free(cache);
   }*/ 
 }
 
-int cache_customlist_add(cache_customlist* cache, char *identity, cache_domain *whitelist, cache_domain *blacklist)
+int cache_customlist_add(cache_customlist* cache, char *identity, cache_domain *whitelist, cache_domain *blacklist, int policyid)
 {
 	if (cache->index > cache->capacity)
 		return -1;
@@ -161,6 +169,7 @@ int cache_customlist_add(cache_customlist* cache, char *identity, cache_domain *
   cache->identity[cache->index] = xidentity;
   cache->whitelist[cache->index] = xwhitelist;
   cache->blacklist[cache->index] = xblacklist;
+  cache->blacklist[cache->index] = policyid;
 
 	cache->index++;
 

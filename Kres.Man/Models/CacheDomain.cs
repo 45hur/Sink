@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 using ProtoBuf;
 
@@ -9,12 +11,27 @@ namespace Kres.Man.Models
     public class CacheDomain
     {
         [ProtoMember(1)]
-        public UInt64 Crc64 { get; set; }
+        public IEnumerable<byte> Proto_Crc64 { get; set; }
 
         [ProtoMember(2)]
-        public Int32 Accuracy { get; set; }
+        public int Accuracy { get; set; }
 
         [ProtoMember(3)]
-        public IEnumerable<byte> Flags { get; set; }
+        public IEnumerable<int> Flags { get; set; }
+
+        public UInt64 Crc64
+        {
+            get
+            {
+                //return Convert.ToUInt64(Proto_Crc64.SelectMany(BitConverter.GetBytes).ToArray());
+                var text = Encoding.ASCII.GetString(Proto_Crc64.ToArray());
+                return Convert.ToUInt64(text);
+            }
+            set
+            {
+                //Proto_Crc64 = new[] { 0 }; 
+                Proto_Crc64 = BitConverter.GetBytes(value);
+            }
+        }
     }
 }

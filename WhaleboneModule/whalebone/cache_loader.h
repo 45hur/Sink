@@ -40,7 +40,6 @@ char **split(char *line, char sep, int fields)
 
 int parse_addr(struct ip_addr *sa, const char *addr) 
 {
-    printf("%s\n", addr);
     int family = strchr(addr, ':') ? AF_INET6 : AF_INET;
     if (family == AF_INET6)
     {
@@ -245,7 +244,7 @@ int loader_loadcustom()
 	fseek(stream, 0, SEEK_SET);
 	while (fgets(line, 1024, stream))
 	{
-		char **fields = split(line, ',', 3);
+		char **fields = split(line, ',', 4);
     
     char *ident = fields[0];    
     int whitenum = countchar(';', fields[1]);
@@ -286,7 +285,7 @@ int loader_loadcustom()
 		  cache_domain_add(cblacklist, crc, 0, 0);
     }
     cache_domain_sort(cblacklist);
-    if (cache_customlist_add(cached_customlist, ident, cwhitelist, cblacklist) != 0)
+    if (cache_customlist_add(cached_customlist, ident, cwhitelist, cblacklist, atoi(fields[3])) != 0)
     {
       puts("not enough memory to add lists to custom list");
       return -1;

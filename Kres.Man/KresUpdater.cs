@@ -25,7 +25,8 @@ namespace Kres.Man
         identitybuffer = 12,
         identitybufferwhitelist = 13,
         identitybufferblacklist = 14,
-        swapfreebuffers = 15,
+        identitybufferpolicyid = 15,
+        swapfreebuffers = 16,
     }
 
     class KresUpdater
@@ -321,9 +322,13 @@ namespace Kres.Man
                     Array.Copy(BitConverter.GetBytes(crc), 0, cachecustomlist_blacklist, j * sizeof(UInt64), sizeof(UInt64));
                 }
 
+                var cachecustomlist_policyid = new byte[4];
+
                 listener.pushCustomListIdentityBuffer(new List<byte[]>() { cacheIdentity });
                 listener.pushCustomListWhitelistBuffer(new List<byte[]>() { cachecustomlist_whitelist });
                 listener.pushCustomListBlacklistBuffer(new List<byte[]>() { cachecustomlist_blacklist });
+                listener.pushCustomListPolicyIdBuffer(new List<byte[]>() { cachecustomlist_policyid });
+                
             }
         }
 

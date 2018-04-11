@@ -131,6 +131,12 @@ namespace Kres.Man
             return KresUpdater.Push(bufferType.identitybufferblacklist, buffer);
         }
 
+        [Mapping("pushcustomlistblacklistbuffer")]
+        public object pushCustomListPolicyIdBuffer(List<byte[]> buffer)
+        {
+            return KresUpdater.Push(bufferType.identitybufferpolicyid, buffer);
+        }
+
         [Mapping("bypass")]
         public object Bypass(string postdata, string ipaddress, string domainToWhitelist)
         {

@@ -16,7 +16,7 @@ namespace Kres.Man
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CoreClient));
         public static Thread tCoreLoop;
-        private static ConcurrentDictionary<Tuple<BigMath.Int128, BigMath.Int128>, Models.CacheIPRange> Cache2 {get; set;} 
+        private static ConcurrentDictionary<Tuple<BigMath.Int128, BigMath.Int128>, Models.CacheIPRange> CacheRadius {get; set;} 
 
         private static void ThreadProc()
         {
@@ -72,22 +72,23 @@ namespace Kres.Man
             req.ServerCertificateValidationCallback += ValidateRemoteCertificate;
             req.AllowAutoRedirect = true;
             req.ClientCertificates = certificates;
-            req.Method = "POST";
+            req.Method = "GET";
             req.ContentType = "application/x-protobuf";
-            string postData = "login-form-type=cert";
-            byte[] postBytes = Encoding.UTF8.GetBytes(postData);
-            req.ContentLength = postBytes.Length;
+            req.Headers["x-resolver-id"] = "13";
+            //string postData = "";
+            //byte[] postBytes = Encoding.UTF8.GetBytes(postData);
+            //req.ContentLength = postBytes.Length;
 
-            var postStream = req.GetRequestStream();
-            postStream.Write(postBytes, 0, postBytes.Length);
-            postStream.Flush();
-            postStream.Close();
+            //var postStream = req.GetRequestStream();
+            //postStream.Write(postBytes, 0, postBytes.Length);
+            //postStream.Flush();
+            //postStream.Close();
 
             using (var response = req.GetResponseAsync().Result)
             {
                 using (var stream = response.GetResponseStream())
                 {
-                    var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+                    CacheLiveStorage.CoreCache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
                 }
             }
         }
@@ -97,5 +98,6 @@ namespace Kres.Man
             tCoreLoop = new Thread(ThreadProc);
             tCoreLoop.Start();
         }
+
     }
 }

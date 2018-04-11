@@ -46,6 +46,8 @@ struct cache_domain **swapcustomlist_whitelist;
 unsigned long long swapcustomlist_whitelist_len = 0;
 struct cache_domain **swapcustomlist_blacklist;
 unsigned long long swapcustomlist_blacklist_len = 0;
+int * swapcustomlist_policyid;
+unsigned long long swapcustomlist_policyid_len = 0;
 
 struct PrimeHeader 
 {
@@ -77,7 +79,8 @@ enum
     bufferType_identitybuffer = 12,
     bufferType_identitybufferwhitelist = 13,
     bufferType_identitybufferblacklist = 14,
-    bufferType_freeswaps = 15,
+    bufferType_identitybufferpolicyid = 15,
+    bufferType_freeswaps = 16,
 } bufferType;
 
 void *connection_handler(void *socket_desc)
@@ -265,7 +268,7 @@ void *connection_handler(void *socket_desc)
           break;
         }        
         
-        //Policues
+        //Policies
         case bufferType_policyid:
         {
           swappolicy_policy_id = (int *)bufferMsg;
@@ -314,6 +317,17 @@ void *connection_handler(void *socket_desc)
           break;
         }                        
         case bufferType_identitybufferblacklist:          
+        {
+          if (swapcustomlist_blacklist == NULL)   
+          {
+            swapcustomlist_blacklist = (struct cache_domain **)malloc(sizeof(struct cache_domain *) * primeHeader.buffercount);
+          }         
+          
+          cache_domain *blacklist = cache_domain_init_ex2((unsigned long long *)bufferMsg, messageHeader.length / sizeof(unsigned long long));
+          swapcustomlist_blacklist[swapcustomlist_blacklist_len++] = (struct cache_domain *)blacklist;  
+          break;
+        }                                   
+        case bufferType_identitybufferpolicyid:          
         {
           if (swapcustomlist_blacklist == NULL)   
           {
