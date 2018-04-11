@@ -343,43 +343,48 @@ void *connection_handler(void *socket_desc)
     
     if (primeHeader.action == bufferType_swapcache)
     {
-        //puts("reinit");
+		char message[255] = {};
         if ((swapdomain_crc_len != swapdomain_accuracy_len) || (swapdomain_crc_len != swapdomain_flags_len))
         {
-			logtosyslog("\"message\":\"domain cache is corrupted %llu %llu %llu\"", swapdomain_crc_len, swapdomain_accuracy_len, swapdomain_flags_len);
+			sprintf(message, "\"message\":\"domain cache is corrupted %llu %llu %llu\"", swapdomain_crc_len, swapdomain_accuracy_len, swapdomain_flags_len));
+			logtosyslog(message);
           goto flush;          
         }
 		logtosyslog("\"message\":\"domain init %llu items\"", swapdomain_crc_len);
         if ((swapiprange_identity_len != swapiprange_high_len) || (swapiprange_low_len != swapiprange_high_len) || (swapiprange_low_len != swapiprange_policy_id_len))
         {
-			logtosyslog("\"message\":\"iprange cache is corrupted\n identity=%llu\n high=%llu\n low=%llu\n policy=%llu\"",
+			sprintf(message, "\"message\":\"iprange cache is corrupted\n identity=%llu\n high=%llu\n low=%llu\n policy=%llu\"",
             swapiprange_identity_len,
             swapiprange_high_len,
             swapiprange_low_len,
             swapiprange_policy_id_len);
-          goto flush;          
+			logtosyslog(message);
+			goto flush;
         }
 		logtosyslog("\"message\":\"iprange init %llu items\"", swapiprange_identity_len);
         if ((swappolicy_policy_id_len != swappolicy_strategy_len) || (swappolicy_strategy_len != swappolicy_audit_len) || (swappolicy_audit_len != swappolicy_block_len))
         {
-			logtosyslog("\"message\":\"policy cache is corrupted\n policy_id=%llu\n strategy=%llu\n audit=%llu\n block=%llu\"",
+			sprintf(message, "\"message\":\"policy cache is corrupted\n policy_id=%llu\n strategy=%llu\n audit=%llu\n block=%llu\"",
             swappolicy_policy_id_len,
             swappolicy_strategy_len,
             swappolicy_audit_len,
             swappolicy_block_len);
+			logtosyslog(message);
           goto flush;          
         }        
 		logtosyslog("\"message\":\"policy init %llu items\"", swappolicy_policy_id_len);
         
         if ((swapcustomlist_identity_len != swapcustomlist_whitelist_len) || (swapcustomlist_whitelist_len != swapcustomlist_blacklist_len))
         {
-			logtosyslog("\"message\":\"ignoring error, customlist cache is corrupted\n identity=%llu\n whitelist=%llu\n blacklist=%llu\"",
+			sprintf(message, "\"message\":\"ignoring error, customlist cache is corrupted\n identity=%llu\n whitelist=%llu\n blacklist=%llu\"",
             swapcustomlist_identity_len,
             swapcustomlist_whitelist_len,
             swapcustomlist_blacklist_len);
+			logtosyslog(message);
           //goto flush;          
         }        
 		logtosyslog("\"message\":\"customlist init %llu items\"", swapcustomlist_identity_len);
+		logtosyslog(message);
         
         //puts("initex domain");
         cache_domain *old_domain = cached_domain;
@@ -599,10 +604,12 @@ static void* socket_server(void *arg)
     for (int port = 8880; port < 8896; port++)
     {
       server.sin_port = htons( port );                   
+	  char message[255] = {};
       //Bind
       if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
       {
-		  logtosyslog("\"message\":\"bind failed on port %d\"", port);
+		  sprintf(message, "\"message\":\"bind failed on port %d\"", port);
+		  logtosyslog(message);
           if (port == 8895)
           {
             return (void*)-1;
@@ -610,7 +617,8 @@ static void* socket_server(void *arg)
           
           continue;
       }
-	  logtosyslog("\"message\":\"bind succeeded on port %d\"", port);
+	  sprintf(message,"\"message\":\"bind succeeded on port %d\"", port);
+	  logtosyslog(message);
       break;
     }
      
