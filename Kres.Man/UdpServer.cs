@@ -2,16 +2,17 @@
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Text;
 
 
 namespace Kres.Man
 {
     internal class UdpServer
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(UdpServer));
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const int listenPort = 11000;
         public static Thread tUdpLoop;
 

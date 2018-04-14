@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
+using System.Text;
 using System.Threading;
 
 namespace Kres.Man
@@ -31,7 +32,7 @@ namespace Kres.Man
 
     class KresUpdater
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(KresUpdater));
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public static Thread tKresLoop;
         private Listener listener;
         private static EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);

@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Linq;
-using System.IO;
+using System.Reflection;
 using System.Text;
-
-
 
 namespace Kres.Man
 {
 
     internal class CsvLoader
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CsvLoader));
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static Models.Cache LoadCacheFromCsv()
         {

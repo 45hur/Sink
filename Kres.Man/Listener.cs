@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Text;
+
 using Newtonsoft.Json;
 
 namespace Kres.Man
 {
     internal class Listener
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Listener));
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private Thread tLoop;
 
         [Mapping("health")]
