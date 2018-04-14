@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 
 using System.Net.Security;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 
 using Newtonsoft.Json;
@@ -71,6 +72,11 @@ namespace Kres.Man
                 // Log it, then use the same answer it would have had if we didn't make a callback.
                 return errors == SslPolicyErrors.None;
             };
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                clientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            }
 
             X509Certificate2 clientCertificate = new X509Certificate2(certName, password);
             clientHandler.ClientCertificates.Add(clientCertificate);
