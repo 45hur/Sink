@@ -203,7 +203,7 @@ namespace Kres.Man
             {
                 var flags = domains[i].Flags.SelectMany(BitConverter.GetBytes).ToArray();
 
-                log.Debug($"Domain {i} CRC {domains[i].Crc64}");
+                log.Debug($"Domain {i} CRC {domains[i].Crc64} {domains[i].Flags.Count()}");
 
                 log.Debug($"Array copy crc");
                 Array.Copy(BitConverter.GetBytes(domains[i].Crc64), 0, cacheDomainsCrc, i * sizeof(UInt64), sizeof(UInt64));
@@ -212,7 +212,7 @@ namespace Kres.Man
                 log.Debug($"Array copy flags");
                 for (var j = 0; i < 8; j++) 
                 {
-                    Array.Copy(new[] { flags[j] }, j, cacheFlags, i * sizeof(UInt64) + j, 1);
+                    Array.Copy(flags, j, cacheFlags, i * sizeof(UInt64) + j, 1);
                 }
             }
 
