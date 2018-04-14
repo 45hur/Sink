@@ -210,7 +210,7 @@ namespace Kres.Man
                 log.Debug($"Array copy accuracy");
                 Array.Copy(BitConverter.GetBytes(domains[i].Accuracy), 0, cacheAccuracy, i * sizeof(UInt16), sizeof(UInt16));
                 log.Debug($"Array copy flags");
-                for (var j = 0; i < 8; j++) 
+                for (var j = 0; j < 8; j++) 
                 {
                     Array.Copy(flags, j, cacheFlags, i * sizeof(UInt64) + j, 1);
                 }
