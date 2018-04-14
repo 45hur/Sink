@@ -60,7 +60,8 @@ namespace Kres.Man
         {
             log.Info("GetCoreCache()");
 
-            string host = Configuration.GetCoreUrl();
+            string core_url = Configuration.GetCoreUrl();
+            string resolver_id = Configuration.GetResolverId();
             string certName = Configuration.GetPfxPath();
             string password = Configuration.GetPfxPassword();
 
@@ -72,11 +73,11 @@ namespace Kres.Man
               .Accept
               .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/x-protobuf"));
 
-            var req = new HttpRequestMessage(HttpMethod.Get, host)
+            var req = new HttpRequestMessage(HttpMethod.Get, core_url)
             {
                 Version = new Version(2, 0)
             };
-            req.Headers.Add("x-resolver-id", "13");
+            req.Headers.Add("x-resolver-id", resolver_id);
 
             using (var response = myClient.SendAsync(req).GetAwaiter().GetResult())
             {

@@ -38,7 +38,11 @@ namespace Kres.Man
         }
         internal static string GetCoreUrl()
         {
-            return GetValue("core");
+            return GetValue("CORE_URL");
+        }
+        internal static string GetResolverId()
+        {
+            return GetValue("RESOLVER_ID");
         }
         internal static string GetPfxPath()
         {
