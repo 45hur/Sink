@@ -196,6 +196,8 @@ namespace Kres.Man
             {
                 var flags = domains[i].Flags.ToArray();
 
+                log.Debug($"Domain {i} CRC {domains[i].Crc64}");
+
                 Array.Copy(BitConverter.GetBytes(domains[i].Crc64), 0, cacheDomainsCrc, i * sizeof(UInt64), sizeof(UInt64));
                 Array.Copy(BitConverter.GetBytes(domains[i].Accuracy), 0, cacheAccuracy, i * sizeof(UInt16), sizeof(UInt16));
                 Array.Copy(flags, 0, cacheFlags, i * sizeof(UInt64), sizeof(UInt64));

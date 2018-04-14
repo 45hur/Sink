@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Xml;
 
@@ -15,6 +16,8 @@ namespace Kres.Man
 
             var repo = log4net.LogManager.CreateRepository(
                 Assembly.GetEntryAssembly(), typeof(log4net.Repository.Hierarchy.Hierarchy));
+
+            log4net.GlobalContext.Properties["pid"] = Process.GetCurrentProcess().Id;
 
             log4net.Config.XmlConfigurator.Configure(repo, log4netConfig["log4net"]);
         }
