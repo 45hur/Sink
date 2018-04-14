@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.IO;
-using System.Text;
+using System.Linq;
 using System.Threading;
-using System.Net;
 using System.Net.Http;
 
 using System.Net.Security;
@@ -95,7 +93,14 @@ namespace Kres.Man
             {
                 using (var stream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
                 {
-                    CacheLiveStorage.CoreCache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+                    var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+
+                    log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
+                    log.Debug($"Domains count = {cache.Domains.ToArray().Count()}");
+                    log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
+                    log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
+
+                    CacheLiveStorage.CoreCache = cache;
                 }
             }
         }
