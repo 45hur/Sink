@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Net;
+using System.Net.Http;
 
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -63,30 +64,23 @@ namespace Kres.Man
             string certName = Configuration.GetPfxPath();
             string password = Configuration.GetPfxPassword();
 
+            var clientHandler = new HttpClientHandler() { ClientCertificateOptions = ClientCertificateOption.Manual };
+            X509Certificate2 clientCertificate = new X509Certificate2(certName, password);
+            clientHandler.ClientCertificates.Add(clientCertificate);
+            var myClient = new HttpClient(clientHandler);
+            myClient.DefaultRequestHeaders
+              .Accept
+              .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/x-protobuf"));
 
-            X509Certificate2Collection certificates = new X509Certificate2Collection();
-            certificates.Import(certName, password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
-
-            ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(host);
-            req.ServerCertificateValidationCallback += ValidateRemoteCertificate;
-            req.AllowAutoRedirect = true;
-            req.ClientCertificates = certificates;
-            req.Method = "GET";
-            req.ContentType = "application/x-protobuf";
-            req.Headers["x-resolver-id"] = "13";
-            //string postData = "";
-            //byte[] postBytes = Encoding.UTF8.GetBytes(postData);
-            //req.ContentLength = postBytes.Length;
-
-            //var postStream = req.GetRequestStream();
-            //postStream.Write(postBytes, 0, postBytes.Length);
-            //postStream.Flush();
-            //postStream.Close();
-
-            using (var response = req.GetResponseAsync().Result)
+            var req = new HttpRequestMessage(HttpMethod.Get, host)
             {
-                using (var stream = response.GetResponseStream())
+                Version = new Version(2, 0)
+            };
+            req.Headers.Add("x-resolver-id", "13");
+
+            using (var response = myClient.SendAsync(req).GetAwaiter().GetResult())
+            {
+                using (var stream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
                 {
                     CacheLiveStorage.CoreCache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
                 }
