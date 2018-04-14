@@ -210,7 +210,10 @@ namespace Kres.Man
                 log.Debug($"Array copy accuracy");
                 Array.Copy(BitConverter.GetBytes(domains[i].Accuracy), 0, cacheAccuracy, i * sizeof(UInt16), sizeof(UInt16));
                 log.Debug($"Array copy flags");
-                Array.Copy(flags, 0, cacheFlags, i * sizeof(UInt64), sizeof(UInt64));
+                for (var j = 0; i < 8; j++) 
+                {
+                    Array.Copy(new[] { flags[j] }, j, cacheFlags, i * sizeof(UInt64) + j, 1);
+                }
             }
 
             listener.pushDomainCrcBuffer(new List<byte[]>() { cacheDomainsCrc });
