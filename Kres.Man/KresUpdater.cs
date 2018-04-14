@@ -191,7 +191,7 @@ namespace Kres.Man
 
         private void UpdateDomains()
         {
-            if (CacheLiveStorage.Domains.CustomLists == null)
+            if (CacheLiveStorage.CoreCache.Domains == null)
             {
                 log.Debug("No domains to update");
                 return;
@@ -229,7 +229,7 @@ namespace Kres.Man
 
         private void UpdateIPRanges()
         {
-            if (CacheLiveStorage.IPRanges.CustomLists == null)
+            if (CacheLiveStorage.CoreCache.IPRanges == null)
             {
                 log.Debug("No ranges to update");
                 return;
@@ -300,7 +300,7 @@ namespace Kres.Man
 
         private void UpdatePolicies()
         {
-            if (CacheLiveStorage.Policies.CustomLists == null)
+            if (CacheLiveStorage.CoreCache.Policies == null)
             {
                 log.Debug("No policies to update");
                 return;
