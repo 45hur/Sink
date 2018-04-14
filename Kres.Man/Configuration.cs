@@ -38,7 +38,7 @@ namespace Kres.Man
         }
         internal static string GetCoreUrl()
         {
-            return GetValue("CORE_URL");
+            return GetValue("RESOLVERAPI_URL");
         }
         internal static string GetResolverId()
         {
