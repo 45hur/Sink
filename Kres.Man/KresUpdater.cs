@@ -248,9 +248,6 @@ namespace Kres.Man
                 var IPFrom = new byte[sizeof(UInt32) + sizeof(UInt32) + 16 /* sizeof(Int128)*/ ];
                 var IPTo = new byte[sizeof(UInt32) + sizeof(UInt32) + 16 /* sizeof(Int128)*/ ];
 
-                var Identity = new byte[ipRange[i].Identity.Length];
-                
-
                 //#define AF_INET		2
                 //#define AF_INET6	    10
 
@@ -285,9 +282,20 @@ namespace Kres.Man
                     Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Low), 0, IPTo, sizeof(UInt32) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
                 }
                 cacheIPTo.Add(IPTo);
-                
-                Array.Copy(ASCIIEncoding.ASCII.GetBytes(ipRange[i].Identity), 0, Identity, 0, ipRange[i].Identity.Length);
-                cacheIdentity.Add(Identity);
+
+
+                if (ipRange[i].Identity != null)
+                {
+                    var Identity = new byte[ipRange[i].Identity.Length];
+                    Array.Copy(ASCIIEncoding.ASCII.GetBytes(ipRange[i].Identity), 0, Identity, 0, ipRange[i].Identity.Length);
+                    cacheIdentity.Add(Identity);
+                }
+                else
+                {
+                    var Identity = new byte[1];
+                    Array.Copy(ASCIIEncoding.ASCII.GetBytes("\0"), 0, Identity, 0, 1);
+                    cacheIdentity.Add(Identity);
+                }
 
                 Array.Copy(BitConverter.GetBytes(ipRange[i].PolicyId), 0, cachePolicy, i * (sizeof(UInt32)), sizeof(UInt32));
             }
