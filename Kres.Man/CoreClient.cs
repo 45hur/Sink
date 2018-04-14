@@ -110,25 +110,37 @@ namespace Kres.Man
             log.Info("GetCoreCacheLinux()");
 
             string core_url = Configuration.GetCoreUrl();
+            string resolver_id = Configuration.GetResolverId();
             string certName = Configuration.GetPfxPath();
             string password = Configuration.GetPfxPassword();
-            string resolver_id = Configuration.GetResolverId();
 
-            X509Certificate2Collection certificates = new X509Certificate2Collection();
-            certificates.Import(certName, password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
+            var clientHandler = new HttpClientHandler() { ClientCertificateOptions = ClientCertificateOption.Manual };
+            //clientHandler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) =>
+            //{
+            //    // Log it, then use the same answer it would have had if we didn't make a callback.
+            //    return errors == SslPolicyErrors.None;
+            //};
 
-            ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(core_url);
-            req.ServerCertificateValidationCallback += ValidateRemoteCertificate;
-            req.AllowAutoRedirect = true;
-            req.ClientCertificates = certificates;
-            req.Method = "GET";
-            req.ContentType = "application/x-protobuf";
-            req.Headers["x-resolver-id"] = resolver_id;
+            clientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
 
-            using (var response = req.GetResponseAsync().Result)
+            X509Certificate2 clientCertificate = new X509Certificate2(certName, password);
+            clientHandler.ClientCertificates.Add(clientCertificate);
+            var myClient = new HttpClient(clientHandler);
+            myClient.DefaultRequestHeaders
+              .Accept
+              .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/x-protobuf"));
+
+            var req = new HttpRequestMessage(HttpMethod.Get, core_url)
             {
-                using (var stream = response.GetResponseStream())
+                Version = new Version(2, 0)
+            };
+            req.Headers.Add("x-resolver-id", resolver_id);
+
+            log.Debug($"Request");
+            using (var response = myClient.SendAsync(req).GetAwaiter().GetResult())
+            {
+                log.Debug($"GetStream");
+                using (var stream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
                 {
                     log.Debug($"Deserialize.");
                     var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
@@ -146,56 +158,6 @@ namespace Kres.Man
                     CacheLiveStorage.CoreCache = cache;
                 }
             }
-
-            //string core_url = Configuration.GetCoreUrl();
-            //string resolver_id = Configuration.GetResolverId();
-            //string certName = Configuration.GetPfxPath();
-            //string password = Configuration.GetPfxPassword();
-
-            //var clientHandler = new HttpClientHandler() { ClientCertificateOptions = ClientCertificateOption.Manual };
-            ////clientHandler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) =>
-            ////{
-            ////    // Log it, then use the same answer it would have had if we didn't make a callback.
-            ////    return errors == SslPolicyErrors.None;
-            ////};
-
-            //clientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-
-            //X509Certificate2 clientCertificate = new X509Certificate2(certName, password);
-            //clientHandler.ClientCertificates.Add(clientCertificate);
-            //var myClient = new HttpClient(clientHandler);
-            //myClient.DefaultRequestHeaders
-            //  .Accept
-            //  .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/x-protobuf"));
-
-            //var req = new HttpRequestMessage(HttpMethod.Get, core_url)
-            //{
-            //    Version = new Version(2, 0)
-            //};
-            //req.Headers.Add("x-resolver-id", resolver_id);
-
-            //log.Debug($"Request");
-            //using (var response = myClient.SendAsync(req).GetAwaiter().GetResult())
-            //{
-            //    log.Debug($"GetStream");
-            //    using (var stream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
-            //    {
-            //        log.Debug($"Deserialize.");
-            //        var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
-
-            //        log.Debug($"Deserialized.");
-            //        if (cache.CustomLists != null)
-            //            log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
-            //        if (cache.Domains != null)
-            //            log.Debug($"Domains count = {cache.Domains.ToArray().Count()}");
-            //        if (cache.IPRanges != null)
-            //            log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
-            //        if (cache.Policies != null)
-            //            log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
-
-            //        CacheLiveStorage.CoreCache = cache;
-            //    }
-            //}
         }
 
         public static void Start()
