@@ -26,7 +26,14 @@ namespace Kres.Man
             {
                 try
                 {
-                    GetCoreCache();
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        GetCoreCacheLinux();
+                    }
+                    else
+                    {
+                        GetCoreCache();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -109,10 +116,7 @@ namespace Kres.Man
                 return errors == SslPolicyErrors.None;
             };
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                clientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-            }
+            clientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
 
             X509Certificate2 clientCertificate = new X509Certificate2(certName, password);
             clientHandler.ClientCertificates.Add(clientCertificate);
