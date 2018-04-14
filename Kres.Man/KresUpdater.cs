@@ -191,6 +191,12 @@ namespace Kres.Man
 
         private void UpdateDomains()
         {
+            if (CacheLiveStorage.Domains.CustomLists == null)
+            {
+                log.Debug("No domains to update");
+                return;
+            }
+
             var domains = CacheLiveStorage.CoreCache.Domains.ToArray();
             var count = domains.Count();
 
@@ -223,6 +229,12 @@ namespace Kres.Man
 
         private void UpdateIPRanges()
         {
+            if (CacheLiveStorage.IPRanges.CustomLists == null)
+            {
+                log.Debug("No ranges to update");
+                return;
+            }
+
             var ipRange = CacheLiveStorage.CoreCache.IPRanges.ToArray();
             var count = ipRange.Count();
 
@@ -233,12 +245,11 @@ namespace Kres.Man
             var cachePolicy = new byte [count * sizeof(UInt32)];
             for (var i = 0; i < count; i++)
             {
-
-                log.Debug($"Updating range {i}.");
-
-
                 var IPFrom = new byte[sizeof(UInt32) + sizeof(UInt32) + 16 /* sizeof(Int128)*/ ];
                 var IPTo = new byte[sizeof(UInt32) + sizeof(UInt32) + 16 /* sizeof(Int128)*/ ];
+
+                var Identity = new byte[ipRange[i].Identity.Length];
+                
 
                 //#define AF_INET		2
                 //#define AF_INET6	    10
@@ -274,13 +285,9 @@ namespace Kres.Man
                     Array.Copy(BitConverter.GetBytes(ipRange[i].IpTo.Low), 0, IPTo, sizeof(UInt32) + sizeof(UInt32) + sizeof(UInt64), sizeof(UInt64));
                 }
                 cacheIPTo.Add(IPTo);
-
-                if (ipRange[i].Identity != null)
-                {
-                    var Identity = new byte[ipRange[i].Identity.Length];
-                    Array.Copy(ASCIIEncoding.ASCII.GetBytes(ipRange[i].Identity), 0, Identity, 0, ipRange[i].Identity.Length);
-                    cacheIdentity.Add(Identity);
-                }
+                
+                Array.Copy(ASCIIEncoding.ASCII.GetBytes(ipRange[i].Identity), 0, Identity, 0, ipRange[i].Identity.Length);
+                cacheIdentity.Add(Identity);
 
                 Array.Copy(BitConverter.GetBytes(ipRange[i].PolicyId), 0, cachePolicy, i * (sizeof(UInt32)), sizeof(UInt32));
             }
@@ -293,6 +300,12 @@ namespace Kres.Man
 
         private void UpdatePolicies()
         {
+            if (CacheLiveStorage.Policies.CustomLists == null)
+            {
+                log.Debug("No policies to update");
+                return;
+            }
+
             var policies = CacheLiveStorage.CoreCache.Policies.ToArray();
             var count = policies.Count();
 
@@ -318,6 +331,12 @@ namespace Kres.Man
 
         private void UpdateCustomLists()
         {
+            if (CacheLiveStorage.CoreCache.CustomLists == null)
+            {
+                log.Debug("No custom list to update");
+                return;
+            }
+
             var customlist = CacheLiveStorage.CoreCache.CustomLists.ToArray();
             var count = customlist.Count();
 
