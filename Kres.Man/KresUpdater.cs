@@ -195,9 +195,9 @@ namespace Kres.Man
             var count = domains.Count();
 
             log.Debug($"Updating {count} crc domains.");
-            var cacheDomainsCrc = new byte[(count * sizeof(UInt64))];
-            var cacheAccuracy = new byte[(count * sizeof(UInt16))];
-            var cacheFlags = new byte[(count * sizeof(UInt64))];
+            byte[] cacheDomainsCrc = new byte[(count * sizeof(UInt64))];
+            byte[] cacheAccuracy = new byte[(count * sizeof(UInt16))];
+            byte[] cacheFlags = new byte[(count * sizeof(UInt64))];
 
             for (var i = 0; i < count; i++)
             {
@@ -205,8 +205,11 @@ namespace Kres.Man
 
                 log.Debug($"Domain {i} CRC {domains[i].Crc64}");
 
+                log.Debug($"Array copy crc");
                 Array.Copy(BitConverter.GetBytes(domains[i].Crc64), 0, cacheDomainsCrc, i * sizeof(UInt64), sizeof(UInt64));
+                log.Debug($"Array copy accuracy");
                 Array.Copy(BitConverter.GetBytes(domains[i].Accuracy), 0, cacheAccuracy, i * sizeof(UInt16), sizeof(UInt16));
+                log.Debug($"Array copy flags");
                 Array.Copy(flags, 0, cacheFlags, i * sizeof(UInt64), sizeof(UInt64));
             }
 
