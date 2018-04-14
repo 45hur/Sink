@@ -66,6 +66,12 @@ namespace Kres.Man
             string password = Configuration.GetPfxPassword();
 
             var clientHandler = new HttpClientHandler() { ClientCertificateOptions = ClientCertificateOption.Manual };
+            clientHandler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) =>
+            {
+                // Log it, then use the same answer it would have had if we didn't make a callback.
+                return errors == SslPolicyErrors.None;
+            };
+
             X509Certificate2 clientCertificate = new X509Certificate2(certName, password);
             clientHandler.ClientCertificates.Add(clientCertificate);
             var myClient = new HttpClient(clientHandler);
