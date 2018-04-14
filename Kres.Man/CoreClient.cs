@@ -102,7 +102,7 @@ namespace Kres.Man
 
         private static void GetCoreCacheLinux()
         {
-            log.Info("GetCoreCache()");
+            log.Info("GetCoreCacheLinux()");
 
             string core_url = Configuration.GetCoreUrl();
             string resolver_id = Configuration.GetResolverId();
@@ -131,13 +131,16 @@ namespace Kres.Man
             };
             req.Headers.Add("x-resolver-id", resolver_id);
 
+            log.Debug($"Request");
             using (var response = myClient.SendAsync(req).GetAwaiter().GetResult())
             {
+                log.Debug($"GetStream");
                 using (var stream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
                 {
+                    log.Debug($"Deserialize.");
                     var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
 
-                    log.Debug($"Deserialize.");
+                    log.Debug($"Deserialized.");
                     if (cache.CustomLists != null)
                         log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
                     if (cache.Domains != null)
