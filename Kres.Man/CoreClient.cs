@@ -95,10 +95,14 @@ namespace Kres.Man
                 {
                     var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
 
-                    log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
-                    log.Debug($"Domains count = {cache.Domains.ToArray().Count()}");
-                    log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
-                    log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
+                    if (cache.CustomLists != null)
+                        log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
+                    if (cache.Domains != null)
+                        log.Debug($"Domains count = {cache.Domains.ToArray().Count()}");
+                    if (cache.IPRanges != null)
+                        log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
+                    if (cache.Policies != null)
+                        log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
 
                     CacheLiveStorage.CoreCache = cache;
                 }
