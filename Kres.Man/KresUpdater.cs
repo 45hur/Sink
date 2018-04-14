@@ -201,7 +201,7 @@ namespace Kres.Man
 
             for (var i = 0; i < count; i++)
             {
-                var flags = domains[i].Flags.ToArray();
+                var flags = domains[i].Flags.SelectMany(BitConverter.GetBytes).ToArray();
 
                 log.Debug($"Domain {i} CRC {domains[i].Crc64}");
 
