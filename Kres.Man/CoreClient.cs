@@ -87,7 +87,20 @@ namespace Kres.Man
             {
                 using (var stream = response.GetResponseStream())
                 {
-                    CacheLiveStorage.CoreCache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+                    log.Debug($"Deserialize.");
+                    var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+
+                    log.Debug($"Deserialized.");
+                    if (cache.CustomLists != null)
+                        log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
+                    if (cache.Domains != null)
+                        log.Debug($"Domains count = {cache.Domains.ToArray().Count()}");
+                    if (cache.IPRanges != null)
+                        log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
+                    if (cache.Policies != null)
+                        log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
+
+                    CacheLiveStorage.CoreCache = cache;
                 }
             }
         }
@@ -117,7 +130,20 @@ namespace Kres.Man
             {
                 using (var stream = response.GetResponseStream())
                 {
-                    CacheLiveStorage.CoreCache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+                    log.Debug($"Deserialize.");
+                    var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+
+                    log.Debug($"Deserialized.");
+                    if (cache.CustomLists != null)
+                        log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
+                    if (cache.Domains != null)
+                        log.Debug($"Domains count = {cache.Domains.ToArray().Count()}");
+                    if (cache.IPRanges != null)
+                        log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
+                    if (cache.Policies != null)
+                        log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
+
+                    CacheLiveStorage.CoreCache = cache;
                 }
             }
 
