@@ -136,24 +136,24 @@ namespace Kres.Man
             };
             req.Headers.Add("x-resolver-id", resolver_id);
 
-            log.Debug($"Request");
+            log.Info($"Request");
             using (var response = myClient.SendAsync(req).GetAwaiter().GetResult())
             {
-                log.Debug($"GetStream");
+                log.Info($"GetStream");
                 using (var stream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
                 {
-                    log.Debug($"Deserialize.");
+                    log.Info($"Deserialize.");
                     var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
 
-                    log.Debug($"Deserialized.");
+                    log.Info($"Deserialized.");
                     if (cache.CustomLists != null)
-                        log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
+                        log.Info($"Custom List count = {cache.CustomLists.ToArray().Count()}");
                     if (cache.Domains != null)
-                        log.Debug($"Domains count = {cache.Domains.ToArray().Count()}");
+                        log.Info($"Domains count = {cache.Domains.ToArray().Count()}");
                     if (cache.IPRanges != null)
-                        log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
+                        log.Info($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
                     if (cache.Policies != null)
-                        log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
+                        log.Info($"Policies count = {cache.Policies.ToArray().Count()}");
 
                     CacheLiveStorage.CoreCache = cache;
                 }
