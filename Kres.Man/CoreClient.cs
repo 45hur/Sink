@@ -35,6 +35,8 @@ namespace Kres.Man
                     {
                         GetCoreCache();
                     }
+
+                    CacheLiveStorage.CoreCache.Updated = true;
                 }
                 catch (Exception ex)
                 {

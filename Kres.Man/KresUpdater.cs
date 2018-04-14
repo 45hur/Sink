@@ -145,11 +145,18 @@ namespace Kres.Man
             try
             {
                 log.Info("Load CSVs.");
-                CacheLiveStorage.CoreCache = CsvLoader.LoadCacheFromCsv();
+                //CacheLiveStorage.CoreCache = CsvLoader.LoadCacheFromCsv();
 
                 while (true)
                 {
                     log.Info("KresUpdater loop.");
+
+                    if (!CacheLiveStorage.CoreCache.Updated)
+                    {
+                        log.Info("Cache has was not yet been loaded.");
+                        Thread.Sleep(15000);
+                        continue;
+                    }
 
                     FreeCaches();
 

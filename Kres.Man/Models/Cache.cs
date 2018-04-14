@@ -17,5 +17,7 @@ namespace Kres.Man.Models
 
         [ProtoMember(4)]
         public IEnumerable<CachePolicy> Policies { get; set; }
+
+        public bool Updated { get; set; }
     }
 }
