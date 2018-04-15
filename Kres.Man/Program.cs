@@ -27,6 +27,9 @@ namespace Kres.Man
             LoadLogConfig();
             log.Info("Main");
 
+            log.Info("Init cache");
+            CacheLiveStorage.CoreCache = CsvLoader.InitCache();
+
             log.Info("Starting UDP Server");
             UdpServer.Listen();
 

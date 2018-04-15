@@ -26,6 +26,12 @@ namespace Kres.Man
             return result;
         }
 
+        public static Models.Cache InitCache()
+        {
+            var result = new Models.Cache();
+            return result;
+        }
+
         private static List<Models.CacheCustomList> LoadCustomLists()
         {
             var result = new List<Models.CacheCustomList>();
