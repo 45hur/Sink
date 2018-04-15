@@ -41,7 +41,7 @@ namespace Kres.Man
         {
             log.Debug($"Push buftype {buftype}");
 
-            for (var port = 8880; port < 8896; port++)
+            for (var port = Configuration.GetMinPort(); port < Configuration.GetMaxPort(); port++)
             {
                 try
                 {

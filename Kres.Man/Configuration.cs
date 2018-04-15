@@ -60,6 +60,14 @@ namespace Kres.Man
         {
             return GetValue("kres");
         }
+        internal static int GetMinPort()
+        {
+            return Convert.ToInt32(GetValue("kres_min_port"));
+        }
+        internal static int GetMaxPort()
+        {
+            return Convert.ToInt32(GetValue("kres_max_port"));
+        }
 
 
     }
