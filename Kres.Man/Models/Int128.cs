@@ -8,9 +8,10 @@ namespace Kres.Man.Models
     public class Int128
     {
         [ProtoMember(1)]
-        public UInt64 Hi { get; set; }
-        [ProtoMember(2)]
         public UInt64 Low { get; set; }
+
+        [ProtoMember(2)]
+        public UInt64 Hi { get; set; }
 
         public static Kres.Man.Models.Int128 Convert(BigMath.Int128 param)
         {

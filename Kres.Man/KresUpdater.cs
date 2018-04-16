@@ -142,12 +142,9 @@ namespace Kres.Man
         {
             log.Info("Starting KresUpdater thread.");
 
-            try
+            while (true)
             {
-                //log.Info("Load CSVs.");
-                //CacheLiveStorage.CoreCache = CsvLoader.LoadCacheFromCsv();
-
-                while (true)
+                try
                 {
                     log.Info("KresUpdater loop.");
 
@@ -176,11 +173,11 @@ namespace Kres.Man
                         log.Info("KresUpdate reloading on timeout.");
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                tKresLoop = null;
-                log.Fatal($"{ex}");
+                catch (Exception ex)
+                {
+                    tKresLoop = null;
+                    log.Error($"{ex}");
+                }
             }
         }
 

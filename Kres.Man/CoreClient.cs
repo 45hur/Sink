@@ -158,6 +158,14 @@ namespace Kres.Man
                     if (cache.Policies != null)
                         log.Info($"Policies count = {cache.Policies.ToArray().Count()}");
 
+                    if (cache.CustomLists == null &&
+                        cache.Domains == null &&
+                        cache.IPRanges == null &&
+                        cache.Policies == null)
+                    {
+                        throw new Exception("Core has no cache!");
+                    }
+
                     CacheLiveStorage.CoreCache = cache;
                 }
             }
