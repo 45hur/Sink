@@ -190,7 +190,7 @@ int cache_iprange_contains(cache_iprange* cache, const struct ip_addr * ip, ipra
 {
 	if (cache == NULL)
 	{
-		return -1;
+		return 0;
 	}
 
 	cache->searchers++;

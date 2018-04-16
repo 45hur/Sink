@@ -183,7 +183,7 @@ int cache_customlist_whitelist_contains(cache_customlist* cache, char *identity,
 {
 	if (cache == NULL)
 	{
-		return -1;
+		return 0;
 	}
 
 	cache->searchers++;
