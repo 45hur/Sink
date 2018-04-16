@@ -384,18 +384,56 @@ void *connection_handler(void *socket_desc)
 		sprintf(message, "\"message\":\"customlist init %llu items\"", swapcustomlist_identity_len);
 		logtosyslog(message);
 
-		//puts("initex domain");
-		cache_domain *old_domain = cached_domain;
-		cached_domain = cache_domain_init_ex(swapdomain_crc, swapdomain_accuracy, swapdomain_flags, swapdomain_crc_len);
+		if (swapdomain_crc_len > 0)
+		{
+			sprintf(message, "\"message\":\"initex domain %llu\"", swapdomain_crc_len);
+			logtosyslog(message);
 
-		//puts("initex iprange");                   
-		cache_iprange *old_iprange = cached_iprange;
-		cached_iprange = cache_iprange_init_ex(swapiprange_low, swapiprange_high, swapiprange_identity, swapiprange_policy_id, swapiprange_high_len);
+			cache_domain *old_domain = cached_domain;
+			cached_domain = cache_domain_init_ex(swapdomain_crc, swapdomain_accuracy, swapdomain_flags, swapdomain_crc_len);
 
-		//puts("initex policy");
-		cache_policy *old_policy = cached_policy;
-		cached_policy = cache_policy_init_ex(swappolicy_policy_id, swappolicy_strategy, swappolicy_audit, swappolicy_block, swappolicy_policy_id_len);
+			sprintf(message, "\"message\":\"destroy old domain\"");
+			cache_domain_destroy(old_domain);
+		}
+		else
+		{
+			sprintf(message, "\"message\":\"initex domain has no items\"");
+			logtosyslog(message);
+		}
 
+		if (swapiprange_high_len > 0)
+		{
+			sprintf(message, "\"message\":\"initex iprange %llu\"", swapiprange_high_len);
+			logtosyslog(message);
+
+			cache_iprange *old_iprange = cached_iprange;
+			cached_iprange = cache_iprange_init_ex(swapiprange_low, swapiprange_high, swapiprange_identity, swapiprange_policy_id, swapiprange_high_len);
+		
+			sprintf(message, "\"message\":\"destroy old iprange\"");
+			cache_iprange_destroy(old_iprange);
+		}
+		else
+		{
+			sprintf(message, "\"message\":\"initex iprange has no items\"");
+			logtosyslog(message);
+		}
+		
+		if (swappolicy_policy_id_len > 0)
+		{
+			sprintf(message, "\"message\":\"initex policy %llu\"", swapcustomlist_identity_len);
+			logtosyslog(message);
+
+			cache_policy *old_policy = cached_policy;
+			cached_policy = cache_policy_init_ex(swappolicy_policy_id, swappolicy_strategy, swappolicy_audit, swappolicy_block, swappolicy_policy_id_len);
+		
+			sprintf(message, "\"message\":\"destroy old policy\"");
+			cache_policy_destroy(old_policy);
+		}
+		else
+		{
+			sprintf(message, "\"message\":\"initex policy has no items\"");
+			logtosyslog(message);
+		}
 		
 		if (swapcustomlist_identity_len > 0)
 		{
@@ -445,14 +483,6 @@ void *connection_handler(void *socket_desc)
 		swapcustomlist_identity_len = 0;
 		swapcustomlist_whitelist_len = 0;
 		swapcustomlist_blacklist_len = 0;
-
-		//puts("destroy domain");
-		cache_domain_destroy(old_domain);
-		//puts("destroy_iprange");                
-		cache_iprange_destroy(old_iprange);
-		//puts("destroy policy");
-		cache_policy_destroy(old_policy);
-		//puts("destroy customlist");
 		
 	}
 	if (primeHeader.action == bufferType_freeswaps)
