@@ -59,7 +59,10 @@ enum
 
 unsigned char cache_domain_get_flags(unsigned long long flags, int n)
 {
-  return (flags >> (8 * n)) & 0xff; 
+	unsigned char *flags = (unsigned char *)&flags;
+	return flags[n];
+
+  //return (flags >> (8 * n)) & 0xff; 
 } 
 
 int cache_domain_compare(const void * a, const void * b)
