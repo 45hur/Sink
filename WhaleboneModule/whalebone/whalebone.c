@@ -18,17 +18,17 @@ static void* observe(void *arg)
 	logtosyslog("\"message\":\"loading\"");
 
 
-	unsigned long long ret = 0;
-	if ((ret = loader_init()) != 0)
-	{
-		logtosyslog("\"message\":\"csv load failed\"");
-		return (void *)-1;
-	}
+	//unsigned long long ret = 0;
+	//if ((ret = loader_init()) != 0)
+	//{
+	//	logtosyslog("\"message\":\"csv load failed\"");
+	//	return (void *)-1;
+	//}
 
 	pthread_t thr_id;
 	if ((ret = pthread_create(&thr_id, NULL, &socket_server, NULL)) != 0)
 	{
-		logtosyslog("\"message\":\"create thead failed\"");
+		logtosyslog("\"message\":\"create thread failed\"");
 		return (void *)ret;
 	}
 
