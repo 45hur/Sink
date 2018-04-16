@@ -221,7 +221,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			int domain_flags = cache_domain_get_flags(domain_item.flags, 0);
 			if (domain_flags & flags_accuracy)
 			{
-				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'accuracy'\"", querieddomain);
+				sprintf(message, "\"policy_id\":\"0\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"accuracy\"", req_addr, querieddomain);
 				logtofile(message);
 				logtosyslog(message);
 				sprintf(message, "auditing '%s' no-policy => domain-policy =>'accuracy'", querieddomain);
@@ -229,21 +229,21 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			}
 			if (domain_flags & flags_blacklist)
 			{
-				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'blacklist'\"", querieddomain);
+				sprintf(message, "\"policy_id\":\"0\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"blacklist\"", req_addr, querieddomain);
 				logtofile(message);
 				logtosyslog(message);
 				return redirect(request, last);
 			}
 			if (domain_flags & flags_whitelist)
 			{
-				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'whitelist'\"", querieddomain);
+				sprintf(message, "\"policy_id\":\"0\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"whitelist\"", req_addr, querieddomain);
 				logtofile(message);
 				logtosyslog(message);
 				return KNOT_STATE_DONE;
 			}
 			if (domain_flags & flags_drop)
 			{
-				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'drop'\"", querieddomain);
+				sprintf(message, "\"policy_id\":\"0\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"drop\"", req_addr, querieddomain);
 				logtofile(message);
 				logtosyslog(message);
 
