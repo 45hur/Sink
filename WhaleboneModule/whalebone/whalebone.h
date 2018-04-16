@@ -3,6 +3,7 @@
 
 #include "lib/module.h"
 #include <pthread.h>
+#include <stdio.h>
 #include <syslog.h>
 #include <lib/rplan.h>
 
@@ -15,9 +16,12 @@
 static FILE *log_whalebone = 0;
 static FILE *log_debug = 0;
 static FILE *log_audit = 0;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static __inline void logtofile(char *text)
 {
+	pthread_mutex_lock(&mutex);
+
 	char message[255] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
@@ -37,18 +41,24 @@ static __inline void logtofile(char *text)
 			log_whalebone = fopen("/var/log/whalebone/whalebone.log", "wt");
 		if (!log_whalebone)
 		{
+			pthread_mutex_unlock(&mutex);
+
 			return;
 		}
 	}
-
+	
 	fputs(message, log_whalebone);
 	fflush(log_whalebone);
 
 	memset(text, 0, strlen(text));
+
+	pthread_mutex_unlock(&mutex);
 }
 
 static __inline void logtosyslog(char *text)
 {
+	pthread_mutex_lock(&mutex);
+
 	char message[255] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
@@ -72,6 +82,8 @@ static __inline void logtosyslog(char *text)
 			log_debug = fopen("/var/log/whalebone/debug.log", "wt");
 		if (!log_debug)
 		{
+			pthread_mutex_unlock(&mutex);
+
 			return;
 		}
 	}
@@ -80,6 +92,8 @@ static __inline void logtosyslog(char *text)
 	fflush(log_debug);
 
 	memset(text, 0, strlen(text));
+
+	pthread_mutex_unlock(&mutex);
 }
 
 #include "cache_loader.h"
@@ -87,6 +101,8 @@ static __inline void logtosyslog(char *text)
 
 static __inline void logtoaudit(char *text)
 {
+	pthread_mutex_lock(&mutex);
+
 	char message[255] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
@@ -106,6 +122,8 @@ static __inline void logtoaudit(char *text)
 			log_audit = fopen("/var/log/whalebone/audit.log", "wt");
 		if (!log_audit)
 		{
+			pthread_mutex_unlock(&mutex);
+
 			return;
 		}
 	}
@@ -114,5 +132,7 @@ static __inline void logtoaudit(char *text)
 	fflush(log_audit);
 
 	memset(text, 0, strlen(text));
+
+	pthread_mutex_unlock(&mutex);
 }
 #endif //SINK_SINK_H
