@@ -191,6 +191,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				{
 					sprintf(message, "\"message\":\"policy has strategy flags_none\"");
 					logtosyslog(message);
+					return redirect(request, last, ipv4);
 				}
 				if (domain_flags & flags_accuracy)
 				{
