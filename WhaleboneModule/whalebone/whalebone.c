@@ -467,7 +467,7 @@ static int finish(kr_layer_t *ctx)
 				logtosyslog(message);
 
 
-				ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr, type == KNOT_RRTYPE_A);
+				ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr, rr->type == KNOT_RRTYPE_A);
 				break;
 			}
 			else
