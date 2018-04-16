@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -30,6 +31,9 @@ namespace Kres.Man
             log.Info("Init cache");
             CacheLiveStorage.CoreCache = CsvLoader.InitCache();
 
+            log.Info("Run shell script");
+            RunScriptIfExists();
+
             log.Info("Starting UDP Server");
             UdpServer.Listen();
 
@@ -46,6 +50,39 @@ namespace Kres.Man
             listener.Listen();
 
 
+        }
+
+        private static void RunScriptIfExists()
+        {
+            if (!File.Exists("gencert.sh"))
+            {
+                log.Info($"Sheel script gencert.sh does not exist.");
+                return;
+            }
+
+            var psi = new ProcessStartInfo();
+            psi.FileName = "sh";
+            psi.Arguments = "gencert.sh";
+            psi.UseShellExecute = false;
+            psi.RedirectStandardOutput = true;
+            psi.RedirectStandardError = true;
+
+            Process proc = new Process
+            {
+                StartInfo = psi
+            };
+
+            proc.Start();
+
+            string error = proc.StandardError.ReadToEnd();
+            if (!string.IsNullOrEmpty(error))
+            {
+                log.Error($"Sheel script failed with {error}");
+            }
+
+            var output = proc.StandardOutput.ReadToEnd();
+            log.Info($"Sheel script output = {output}");
+            proc.WaitForExit();
         }
     }
 }
