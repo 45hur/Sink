@@ -270,12 +270,12 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				logtofile(message);
 				logtosyslog(message);
 
-				//TODO
+				return KNOT_STATE_NOOP;
 			}
 		}
 	}
 
-	return KNOT_STATE_NOOP;
+	return KNOT_STATE_DONE;
 }
 
 static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, bool ipv4)
