@@ -209,39 +209,42 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			}
 			else
 			{
-				int domain_flags = cache_domain_get_flags(domain_item.flags, 0);
-				if (domain_flags & flags_accuracy)
-				{
-					sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'accuracy'\"", querieddomain);
-					logtosyslog(message);
-					sprintf(message, "auditing '%s' no-policy => domain-policy =>'accuracy'", querieddomain);
-					logtoaudit(message);
-				}
-				if (domain_flags & flags_blacklist)
-				{
-					sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'blacklist'\"", querieddomain);
-					logtosyslog(message);
-					return redirect(request, last);
-				}
-				if (domain_flags & flags_whitelist)
-				{
-					sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'whitelist'\"", querieddomain);
-					logtosyslog(message);
-					return KNOT_STATE_DONE;
-				}
-				if (domain_flags & flags_drop)
-				{
-					sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'drop'\"", querieddomain);
-					logtosyslog(message);
-
-					//TODO
-				}
+				sprintf(message, "\"message\":\"cached_policy does not match\"");
+				logtosyslog(message);
 			}
 		}
 		else
 		{
 			sprintf(message, "\"message\":\"no match to iprange\"");
 			logtosyslog(message);
+
+			int domain_flags = cache_domain_get_flags(domain_item.flags, 0);
+			if (domain_flags & flags_accuracy)
+			{
+				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'accuracy'\"", querieddomain);
+				logtosyslog(message);
+				sprintf(message, "auditing '%s' no-policy => domain-policy =>'accuracy'", querieddomain);
+				logtoaudit(message);
+			}
+			if (domain_flags & flags_blacklist)
+			{
+				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'blacklist'\"", querieddomain);
+				logtosyslog(message);
+				return redirect(request, last);
+			}
+			if (domain_flags & flags_whitelist)
+			{
+				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'whitelist'\"", querieddomain);
+				logtosyslog(message);
+				return KNOT_STATE_DONE;
+			}
+			if (domain_flags & flags_drop)
+			{
+				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'drop'\"", querieddomain);
+				logtosyslog(message);
+
+				//TODO
+			}
 		}
 	}
 
