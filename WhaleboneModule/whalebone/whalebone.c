@@ -222,6 +222,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					//sprintf(message, "policy '%d' strategy=>'whitelist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
 					sprintf(message, "\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"whitelist\"", querieddomain, req_addr);
 					logtofile(message);
+					return redirect(request, last, ipv4);
 				}
 				if (domain_flags & flags_drop)
 				{
