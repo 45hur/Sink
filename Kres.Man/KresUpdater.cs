@@ -221,7 +221,7 @@ namespace Kres.Man
                 //log.Debug($"Array copy flags");
                 for (var j = 0; j < 8; j++) 
                 {
-                    Array.Copy(new[] { flags[j * 4] }, j, cacheFlags, i * sizeof(UInt64) + j, 1);
+                    Array.Copy(new[] { flags[j * 4] }, 0, cacheFlags, i * sizeof(UInt64) + j, 1);
                 }
             }
 
