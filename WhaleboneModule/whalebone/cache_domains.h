@@ -62,7 +62,7 @@ unsigned char cache_domain_get_flags(unsigned long long flags, int n)
   return (flags >> (8 * n)) & 0xff; 
 } 
 
-static int cache_domain_compare(const void * a, const void * b)
+int cache_domain_compare(const void * a, const void * b)
 {
 	const unsigned long long ai = *(const unsigned long long*)a;
 	const unsigned long long bi = *(const unsigned long long*)b;

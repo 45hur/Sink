@@ -18,9 +18,7 @@
 #include "daemon/engine.h"
 #include <knot/query/layer.h>
 
-static FILE *log_whalebone = 0;
-static FILE *log_debug = 0;
-static FILE *log_audit = 0;
+
 
 struct shared {
 	pthread_mutex_t mutex;
@@ -32,6 +30,7 @@ static __inline void logtofile(char *text)
 {
 	pthread_mutex_lock(&(p->mutex));
 
+	FILE *log_whalebone = 0
 	char message[255] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
@@ -59,6 +58,7 @@ static __inline void logtofile(char *text)
 	
 	fputs(message, log_whalebone);
 	fflush(log_whalebone);
+	fclose(log_whalebone);
 
 	memset(text, 0, strlen(text));
 
@@ -68,7 +68,8 @@ static __inline void logtofile(char *text)
 static __inline void logtosyslog(char *text)
 {
 	pthread_mutex_lock(&(p->mutex));
-
+	
+	FILE *log_debug = 0;
 	char message[255] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
@@ -100,6 +101,7 @@ static __inline void logtosyslog(char *text)
 
 	fputs(message, log_debug);
 	fflush(log_debug);
+	fclose(log_debug);
 
 	memset(text, 0, strlen(text));
 
@@ -113,6 +115,7 @@ static __inline void logtoaudit(char *text)
 {
 	pthread_mutex_lock(&(p->mutex));
 
+	FILE *log_audit = 0;
 	char message[255] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
@@ -140,6 +143,7 @@ static __inline void logtoaudit(char *text)
 
 	fputs(message, log_audit);
 	fflush(log_audit);
+	fclose(log_audit);
 
 	memset(text, 0, strlen(text));
 
