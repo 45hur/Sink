@@ -18,7 +18,7 @@ static void* observe(void *arg)
 	logtosyslog("\"message\":\"loading\"");
 
 
-	unsigned long long ret = 0;
+	./g	unsigned long long ret = 0;
 	//if ((ret = loader_init()) != 0)
 	//{
 	//	logtosyslog("\"message\":\"csv load failed\"");
@@ -120,7 +120,7 @@ static int redirect(struct kr_request * request, struct kr_query *last)
 
 	knot_wire_set_id(request->answer->wire, msgid);
 
-	kr_pkt_put(request->answer, last->sname, 120, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
+	kr_pkt_put(request->answer, last->sname, 1, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
 
 	return KNOT_STATE_DONE;
 }
