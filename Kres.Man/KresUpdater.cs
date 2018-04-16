@@ -144,7 +144,7 @@ namespace Kres.Man
 
             try
             {
-                log.Info("Load CSVs.");
+                //log.Info("Load CSVs.");
                 //CacheLiveStorage.CoreCache = CsvLoader.LoadCacheFromCsv();
 
                 while (true)
