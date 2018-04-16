@@ -121,7 +121,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 		const char *sinkit_sinkhole = getenv("SINKIPV6");
 		if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
 		{
-			sinkit_sinkhole = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
+			sinkit_sinkhole = "0000:0000:0000:0000:0000:0000:0000:0001";
 		}
 		if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
 		{
