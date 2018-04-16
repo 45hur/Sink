@@ -60,7 +60,7 @@ static __inline void logtofile(char *text)
 	fflush(log_whalebone);
 	fclose(log_whalebone);
 
-	memset(text, 0, strlen(text));
+	//memset(text, 0, strlen(text));
 
 	pthread_mutex_unlock(&(p->mutex));
 }
@@ -103,7 +103,7 @@ static __inline void logtosyslog(char *text)
 	fflush(log_debug);
 	fclose(log_debug);
 
-	memset(text, 0, strlen(text));
+	//memset(text, 0, strlen(text));
 
 	pthread_mutex_unlock(&(p->mutex));
 }
@@ -145,7 +145,7 @@ static __inline void logtoaudit(char *text)
 	fflush(log_audit);
 	fclose(log_audit);
 
-	memset(text, 0, strlen(text));
+	//memset(text, 0, strlen(text));
 
 	pthread_mutex_unlock(&(p->mutex));
 }
