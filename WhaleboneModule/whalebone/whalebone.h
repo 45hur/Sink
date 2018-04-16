@@ -6,6 +6,11 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <lib/rplan.h>
+#include <unistd.h>
+#include <sys/file.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+
 
 #include <libknot/packet/pkt.h>
 #include <libknot/rrtype/aaaa.h>
@@ -16,11 +21,16 @@
 static FILE *log_whalebone = 0;
 static FILE *log_debug = 0;
 static FILE *log_audit = 0;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+struct shared {
+	pthread_mutex_t mutex;
+	int sharedResource;
+};
+struct shared *p;
 
 static __inline void logtofile(char *text)
 {
-	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&(p->mutex));
 
 	char message[255] = {};
 	char timebuf[30] = {};
@@ -41,7 +51,7 @@ static __inline void logtofile(char *text)
 			log_whalebone = fopen("/var/log/whalebone/whalebone.log", "wt");
 		if (!log_whalebone)
 		{
-			pthread_mutex_unlock(&mutex);
+			pthread_mutex_unlock(&(p->mutex));
 
 			return;
 		}
@@ -52,12 +62,12 @@ static __inline void logtofile(char *text)
 
 	memset(text, 0, strlen(text));
 
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&(p->mutex));
 }
 
 static __inline void logtosyslog(char *text)
 {
-	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&(p->mutex));
 
 	char message[255] = {};
 	char timebuf[30] = {};
@@ -82,7 +92,7 @@ static __inline void logtosyslog(char *text)
 			log_debug = fopen("/var/log/whalebone/debug.log", "wt");
 		if (!log_debug)
 		{
-			pthread_mutex_unlock(&mutex);
+			pthread_mutex_unlock(&(p->mutex));
 
 			return;
 		}
@@ -93,7 +103,7 @@ static __inline void logtosyslog(char *text)
 
 	memset(text, 0, strlen(text));
 
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&(p->mutex));
 }
 
 #include "cache_loader.h"
@@ -101,7 +111,7 @@ static __inline void logtosyslog(char *text)
 
 static __inline void logtoaudit(char *text)
 {
-	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&(p->mutex));
 
 	char message[255] = {};
 	char timebuf[30] = {};
@@ -122,7 +132,7 @@ static __inline void logtoaudit(char *text)
 			log_audit = fopen("/var/log/whalebone/audit.log", "wt");
 		if (!log_audit)
 		{
-			pthread_mutex_unlock(&mutex);
+			pthread_mutex_unlock(&(p->mutex));
 
 			return;
 		}
@@ -133,6 +143,6 @@ static __inline void logtoaudit(char *text)
 
 	memset(text, 0, strlen(text));
 
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&(p->mutex));
 }
 #endif //SINK_SINK_H

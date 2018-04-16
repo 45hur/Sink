@@ -472,6 +472,20 @@ const kr_layer_api_t *whalebone_layer(struct kr_module *module) {
 KR_EXPORT
 int whalebone_init(struct kr_module *module)
 {
+	int fd = shm_open("/mutex.whalebone.kres.module", O_CREAT | O_TRUNC | O_RDWR, 0600);
+	ftruncate(fd, sizeof(struct shared));
+
+	p = (struct shared*)mmap(0, sizeof(struct shared), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	p->sharedResource = 0;
+
+	// Make sure it can be shared across processes
+	pthread_mutexattr_t shared;
+	pthread_mutexattr_init(&shared);
+	pthread_mutexattr_setpshared(&shared, PTHREAD_PROCESS_SHARED);
+
+	pthread_mutex_init(&(p->mutex), &shared);
+
 	/* Create a thread and start it in the background. */
 	pthread_t thr_id;
 	int ret = pthread_create(&thr_id, NULL, &observe, NULL);
@@ -491,6 +505,9 @@ int whalebone_init(struct kr_module *module)
 KR_EXPORT
 int whalebone_deinit(struct kr_module *module)
 {
+	munmap(p, sizeof(struct shared*));
+	shm_unlink("/mutex.whalebone.kres.module");
+
 	/* ... signalize cancellation ... */
 	void *res = NULL;
 	pthread_t thr_id = (pthread_t)module->data;
