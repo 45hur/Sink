@@ -420,7 +420,7 @@ void *connection_handler(void *socket_desc)
 		
 		if (swappolicy_policy_id_len > 0)
 		{
-			sprintf(message, "\"message\":\"initex policy %llu\"", swapcustomlist_identity_len);
+			sprintf(message, "\"message\":\"initex policy %llu\"", swappolicy_policy_id_len);
 			logtosyslog(message);
 
 			cache_policy *old_policy = cached_policy;

@@ -197,7 +197,7 @@ namespace Kres.Man
                 return;
             }
 
-            var domains = CacheLiveStorage.CoreCache.Domains.ToArray();
+            var domains = CacheLiveStorage.CoreCache.Domains.OrderBy(t => t.Crc64).ToArray();
             var count = domains.Count();
 
             log.Debug($"Updating {count} crc domains.");
@@ -209,7 +209,10 @@ namespace Kres.Man
             {
                 var flags = domains[i].Flags.SelectMany(BitConverter.GetBytes).ToArray();
 
-                //log.Debug($"Domain {i} CRC {domains[i].Crc64} {domains[i].Flags.Count()}");
+                //if (domains[i].Crc64 == 8554644589776997716)
+                //{
+                //    log.Debug($"Domain {i} CRC {domains[i].Crc64}");
+                //}
 
                 //log.Debug($"Array copy crc");
                 Array.Copy(BitConverter.GetBytes(domains[i].Crc64), 0, cacheDomainsCrc, i * sizeof(UInt64), sizeof(UInt64));
