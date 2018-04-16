@@ -222,6 +222,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			if (domain_flags & flags_accuracy)
 			{
 				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'accuracy'\"", querieddomain);
+				logtofile(message);
 				logtosyslog(message);
 				sprintf(message, "auditing '%s' no-policy => domain-policy =>'accuracy'", querieddomain);
 				logtoaudit(message);
@@ -229,18 +230,21 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			if (domain_flags & flags_blacklist)
 			{
 				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'blacklist'\"", querieddomain);
+				logtofile(message);
 				logtosyslog(message);
 				return redirect(request, last);
 			}
 			if (domain_flags & flags_whitelist)
 			{
 				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'whitelist'\"", querieddomain);
+				logtofile(message);
 				logtosyslog(message);
 				return KNOT_STATE_DONE;
 			}
 			if (domain_flags & flags_drop)
 			{
 				sprintf(message, "\"message\":\"'%s' no-policy => domain-policy =>'drop'\"", querieddomain);
+				logtofile(message);
 				logtosyslog(message);
 
 				//TODO
