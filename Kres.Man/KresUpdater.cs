@@ -352,6 +352,7 @@ namespace Kres.Man
             for (var i = 0; i < count; i++)
             {
                 var cacheIdentity = new byte[customlist[i].Identity.Length];
+                var cachecustomlist_policyid = new byte[sizeof(Int32)];
                 Array.Copy(ASCIIEncoding.ASCII.GetBytes(customlist[i].Identity), 0, cacheIdentity, 0, customlist[i].Identity.Length);
 
                 var cachecustomlist_whitelist = new byte[(customlist[i].WhiteList.Count() * sizeof(UInt64))];
@@ -370,13 +371,12 @@ namespace Kres.Man
                     Array.Copy(BitConverter.GetBytes(crc), 0, cachecustomlist_blacklist, j * sizeof(UInt64), sizeof(UInt64));
                 }
 
-                var cachecustomlist_policyid = new byte[4];
+                Array.Copy(BitConverter.GetBytes(customlist[i].PolicyId), 0, cachecustomlist_policyid, 0, sizeof(Int32));
 
                 listener.pushCustomListIdentityBuffer(new List<byte[]>() { cacheIdentity });
                 listener.pushCustomListWhitelistBuffer(new List<byte[]>() { cachecustomlist_whitelist });
                 listener.pushCustomListBlacklistBuffer(new List<byte[]>() { cachecustomlist_blacklist });
                 listener.pushCustomListPolicyIdBuffer(new List<byte[]>() { cachecustomlist_policyid });
-                
             }
         }
 
