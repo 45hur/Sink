@@ -18,7 +18,7 @@ static void* observe(void *arg)
 	logtosyslog("\"message\":\"loading\"");
 
 
-	//unsigned long long ret = 0;
+	unsigned long long ret = 0;
 	//if ((ret = loader_init()) != 0)
 	//{
 	//	logtosyslog("\"message\":\"csv load failed\"");
