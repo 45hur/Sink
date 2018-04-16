@@ -463,11 +463,11 @@ static int finish(kr_layer_t *ctx)
 					querieddomain[domainLen - 1] = '\0';
 				}
 
-				sprintf(message, "\"message\":\"query for %s\"", querieddomain);
+				sprintf(message, "\"message\":\"query for %s type %d\"", querieddomain, rr->type);
 				logtosyslog(message);
 
 
-				ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr, ipv4);
+				ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr, type == KNOT_RRTYPE_A);
 				break;
 			}
 			else
