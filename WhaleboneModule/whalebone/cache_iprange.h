@@ -96,6 +96,11 @@ cache_iprange* cache_iprange_init_ex(struct ip_addr ** low, struct ip_addr ** hi
 
 void cache_iprange_destroy(cache_iprange *cache)
 {
+	if (cache == NULL)
+	{
+		return;
+	}
+
   while (cache->searchers > 0)
   {
     usleep(50000);
@@ -183,6 +188,11 @@ int cache_iprange_add(cache_iprange* cache, struct ip_addr *low, struct ip_addr 
 
 int cache_iprange_contains(cache_iprange* cache, const struct ip_addr * ip, iprange *item)
 {
+	if (cache == NULL)
+	{
+		return -1;
+	}
+
 	cache->searchers++;
   int result = 0;
 	int position = cache->index;

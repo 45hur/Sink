@@ -94,6 +94,9 @@ cache_policy* cache_policy_init_ex(int *policy, int *strategy, int *audit, int *
 
 void cache_policy_destroy(cache_policy *cache)
 {
+	if (cache == NULL)
+		return;
+
   while (cache->searchers > 0)
   {
     usleep(50000);
@@ -138,6 +141,9 @@ int cache_policy_add(cache_policy* cache, int policy_id, int strategy, int audit
 
 int cache_policy_contains(cache_policy* cache, int policy_id, policy *item)
 {
+	if (cache == NULL)
+		return -1;
+
 	cache->searchers++;
   int result = 0;
 	int position = cache->index;

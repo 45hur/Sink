@@ -89,6 +89,9 @@ cache_customlist* cache_customlist_init_ex(char ** identity, struct cache_domain
          
 void cache_customlist_destroy(cache_customlist *cache)
 {
+	if (cache == NULL)
+		return;
+
   while (cache->searchers > 0)
   {
     usleep(50000);
@@ -178,6 +181,11 @@ int cache_customlist_add(cache_customlist* cache, char *identity, cache_domain *
 
 int cache_customlist_whitelist_contains(cache_customlist* cache, char *identity, unsigned long long crc)
 {
+	if (cache == NULL)
+	{
+		return -1;
+	}
+
 	cache->searchers++;
   int result = 0;
   int position = cache->index;

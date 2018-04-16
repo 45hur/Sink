@@ -156,6 +156,11 @@ cache_domain* cache_domain_init_ex2(unsigned long long *domains, int count)
 
 void cache_domain_destroy(cache_domain *cache)
 {
+	if (cache == NULL)
+	{
+		return;
+	}
+
   //printf(" free domain start\n");
   while(cache->searchers > 0)
   {
@@ -229,25 +234,14 @@ void cache_domain_sort(cache_domain* cache)
 {
 	qsort(cache->base, (size_t)cache->index, sizeof(unsigned long long), cache_domain_compare);
 }
-       /*
-int sink_list_dump(list* item, const char * filename)
-{
-	FILE* file = fopen(filename, "wb");
-	if (file == NULL)
-		return -1;
-
-	int written = fwrite(item->base, sizeof(unsigned long long), item->index, file);
-	if (written != item->index)
-		return -2;
-
-	if (fflush(file) != 0)
-		return -3;
-
-	return fclose(file);
-}   */
 
 int cache_domain_contains(cache_domain* cache, unsigned long long value, domain *citem)
 {
+	if (cache == NULL)
+	{
+		return -1;
+	}
+
 	cache->searchers++;
 	int lowerbound = 0;
 	int upperbound = cache->index;
