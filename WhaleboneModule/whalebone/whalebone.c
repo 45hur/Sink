@@ -95,7 +95,7 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 	return ctx->state;
 }
 
-static int redirect(struct kr_request * request, struct kr_query *last)
+static int redirect(struct kr_request * request, struct kr_query *last, bool ipv4)
 {
 	uint16_t msgid = knot_wire_get_id(request->answer->wire);
 	kr_pkt_recycle(request->answer);
@@ -104,14 +104,29 @@ static int redirect(struct kr_request * request, struct kr_query *last)
 	knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
 
 	struct sockaddr_storage sinkhole;
-	const char *sinkit_sinkhole = getenv("SINKIP");
-	if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
+	if (ipv4)
 	{
-		sinkit_sinkhole = "0.0.0.0";
+		const char *sinkit_sinkhole = getenv("SINKIP");
+		if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
+		{
+			sinkit_sinkhole = "0.0.0.0";
+		}
+		if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
+		{
+			return kr_error(EINVAL);
+		}
 	}
-	if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
+	else
 	{
-		return kr_error(EINVAL);
+		const char *sinkit_sinkhole = getenv("SINKIPV6");
+		if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
+		{
+			sinkit_sinkhole = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
+		}
+		if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
+		{
+			return kr_error(EINVAL);
+		}
 	}
 
 	size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
@@ -120,12 +135,20 @@ static int redirect(struct kr_request * request, struct kr_query *last)
 
 	knot_wire_set_id(request->answer->wire, msgid);
 
-	kr_pkt_put(request->answer, last->sname, 1, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
+	if (ipv4)
+	{
+		kr_pkt_put(request->answer, last->sname, 1, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
+	}
+	else
+	{
+		kr_pkt_put(request->answer, last->sname, 1, KNOT_CLASS_IN, KNOT_RRTYPE_AAAA, raw_addr, addr_len);
+	}
+
 
 	return KNOT_STATE_DONE;
 }
 
-static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr)
+static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, bool ipv4)
 {
 	//printf("%s.%03d\n", timebuf, millisec);
 	char message[KNOT_DNAME_MAXLEN] = {};
@@ -148,7 +171,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				{
 					sprintf(message, "\"message\":\"identity '%s' got '%s' blacklisted.\"", iprange_item.identity, querieddomain);
 					logtosyslog(message);
-					return redirect(request, last);
+					return redirect(request, last, ipv4);
 				}
 				if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc))
 				{
@@ -176,7 +199,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					logtofile(message);
 					if (domain_item.accuracy >= policy_item.block)
 					{
-						return redirect(request, last);
+						return redirect(request, last, ipv4);
 					}
 					else
 						if (domain_item.accuracy > policy_item.audit)
@@ -192,7 +215,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					//sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
 					sprintf(message, "\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"blacklist\"", querieddomain, req_addr);
 					logtofile(message);
-					return redirect(request, last);
+					return redirect(request, last, ipv4);
 				}
 				if (domain_flags & flags_whitelist)
 				{
@@ -232,7 +255,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				sprintf(message, "\"policy_id\":\"0\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", req_addr, querieddomain);
 				logtofile(message);
 				logtosyslog(message);
-				return redirect(request, last);
+				return redirect(request, last, ipv4);
 			}
 			if (domain_flags & flags_whitelist)
 			{
@@ -255,7 +278,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 	return KNOT_STATE_NOOP;
 }
 
-static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr)
+static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, bool ipv4)
 {
 	char message[KNOT_DNAME_MAXLEN] = {};
 	char *ptr = domain;
@@ -270,7 +293,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 			{
 				sprintf(message, "\"message\":\"search %s\"", ptr + 1);
 				logtosyslog(message);
-				if ((result = search(ctx, ptr + 1, origin, request, last, req_addr)) == KNOT_STATE_DONE)
+				if ((result = search(ctx, ptr + 1, origin, request, last, req_addr, ipv4)) == KNOT_STATE_DONE)
 				{
 					return result;
 				}
@@ -282,7 +305,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 			{
 				sprintf(message, "\"message\":\"search %s\"", ptr);
 				logtosyslog(message);
-				if ((result = search(ctx, ptr, origin, request, last, req_addr)) == KNOT_STATE_DONE)
+				if ((result = search(ctx, ptr, origin, request, last, req_addr, ipv4)) == KNOT_STATE_DONE)
 				{
 					return result;
 				}
@@ -343,6 +366,7 @@ static int finish(kr_layer_t *ctx)
 	const struct sockaddr *res = request->qsource.addr;
 	char *req_addr = NULL;
 	struct ip_addr origin = {};
+	bool ipv4 = true;
 	switch (res->sa_family) {
 	case AF_INET:
 	{
@@ -360,6 +384,7 @@ static int finish(kr_layer_t *ctx)
 		inet_ntop(AF_INET6, &(addr_in6->sin6_addr), req_addr, INET6_ADDRSTRLEN);
 		origin.family = AF_INET6;
 		memcpy(&origin.ipv6_sin_addr, &(addr_in6->sin6_addr), 16);
+		ipv4 = false;
 		break;
 	}
 	default:
@@ -442,7 +467,7 @@ static int finish(kr_layer_t *ctx)
 				logtosyslog(message);
 
 
-				ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr);
+				ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr, ipv4);
 				break;
 			}
 			else
