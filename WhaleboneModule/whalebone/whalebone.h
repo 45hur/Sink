@@ -30,7 +30,7 @@ static __inline void logtofile(char *text)
 {
 	pthread_mutex_lock(&(p->mutex));
 
-	FILE *log_whalebone = 0
+	FILE *log_whalebone = 0;
 	char message[255] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
