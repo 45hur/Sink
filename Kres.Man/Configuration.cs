@@ -44,6 +44,10 @@ namespace Kres.Man
         {
             return GetValue("RESOLVER_ID");
         }
+        internal static int GetResolverUpdateInterval()
+        {
+            return Convert.ToInt32(GetValue("RESOLVERAPI_UPDATE_INTERVAL_S"));
+        }
         internal static string GetPfxPath()
         {
             return GetValue("pfxpath");

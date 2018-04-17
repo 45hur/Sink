@@ -259,9 +259,9 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			}
 			if (domain_flags & flags_whitelist)
 			{
-				sprintf(message, "\"policy_id\":\"0\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\"", req_addr, querieddomain);
-				logtofile(message);
-				logtosyslog(message);
+				//sprintf(message, "\"policy_id\":\"0\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\"", req_addr, querieddomain);
+				//logtofile(message);
+				//logtosyslog(message);
 				return KNOT_STATE_DONE;
 			}
 			if (domain_flags & flags_drop)

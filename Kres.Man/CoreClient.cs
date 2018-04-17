@@ -44,7 +44,8 @@ namespace Kres.Man
                     log.Fatal($"{ex}");
                 }
 
-                Thread.Sleep(60000);
+                var interval_seconds = Configuration.GetResolverUpdateInterval();
+                Thread.Sleep(interval_seconds * 1000);
             }
         }
 
