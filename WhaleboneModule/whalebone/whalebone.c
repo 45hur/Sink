@@ -28,8 +28,11 @@ static void* observe(void *arg)
 	if ((cached_iprange_slovakia = cache_iprange_init(4)) == NULL)
 	{
 		puts("not enough memory to create ip range cache");
-		return -1;
+		return (void *)-1;
 	}
+
+	struct ip_addr ip4addr_low;
+	struct ip_addr ip4addr_high;
 
 	ip4addr_low.family = AF_INET;
 	inet_pton(AF_INET, "100.120.0.1", &ip4addr_low.ipv4_sin_addr);
