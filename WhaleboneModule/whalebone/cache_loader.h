@@ -17,6 +17,7 @@ cache_iprange* cached_iprange = NULL;
 cache_policy* cached_policy = NULL;
 cache_customlist* cached_customlist = NULL;
 
+cache_iprange* cached_iprange_slovakia = NULL;
 
 char **split(char *line, char sep, int fields)
 {

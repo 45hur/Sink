@@ -25,6 +25,36 @@ static void* observe(void *arg)
 	//	return (void *)-1;
 	//}
 
+	if ((cached_iprange_slovakia = cache_iprange_init(4)) == NULL)
+	{
+		puts("not enough memory to create ip range cache");
+		return -1;
+	}
+
+	ip4addr_low.family = AF_INET;
+	inet_pton(AF_INET, "100.120.0.1", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_high.family = AF_INET;
+	inet_pton(AF_INET, "100.127.255.255", &ip4addr_high.ipv4_sin_addr);
+	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
+
+	ip4addr_low.family = AF_INET;
+	inet_pton(AF_INET, "100.112.0.0", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_high.family = AF_INET;
+	inet_pton(AF_INET, "100.119.255.255", &ip4addr_high.ipv4_sin_addr);
+	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
+
+	ip4addr_low.family = AF_INET;
+	inet_pton(AF_INET, "151.236.224.0", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_high.family = AF_INET;
+	inet_pton(AF_INET, "151.236.231.255", &ip4addr_high.ipv4_sin_addr);
+	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
+
+	ip4addr_low.family = AF_INET;
+	inet_pton(AF_INET, "127.0.0.21", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_high.family = AF_INET;
+	inet_pton(AF_INET, "127.0.0.21", &ip4addr_high.ipv4_sin_addr);
+	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
+
 	pthread_t thr_id;
 	if ((ret = pthread_create(&thr_id, NULL, &socket_server, NULL)) != 0)
 	{
@@ -95,7 +125,7 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 	return ctx->state;
 }
 
-static int redirect(struct kr_request * request, struct kr_query *last, bool ipv4)
+static int redirect(struct kr_request * request, struct kr_query *last, bool ipv4, struct ip_addr * origin)
 {
 	uint16_t msgid = knot_wire_get_id(request->answer->wire);
 	kr_pkt_recycle(request->answer);
@@ -114,6 +144,12 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 		if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
 		{
 			return kr_error(EINVAL);
+		}
+
+		iprange iprange_item = {};
+		if (cache_iprange_contains(cached_iprange_slovakia, origin, &iprange_item))
+		{
+			sinkit_sinkhole = "127.0.0.11";
 		}
 	}
 	else
@@ -171,7 +207,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				{
 					sprintf(message, "\"message\":\"identity '%s' got '%s' blacklisted.\"", iprange_item.identity, querieddomain);
 					logtosyslog(message);
-					return redirect(request, last, ipv4);
+					return redirect(request, last, ipv4, origin);
 				}
 				if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc))
 				{
@@ -199,7 +235,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					logtofile(message);
 					if (domain_item.accuracy >= policy_item.block)
 					{
-						return redirect(request, last, ipv4);
+						return redirect(request, last, ipv4, origin);
 					}
 					else
 						if (domain_item.accuracy > policy_item.audit)
@@ -215,7 +251,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					//sprintf(message, "policy '%d' strategy=>'blacklist' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
 					sprintf(message, "\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"blacklist\"", querieddomain, req_addr);
 					logtofile(message);
-					return redirect(request, last, ipv4);
+					return redirect(request, last, ipv4, origin);
 				}
 				if (domain_flags & flags_whitelist)
 				{
@@ -255,7 +291,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				sprintf(message, "\"policy_id\":\"0\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", req_addr, querieddomain);
 				logtofile(message);
 				logtosyslog(message);
-				return redirect(request, last, ipv4);
+				return redirect(request, last, ipv4, origin);
 			}
 			if (domain_flags & flags_whitelist)
 			{
