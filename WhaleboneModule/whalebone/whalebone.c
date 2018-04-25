@@ -161,10 +161,6 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 		{
 			sinkit_sinkhole = "0.0.0.0";
 		}
-		if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
-		{
-			return kr_error(EINVAL);
-		}
 
 		iprange iprange_item = {};
 		if (cache_iprange_contains(cached_iprange_slovakia, origin, &iprange_item) == 1)
@@ -177,6 +173,11 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 		{
 			sprintf(message, "\"message\":\"origin does not match slovakia\"");
 			logtosyslog(message);
+		}
+
+		if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
+		{
+			return kr_error(EINVAL);
 		}
 	}
 	else
@@ -213,7 +214,6 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 
 static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, bool ipv4)
 {
-	//printf("%s.%03d\n", timebuf, millisec);
 	char message[KNOT_DNAME_MAXLEN] = {};
 	unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
 	domain domain_item = {};
