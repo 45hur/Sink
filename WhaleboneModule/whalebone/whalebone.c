@@ -158,7 +158,14 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 		iprange iprange_item = {};
 		if (cache_iprange_contains(cached_iprange_slovakia, origin, &iprange_item))
 		{
+			sprintf(message, "\"message\":\"origin matches slovakia\"");
+			logtosyslog(message);
 			sinkit_sinkhole = "194.228.41.77";
+		}
+		else
+		{
+			sprintf(message, "\"message\":\"origin does not match slovakia\"");
+			logtosyslog(message);
 		}
 	}
 	else
@@ -247,7 +254,6 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			}
 			if (domain_flags & flags_accuracy)
 			{
-				//policy '%d' strategy=>'accuracy' audit='%d' block='%d' '%s'='%d' accuracy", iprange_item.policy_id, policy_item.audit, policy_item.block, querieddomain, domain_item.accuracy);
 				if (domain_item.accuracy >= policy_item.block)
 				{
 					sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"block\",\"reason\":\"accuracy\"", iprange_item.policy_id, req_addr, querieddomain);
@@ -280,12 +286,12 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			if (domain_flags & flags_whitelist)
 			{
 				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\"", iprange_item.policy_id, req_addr, querieddomain);
-				logtofile(message);
+				logtosyslog(message);
 			}
 			if (domain_flags & flags_drop)
 			{
 				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"allow\",\"reason\":\"drop\"", iprange_item.policy_id, req_addr, querieddomain);
-				logtofile(message);
+				logtosyslog(message);
 			}
 		}
 		else
