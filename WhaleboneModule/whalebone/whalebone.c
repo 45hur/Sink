@@ -142,6 +142,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 	knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
 	knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
 
+	char message[KNOT_DNAME_MAXLEN] = {};
 	struct sockaddr_storage sinkhole;
 	if (ipv4)
 	{
