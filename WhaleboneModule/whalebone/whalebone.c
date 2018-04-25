@@ -157,7 +157,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 		}
 
 		iprange iprange_item = {};
-		if (cache_iprange_contains(cached_iprange_slovakia, origin, &iprange_item))
+		if (cache_iprange_contains(cached_iprange_slovakia, origin, &iprange_item) == 1)
 		{
 			sprintf(message, "\"message\":\"origin matches slovakia\"");
 			logtosyslog(message);
@@ -207,13 +207,13 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 	char message[KNOT_DNAME_MAXLEN] = {};
 	unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
 	domain domain_item = {};
-	if (cache_domain_contains(cached_domain, crc, &domain_item))
+	if (cache_domain_contains(cached_domain, crc, &domain_item) == 1)
 	{
 		sprintf(message, "\"message\":\"detected '%s'\"", querieddomain);
 		logtosyslog(message);
 
 		iprange iprange_item = {};
-		if (cache_iprange_contains(cached_iprange, origin, &iprange_item))
+		if (cache_iprange_contains(cached_iprange, origin, &iprange_item) == 1)
 		{
 			sprintf(message, "\"message\":\"detected '%s' matches ip range with ident '%s' policy '%d'\"", querieddomain, iprange_item.identity, iprange_item.policy_id);
 			logtosyslog(message);
@@ -228,13 +228,13 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 
 		if (strlen(iprange_item.identity) > 0)
 		{
-			if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc))
+			if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc) == 1)
 			{
 				sprintf(message, "\"message\":\"identity '%s' got '%s' blacklisted.\"", iprange_item.identity, querieddomain);
 				logtosyslog(message);
 				return redirect(request, last, ipv4, origin);
 			}
-			if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc))
+			if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc) == 1)
 			{
 				sprintf(message, "\"message\":\"identity '%s' got '%s' whitelisted.\"", iprange_item.identity, querieddomain);
 				logtosyslog(message);
@@ -245,7 +245,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 		logtosyslog(message);
 
 		policy policy_item = {};
-		if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item))
+		if (cache_policy_contains(cached_policy, iprange_item.policy_id, &policy_item) == 1)
 		{
 			int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
 			if (domain_flags == 0)
