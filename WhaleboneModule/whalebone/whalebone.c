@@ -25,7 +25,7 @@ static void* observe(void *arg)
 	//	return (void *)-1;
 	//}
 
-	if ((cached_iprange_slovakia = cache_iprange_init(4)) == NULL)
+	if ((cached_iprange_slovakia = cache_iprange_init(5)) == NULL)
 	{
 		puts("not enough memory to create ip range cache");
 		return (void *)-1;
@@ -56,6 +56,12 @@ static void* observe(void *arg)
 	inet_pton(AF_INET, "127.0.0.21", &ip4addr_low.ipv4_sin_addr);
 	ip4addr_high.family = AF_INET;
 	inet_pton(AF_INET, "127.0.0.21", &ip4addr_high.ipv4_sin_addr);
+	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
+
+	ip4addr_low.family = AF_INET;
+	inet_pton(AF_INET, "127.0.0.30", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_high.family = AF_INET;
+	inet_pton(AF_INET, "127.0.0.30", &ip4addr_high.ipv4_sin_addr);
 	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
 
 	pthread_t thr_id;
@@ -152,7 +158,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 		iprange iprange_item = {};
 		if (cache_iprange_contains(cached_iprange_slovakia, origin, &iprange_item))
 		{
-			sinkit_sinkhole = "127.0.0.11";
+			sinkit_sinkhole = "194.228.41.77";
 		}
 	}
 	else
