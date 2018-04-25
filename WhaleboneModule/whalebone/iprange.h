@@ -31,14 +31,14 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
 	switch (ip->family) {
 	case AF_INET: {
 		unsigned int addr_ip = __builtin_bswap32(ip->ipv4_sin_addr);
-		unsigned int addr_fr = from->ipv4_sin_addr;
-		unsigned int addr_to = to->ipv4_sin_addr;
+		unsigned int addr_fr = __builtin_bswap32(from->ipv4_sin_addr);
+		unsigned int addr_to = __builtin_bswap32(to->ipv4_sin_addr);
 
-		//printf("%08x => %08x <= %08x\n",
-		//	addr_fr,
-		//	addr_ip,
-		//	addr_to
-		//);
+		printf("%08x => %08x <= %08x\n",
+			addr_fr,
+			addr_ip,
+			addr_to
+		);
 
 		result = (addr_ip >= addr_fr) && (addr_ip <= addr_to);
 		break;
