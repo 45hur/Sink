@@ -59,9 +59,9 @@ static void* observe(void *arg)
 	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
 
 	ip4addr_low.family = AF_INET;
-	inet_pton(AF_INET, "127.0.0.30", &ip4addr_low.ipv4_sin_addr);
+	inet_pton(AF_INET, "127.0.0.29", &ip4addr_low.ipv4_sin_addr);
 	ip4addr_high.family = AF_INET;
-	inet_pton(AF_INET, "127.0.0.30", &ip4addr_high.ipv4_sin_addr);
+	inet_pton(AF_INET, "127.0.0.31", &ip4addr_high.ipv4_sin_addr);
 	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
 
 	pthread_t thr_id;
