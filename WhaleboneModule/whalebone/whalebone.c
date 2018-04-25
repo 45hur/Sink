@@ -36,32 +36,42 @@ static void* observe(void *arg)
 
 	ip4addr_low.family = AF_INET;
 	inet_pton(AF_INET, "100.120.0.1", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_low.ipv4_sin_addr = __builtin_bswap32(ip4addr_low.ipv4_sin_addr);
 	ip4addr_high.family = AF_INET;
 	inet_pton(AF_INET, "100.127.255.255", &ip4addr_high.ipv4_sin_addr);
+	ip4addr_high.ipv4_sin_addr = __builtin_bswap32(ip4addr_high.ipv4_sin_addr);
 	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
 
 	ip4addr_low.family = AF_INET;
 	inet_pton(AF_INET, "100.112.0.0", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_low.ipv4_sin_addr = __builtin_bswap32(ip4addr_low.ipv4_sin_addr);
 	ip4addr_high.family = AF_INET;
 	inet_pton(AF_INET, "100.119.255.255", &ip4addr_high.ipv4_sin_addr);
+	ip4addr_high.ipv4_sin_addr = __builtin_bswap32(ip4addr_high.ipv4_sin_addr);
 	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
 
 	ip4addr_low.family = AF_INET;
 	inet_pton(AF_INET, "151.236.224.0", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_low.ipv4_sin_addr = __builtin_bswap32(ip4addr_low.ipv4_sin_addr);
 	ip4addr_high.family = AF_INET;
 	inet_pton(AF_INET, "151.236.231.255", &ip4addr_high.ipv4_sin_addr);
+	ip4addr_high.ipv4_sin_addr = __builtin_bswap32(ip4addr_high.ipv4_sin_addr);
 	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
 
 	ip4addr_low.family = AF_INET;
 	inet_pton(AF_INET, "127.0.0.21", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_low.ipv4_sin_addr = __builtin_bswap32(ip4addr_low.ipv4_sin_addr);
 	ip4addr_high.family = AF_INET;
 	inet_pton(AF_INET, "127.0.0.21", &ip4addr_high.ipv4_sin_addr);
+	ip4addr_high.ipv4_sin_addr = __builtin_bswap32(ip4addr_high.ipv4_sin_addr);
 	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
 
 	ip4addr_low.family = AF_INET;
 	inet_pton(AF_INET, "127.0.0.30", &ip4addr_low.ipv4_sin_addr);
+	ip4addr_low.ipv4_sin_addr = __builtin_bswap32(ip4addr_low.ipv4_sin_addr);
 	ip4addr_high.family = AF_INET;
 	inet_pton(AF_INET, "127.0.0.30", &ip4addr_high.ipv4_sin_addr);
+	ip4addr_high.ipv4_sin_addr = __builtin_bswap32(ip4addr_high.ipv4_sin_addr);
 	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
 
 	pthread_t thr_id;
