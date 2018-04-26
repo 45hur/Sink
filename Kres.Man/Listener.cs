@@ -139,6 +139,13 @@ namespace Kres.Man
             return KresUpdater.Push(bufferType.identitybufferpolicyid, buffer);
         }
 
+        [Mapping("updatenow")]
+        public object UpdateNow(string postdata)
+        {
+            KresUpdater.UpdateNow();
+            return 0;
+        }
+
         [Mapping("bypass")]
         public object Bypass(string postdata, string ipaddress, string domainToWhitelist)
         {
@@ -331,8 +338,6 @@ namespace Kres.Man
         {
             tLoop = new Thread(ThreadProc);
             tLoop.Start();
-
-                
         }
     }
 }
