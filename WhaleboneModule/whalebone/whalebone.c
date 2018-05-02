@@ -260,7 +260,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
 			if (domain_flags == 0)
 			{
-				sprintf(message, "\"message\":\"policy has strategy flags_none\"");
+				sprintf(message, "\"message\":\"policy has strategy flags_none\",\"flags\":\"%llu\",\"policy_id\":\"%d\"", domain_item.flags, iprange_item.policy_id);
 				logtosyslog(message);
 			}
 			if (domain_flags & flags_accuracy)
