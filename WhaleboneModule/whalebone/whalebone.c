@@ -267,7 +267,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			{
 				if (domain_item.accuracy >= policy_item.block)
 				{
-					sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"block\",\"reason\":\"accuracy\"", iprange_item.policy_id, req_addr, querieddomain);
+					sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"block\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
 					logtofile(message);
 					logtoaudit(message);
 
@@ -277,13 +277,13 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				{
 					if (domain_item.accuracy > policy_item.audit)
 					{
-						sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"audit\",\"reason\":\"accuracy\"", iprange_item.policy_id, req_addr, querieddomain);
+						sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"audit\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
 						logtofile(message);
 						logtoaudit(message);
 					}
 					else
 					{
-						sprintf(message, "\"message\":\"policy has no action\"");
+						sprintf(message, "\"message\":\"policy has no action\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", domain_item.accuracy, policy_item.audit, policy_item.block);
 						logtosyslog(message);
 					}
 				}
