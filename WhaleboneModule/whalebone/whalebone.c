@@ -35,7 +35,7 @@ static void* observe(void *arg)
 	struct ip_addr ip4addr_high;
 
 	ip4addr_low.family = AF_INET;
-	inet_pton(AF_INET, "100.120.0.1", &ip4addr_low.ipv4_sin_addr);
+	inet_pton(AF_INET, "100.120.0.0", &ip4addr_low.ipv4_sin_addr);
 	ip4addr_low.ipv4_sin_addr = __builtin_bswap32(ip4addr_low.ipv4_sin_addr);
 	ip4addr_high.family = AF_INET;
 	inet_pton(AF_INET, "100.127.255.255", &ip4addr_high.ipv4_sin_addr);
@@ -54,7 +54,7 @@ static void* observe(void *arg)
 	inet_pton(AF_INET, "151.236.224.0", &ip4addr_low.ipv4_sin_addr);
 	ip4addr_low.ipv4_sin_addr = __builtin_bswap32(ip4addr_low.ipv4_sin_addr);
 	ip4addr_high.family = AF_INET;
-	inet_pton(AF_INET, "151.236.231.255", &ip4addr_high.ipv4_sin_addr);
+	inet_pton(AF_INET, "151.236.239.255", &ip4addr_high.ipv4_sin_addr);
 	ip4addr_high.ipv4_sin_addr = __builtin_bswap32(ip4addr_high.ipv4_sin_addr);
 	cache_iprange_add(cached_iprange_slovakia, &ip4addr_low, &ip4addr_high, "", 0);
 
