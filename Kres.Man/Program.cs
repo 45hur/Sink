@@ -29,7 +29,8 @@ namespace Kres.Man
             log.Info("Main");
 
             log.Info("Init cache");
-            CacheLiveStorage.CoreCache = CsvLoader.InitCache();
+            CacheLiveStorage.CoreCache = new Models.Cache();
+            CacheLiveStorage.UdpCache = new System.Collections.Concurrent.ConcurrentDictionary<string, Models.CacheIPRange>();
 
             log.Info("Run shell script");
             RunScriptIfExists();

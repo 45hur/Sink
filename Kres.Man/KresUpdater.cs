@@ -229,14 +229,21 @@ namespace Kres.Man
 
         private void UpdateIPRanges()
         {
-            if (CacheLiveStorage.CoreCache.IPRanges == null)
+            var ipRange = CacheLiveStorage.UdpCache.Select(t => t.Value).ToArray();
+            Models.CacheIPRange[] ipRangeCore = null;
+
+            if (CacheLiveStorage.CoreCache.IPRanges != null)
             {
-                log.Debug("No ranges to update");
-                return;
+                ipRangeCore = CacheLiveStorage.CoreCache.IPRanges.ToArray();
+                ipRange = ipRange.Concat(ipRangeCore).ToArray();
             }
 
-            var ipRange = CacheLiveStorage.CoreCache.IPRanges.ToArray();
             var count = ipRange.Count();
+            if (count == 0)
+            {
+                log.Info("No ranges to update");
+                return;
+            }
 
             log.Debug($"Updating {count} ip ranges.");
             var cacheIPFrom = new List<byte[]>(count);

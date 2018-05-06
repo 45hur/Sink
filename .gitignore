@@ -16,3 +16,7 @@ Kres\.Man/Kres\.Man\.log.*
 Kres\.Man/Kres\.Man\.log
 
 *.log
+
+\.vs/
+
+PingFlood/obj/Release/

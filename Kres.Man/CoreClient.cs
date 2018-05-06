@@ -7,6 +7,7 @@ using System.Net.Security;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading;
 
 using Newtonsoft.Json;
@@ -94,6 +95,8 @@ namespace Kres.Man
                     log.Debug($"Deserialize.");
                     var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
 
+                    var xx = Crc64.Compute(0, Encoding.UTF8.GetBytes("nceadwbnlvftsiyei.net"));
+
                     log.Debug($"Deserialized.");
                     if (cache.CustomLists != null)
                         log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
@@ -103,6 +106,8 @@ namespace Kres.Man
                         log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
                     if (cache.Policies != null)
                         log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
+
+                    var set = cache.Domains.Where(t => t.Crc64 == xx);
 
                     CacheLiveStorage.CoreCache = cache;
                 }

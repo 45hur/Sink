@@ -22,6 +22,8 @@ namespace Kres.Man.Models
         [ProtoMember(4)]
         public Int32 PolicyId { get; set; }
 
+        public DateTime Created { get; set; }
+
         public Int128 IpFrom
         {
             get

@@ -16,42 +16,73 @@ namespace Kres.Man
         private const int listenPort = 11000;
         public static Thread tUdpLoop;
 
-        private static async void ThreadProc()
+        private static void ThreadProc()
         {
-            log.Info("Starting UDP Server thread.");
+            log.Info("Starting Radius UDP Server thread.");
 
-            using (UdpClient listener = new UdpClient(Configuration.GetUdpPort()))
+            var port = Configuration.GetUdpPort();
+            while (true)
             {
-                IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 1813);
-                try
+                using (var listener = new UdpClient(port, AddressFamily.InterNetwork))
                 {
-                    while (true)
+                    var groupEP = new IPEndPoint(IPAddress.Any, 0);
+                    try
                     {
-                        var receivedResult = await listener.ReceiveAsync();
-                        Task.Run(() => { ProcessResult(receivedResult); });
+                        while (true)
+                        {
+                            var receivedResult = listener.Receive(ref groupEP);
+                            ProcessResult(receivedResult);
+                        }
+
                     }
-                }
-                catch (Exception ex)
-                {
-                    log.Fatal(ex);
-                }
-                finally
-                {
-                    listener.Close();
-                    tUdpLoop = null;
+                    catch (Exception ex)
+                    {
+                        log.Fatal(ex);
+                    }
+                    finally
+                    {
+                        listener.Close();
+                    }
                 }
             }
         }
 
-        private static void ProcessResult(UdpReceiveResult receivedResult)
+        private static void ProcessResult(byte[] receivedResult)
         {
             try
             {
-                var receivedPacket = new FP.Radius.RadiusPacket(receivedResult.Buffer);
+                var receivedPacket = new FP.Radius.RadiusPacket(receivedResult);
                 if (receivedPacket.Valid)
                 {
-                    var ipaddress = receivedPacket.Attributes.Where(t => t.Type == FP.Radius.RadiusAttributeType.FRAMED_IP_ADDRESS).First();
+                    var ipaddress = receivedPacket.Attributes.Where(t => t.Type == FP.Radius.RadiusAttributeType.FRAMED_IP_ADDRESS).First().Value;
                     var sessionid = ASCIIEncoding.ASCII.GetString(receivedPacket.Attributes.Where(t => t.Type == FP.Radius.RadiusAttributeType.ACCT_SESSION_ID).First().Data);
+
+                    var addrbytes = IPAddress.Parse(ipaddress).GetAddressBytes();
+                    var addr = new Models.Int128();
+                    if (addrbytes.Length == 4)
+                    {
+                        addr.Hi = 0;
+                        addr.Low = BitConverter.ToUInt32(addrbytes, 0);
+                    }
+                    else if (addrbytes.Length == 16)
+                    {
+                        addr.Hi = BitConverter.ToUInt64(addrbytes, 0);
+                        addr.Low = BitConverter.ToUInt64(addrbytes, 8);
+                    }
+
+                    var addresstext = new BigMath.Int128(addr.Hi, addr.Low).ToString();
+                    var addbytes2 = ASCIIEncoding.ASCII.GetBytes(addresstext);
+
+                    var item = new Models.CacheIPRange()
+                    {
+                        Created = DateTime.UtcNow,
+                        Identity = sessionid,
+                        Proto_IpFrom = addbytes2,
+                        Proto_IpTo = addbytes2,
+                        PolicyId = 0
+                    };
+
+                    CacheLiveStorage.UdpCache.AddOrUpdate(sessionid, item, (key, oldValue) => item);
 
                     log.Info($"Processed {ipaddress} for {sessionid}.");
                 }
