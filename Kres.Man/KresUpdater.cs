@@ -222,9 +222,9 @@ namespace Kres.Man
                 }
             }
 
-            listener.pushDomainCrcBuffer(new List<byte[]>() { cacheDomainsCrc });
-            listener.pushDomainAccuracyBuffer(new List<byte[]>() { cacheAccuracy });
-            listener.pushDomainFlagsBuffer(new List<byte[]>() { cacheFlags });
+            listener.pushDomainCrcBuffer(null, new List<byte[]>() { cacheDomainsCrc });
+            listener.pushDomainAccuracyBuffer(null, new List<byte[]>() { cacheAccuracy });
+            listener.pushDomainFlagsBuffer(null, new List<byte[]>() { cacheFlags });
         }
 
         private void UpdateIPRanges()
@@ -307,10 +307,10 @@ namespace Kres.Man
                 Array.Copy(BitConverter.GetBytes(ipRange[i].PolicyId), 0, cachePolicy, i * (sizeof(UInt32)), sizeof(UInt32));
             }
 
-            listener.pushIPRangeFromBuffer(cacheIPFrom);
-            listener.pushIPRangeToBuffer(cacheIPTo);
-            listener.pushIPRangeIdentityBuffer(cacheIdentity);
-            listener.pushIPRangePolicyBuffer(new List<byte[]>() { cachePolicy });
+            listener.pushIPRangeFromBuffer(null, cacheIPFrom);
+            listener.pushIPRangeToBuffer(null, cacheIPTo);
+            listener.pushIPRangeIdentityBuffer(null, cacheIdentity);
+            listener.pushIPRangePolicyBuffer(null, new List<byte[]>() { cachePolicy });
         }
 
         private void UpdatePolicies()
@@ -338,10 +338,10 @@ namespace Kres.Man
                 Array.Copy(BitConverter.GetBytes(policies[i].Block), 0, cachePolicyBlock, i * sizeof(UInt32), sizeof(UInt32));
             }
 
-            listener.pushPolicyIDBuffer(new List<byte[]>() { cachePolicyId });
-            listener.pushPolicyStrategyBuffer(new List<byte[]>() { cachePolicyStrategy });
-            listener.pushPolicyAuditBuffer(new List<byte[]>() { cachePolicyAudit });
-            listener.pushPolicyBlockBuffer(new List<byte[]>() { cachePolicyBlock });
+            listener.pushPolicyIDBuffer(null, new List<byte[]>() { cachePolicyId });
+            listener.pushPolicyStrategyBuffer(null, new List<byte[]>() { cachePolicyStrategy });
+            listener.pushPolicyAuditBuffer(null, new List<byte[]>() { cachePolicyAudit });
+            listener.pushPolicyBlockBuffer(null, new List<byte[]>() { cachePolicyBlock });
         }
 
         private void UpdateCustomLists()
@@ -380,21 +380,21 @@ namespace Kres.Man
 
                 Array.Copy(BitConverter.GetBytes(customlist[i].PolicyId), 0, cachecustomlist_policyid, 0, sizeof(Int32));
 
-                listener.pushCustomListIdentityBuffer(new List<byte[]>() { cacheIdentity });
-                listener.pushCustomListWhitelistBuffer(new List<byte[]>() { cachecustomlist_whitelist });
-                listener.pushCustomListBlacklistBuffer(new List<byte[]>() { cachecustomlist_blacklist });
-                listener.pushCustomListPolicyIdBuffer(new List<byte[]>() { cachecustomlist_policyid });
+                listener.pushCustomListIdentityBuffer(null, new List<byte[]>() { cacheIdentity });
+                listener.pushCustomListWhitelistBuffer(null, new List<byte[]>() { cachecustomlist_whitelist });
+                listener.pushCustomListBlacklistBuffer(null, new List<byte[]>() { cachecustomlist_blacklist });
+                listener.pushCustomListPolicyIdBuffer(null, new List<byte[]>() { cachecustomlist_policyid });
             }
         }
 
         private void SwapCaches()
         {
-            listener.pushSwapCaches(new List<byte[]>());
+            listener.pushSwapCaches(null, new List<byte[]>());
         }
 
         private void FreeCaches()
         {
-            listener.pushFreeCaches(new List<byte[]>());
+            listener.pushFreeCaches(null, new List<byte[]>());
         }
 
         internal void Start(Listener listener)

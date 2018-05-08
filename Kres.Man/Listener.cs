@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -16,7 +17,7 @@ namespace Kres.Man
         private Thread tLoop;
 
         [Mapping("health")]
-        public object getHealthHandler(string postData)
+        public object getHealthHandler(HttpListenerContext ctx, string postData)
         {
             if (
                 (tLoop == null) || (tLoop != null && !tLoop.IsAlive) ||
@@ -38,119 +39,140 @@ namespace Kres.Man
 
 
         [Mapping("pushswapcaches")]
-        public object pushSwapCaches(List<byte[]> buffer)
+        public object pushSwapCaches(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.swapcache, buffer);
         }
 
         [Mapping("pushfreecaches")]
-        public object pushFreeCaches(List<byte[]> buffer)
+        public object pushFreeCaches(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.swapfreebuffers, buffer);
         }
 
         [Mapping("pushdomaincrcbuffer")]
-        public object pushDomainCrcBuffer(List<byte[]> buffer)
+        public object pushDomainCrcBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.domainCrcBuffer, buffer); 
         }
 
         [Mapping("pushdomainaccuracybuffer")]
-        public object pushDomainAccuracyBuffer(List<byte[]> buffer)
+        public object pushDomainAccuracyBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.domainAccuracyBuffer, buffer); 
         }
 
         [Mapping("pushdomainflagsbuffer")]
-        public object pushDomainFlagsBuffer(List<byte[]> buffer)
+        public object pushDomainFlagsBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.domainFlagsBuffer, buffer); 
         }
 
         [Mapping("pushiprangefrombuffer")]
-        public object pushIPRangeFromBuffer(List<byte[]> buffer)
+        public object pushIPRangeFromBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.iprangeipfrom, buffer);
         }
 
         [Mapping("pushiprangetobuffer")]
-        public object pushIPRangeToBuffer(List<byte[]> buffer)
+        public object pushIPRangeToBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.iprangeipto, buffer);
         }
 
         [Mapping("pushiprangeidentitybuffer")]
-        public object pushIPRangeIdentityBuffer(List<byte[]> buffer)
+        public object pushIPRangeIdentityBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.iprangeidentity, buffer);
         }
 
         [Mapping("pushiprangepolicybuffer")]
-        public object pushIPRangePolicyBuffer(List<byte[]> buffer)
+        public object pushIPRangePolicyBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.iprangepolicyid, buffer);
         }
 
         [Mapping("pushpolicyidbuffer")]
-        public object pushPolicyIDBuffer(List<byte[]> buffer)
+        public object pushPolicyIDBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.policyid, buffer);
         }
 
         [Mapping("pushpolicystrategybuffer")]
-        public object pushPolicyStrategyBuffer(List<byte[]> buffer)
+        public object pushPolicyStrategyBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.policystrategy, buffer);
         }
 
         [Mapping("pushpolicyauditbuffer")]
-        public object pushPolicyAuditBuffer(List<byte[]> buffer)
+        public object pushPolicyAuditBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.policyaudit, buffer);
         }
 
         [Mapping("pushpolicyblockbuffer")]
-        public object pushPolicyBlockBuffer(List<byte[]> buffer)
+        public object pushPolicyBlockBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.policyblock, buffer);
         }
 
         [Mapping("pushcustomlistidentitkbuffer")]
-        public object pushCustomListIdentityBuffer(List<byte[]> buffer)
+        public object pushCustomListIdentityBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.identitybuffer, buffer);
         }
 
         [Mapping("pushcustomlistwhitelistbuffer")]
-        public object pushCustomListWhitelistBuffer(List<byte[]> buffer)
+        public object pushCustomListWhitelistBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.identitybufferwhitelist, buffer);
         }
 
         [Mapping("pushcustomlistblacklistbuffer")]
-        public object pushCustomListBlacklistBuffer(List<byte[]> buffer)
+        public object pushCustomListBlacklistBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.identitybufferblacklist, buffer);
         }
 
         [Mapping("pushcustomlistblacklistbuffer")]
-        public object pushCustomListPolicyIdBuffer(List<byte[]> buffer)
+        public object pushCustomListPolicyIdBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
             return KresUpdater.Push(bufferType.identitybufferpolicyid, buffer);
         }
 
         [Mapping("updatenow")]
-        public object UpdateNow(string postdata)
+        public object UpdateNow(HttpListenerContext ctx, string postdata)
         {
             KresUpdater.UpdateNow();
             return 0;
         }
 
+        [Mapping("passthrough")]
+        public object PassThrough(HttpListenerContext ctx, string postdata)
+        {
+            using (var file = File.OpenRead(@"Web\sinkit.en.html"))
+            {
+                using (var reader = new StreamReader(file))
+                {
+                    var url = ctx.Request.Url;
+                    var encodedUrl = Base64Encode(url.ToString());
+                    var ipaddress = ctx.Request.RemoteEndPoint.Address.ToString();
+                    var content = reader.ReadToEnd();
+
+                    content = content.Replace("{$targetUrl}", $"{url.Host} from {ipaddress}");
+                    content = content.Replace("{$ipToBypass}", ipaddress);
+                    content = content.Replace("{$domainToWhitelist}", url.Host);
+                    content = content.Replace("{$redirectUrl}", encodedUrl);
+
+                    return content;
+                }
+            }
+        }
+
         [Mapping("bypass")]
-        public object Bypass(string postdata, string ipaddress, string domainToWhitelist)
+        public object Bypass(HttpListenerContext ctx, string postdata, string ipaddress, string domainToWhitelist, string redirectUrl)
         {
             string identity = ipaddress.GetHashCode().ToString("X");
-            
 
             IPAddress ip;
             if (!IPAddress.TryParse(ipaddress, out ip))
@@ -216,6 +238,8 @@ namespace Kres.Man
 
             KresUpdater.UpdateNow();
 
+            ctx.Response.Redirect(Base64Decode(redirectUrl));
+
             return null;
         }
 
@@ -226,6 +250,13 @@ namespace Kres.Man
             var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
             return Encoding.UTF8.GetString(base64EncodedBytes);
         }
+
+        private static string Base64Encode(string data)
+        {
+            var bytes = Encoding.UTF8.GetBytes(data); 
+            return Convert.ToBase64String(bytes);
+        }
+
 
         private void ThreadProc()
         {
@@ -242,13 +273,15 @@ namespace Kres.Man
                     listener.Start();
                     while (true)
                     {
-                        log.Info($"Waiting for listener context.");
+                        //log.Info($"Waiting for listener context.");
                         HttpListenerContext ctx = listener.GetContext();
 
                         ThreadPool.QueueUserWorkItem((_) =>
                         {
                             try
                             {
+                                log.Info($"RemoteEndPoint = {ctx.Request.RemoteEndPoint.ToString()}");
+
                                 string methodName = ctx.Request.Url.Segments[1].Replace("/", "");
                                 string[] strParams = ctx.Request.Url
                                                         .Segments
@@ -256,16 +289,28 @@ namespace Kres.Man
                                                         .Select(s => s.Replace("/", ""))
                                                         .ToArray();
 
-                                var method = this.GetType()
-                                                    .GetMethods()
-                                                    .Where(mi => mi.GetCustomAttributes(true).Any(attr => attr is Mapping && ((Mapping)attr).Map == methodName))
-                                                    .First();
+                                MethodInfo method = null;
 
-                                var args = method.GetParameters().Skip(1).Select((p, i) => Convert.ChangeType(strParams[i], p.ParameterType));
-                                var @params = new object[args.Count() + 1];
+                                try
+                                {
+                                    method = this.GetType()
+                                                        .GetMethods()
+                                                        .Where(mi => mi.GetCustomAttributes(true).Any(attr => attr is Mapping && ((Mapping)attr).Map == methodName))
+                                                        .First();
+                                }
+                                catch (Exception ex)
+                                {
+                                    ctx.Response.OutputStream.Close();
+
+                                    return;
+                                }
+
+                                var args = method.GetParameters().Skip(2).Select((p, i) => Convert.ChangeType(strParams[i], p.ParameterType));
+                                var @params = new object[args.Count() + 2];
 
                                 var inLength = ctx.Request.ContentLength64;
-                                log.Info($"Content len = {inLength}.");
+                                //log.Info($"Content len = {inLength}.");
+                                
                                 var inBuffer = new byte[4096];
                                 var buffer = new byte[inLength];
                                 int totalBytesRead = 0;
@@ -275,7 +320,7 @@ namespace Kres.Man
                                     bytesRead = ctx.Request.InputStream.Read(inBuffer, 0, inBuffer.Length);
                                     if (bytesRead == 0 || bytesRead == -1)
                                     {
-                                        log.Info($"Nothing to read len = {totalBytesRead}.");
+                                        //log.Info($"Nothing to read len = {totalBytesRead}.");
                                         break;
                                     }
 
@@ -284,22 +329,21 @@ namespace Kres.Man
 
                                     if (totalBytesRead == inLength)
                                     {
-                                        log.Info($"Read finished to read len = {totalBytesRead}.");
+                                        //log.Info($"Read finished to read len = {totalBytesRead}.");
                                         break;
                                     }
                                 }
 
-                                var content = Encoding.UTF8.GetString(buffer);
-                                @params[0] = content;
-                                Array.Copy(args.ToArray(), 0, @params, 1, args.Count());
+                                @params[0] = ctx;
+                                @params[1] = Encoding.UTF8.GetString(buffer);
+                                Array.Copy(args.ToArray(), 0, @params, 2, args.Count());
 
                                 log.Info($"Invoking {method.Name}");
                                 try
                                 {
-                                    var ret = method.Invoke(this, @params);
-                                    var retstr = JsonConvert.SerializeObject(ret);
+                                    var ret = method.Invoke(this, @params) as string;
 
-                                    var outBuffer = Encoding.UTF8.GetBytes(retstr);
+                                    var outBuffer = Encoding.UTF8.GetBytes(ret);
                                     ctx.Response.ContentLength64 = outBuffer.LongLength;
                                     ctx.Response.OutputStream.Write(outBuffer, 0, outBuffer.Length);
                                     ctx.Response.OutputStream.Close();

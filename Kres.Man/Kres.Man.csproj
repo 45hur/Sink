@@ -7,6 +7,36 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Web\legal.cs.html" />
+    <None Remove="Web\legal.en.html" />
+    <None Remove="Web\legal.sk.html" />
+    <None Remove="Web\sinkit.cs.html" />
+    <None Remove="Web\sinkit.en.html" />
+    <None Remove="Web\sinkit.sk.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Web\legal.cs.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\legal.en.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\legal.sk.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\sinkit.cs.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\sinkit.en.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\sinkit.sk.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CsvHelper" Version="7.1.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
