@@ -150,7 +150,7 @@ namespace Kres.Man
         [Mapping("passthrough")]
         public object PassThrough(HttpListenerContext ctx, string postdata)
         {
-            using (var file = File.OpenRead(@"Web\sinkit.en.html"))
+            using (var file = File.OpenRead(@"Web/sinkit.en.html"))
             {
                 using (var reader = new StreamReader(file))
                 {
