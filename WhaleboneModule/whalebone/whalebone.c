@@ -220,25 +220,25 @@ static int redirect(struct kr_request * request, struct kr_query *last, bool ipv
 	return KNOT_STATE_DONE;
 }
 
-static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, bool ipv4)
+static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, bool ipv, char * domain)
 {
 	char message[KNOT_DNAME_MAXLEN] = {};
 	unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
 	domain domain_item = {};
 	if (cache_domain_contains(cached_domain, crc, &domain_item) == 1)
 	{
-		sprintf(message, "\"message\":\"detected '%s'\"", querieddomain);
+		sprintf(message, "\"message\":\"detected ioc '%s'\"", querieddomain);
 		logtosyslog(message);
 
 		iprange iprange_item = {};
 		if (cache_iprange_contains(cached_iprange, origin, &iprange_item) == 1)
 		{
-			sprintf(message, "\"message\":\"detected '%s' matches ip range with ident '%s' policy '%d'\"", querieddomain, iprange_item.identity, iprange_item.policy_id);
+			sprintf(message, "\"message\":\"detected ioc '%s' matches ip range with ident '%s' policy '%d'\"", querieddomain, iprange_item.identity, iprange_item.policy_id);
 			logtosyslog(message);
 		}
 		else
 		{
-			sprintf(message, "\"message\":\"detected '%s' does not matches any ip range\"", querieddomain);
+			sprintf(message, "\"message\":\"detected ioc '%s' does not matches any ip range\"", querieddomain);
 			logtosyslog(message);
 			iprange_item.identity = "";
 			iprange_item.policy_id = 0;
@@ -248,13 +248,13 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 		{
 			if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc) == 1)
 			{
-				sprintf(message, "\"message\":\"identity '%s' got '%s' blacklisted.\"", iprange_item.identity, querieddomain);
+				sprintf(message, "\"message\":\"identity '%s' got ioc '%s' blacklisted.\"", iprange_item.identity, querieddomain);
 				logtosyslog(message);
 				return redirect(request, last, ipv4, origin);
 			}
 			if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc) == 1)
 			{
-				sprintf(message, "\"message\":\"identity '%s' got '%s' whitelisted.\"", iprange_item.identity, querieddomain);
+				sprintf(message, "\"message\":\"identity '%s' got ioc '%s' whitelisted.\"", iprange_item.identity, querieddomain);
 				logtosyslog(message);
 				return KNOT_STATE_DONE;
 			}
@@ -275,7 +275,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			{
 				if (domain_item.accuracy > policy_item.block)
 				{
-					sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"block\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
+					sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, domain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
 					logtosyslog(message);
 					logtofile(message);
 					logtoaudit(message);
@@ -286,7 +286,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				{
 					if (domain_item.accuracy > policy_item.audit)
 					{
-						sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"audit\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
+						sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"audit\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, domain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
 						logtosyslog(message);
 						logtofile(message);
 						logtoaudit(message);
@@ -300,19 +300,19 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			}
 			if (domain_flags & flags_blacklist)
 			{
-				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", iprange_item.policy_id, req_addr, querieddomain);
+				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", iprange_item.policy_id, req_addr, domain, querieddomain);
 				logtosyslog(message);
 				logtofile(message);
 				return redirect(request, last, ipv4, origin);
 			}
 			if (domain_flags & flags_whitelist)
 			{
-				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\"", iprange_item.policy_id, req_addr, querieddomain);
+				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\"", iprange_item.policy_id, req_addr, domain, querieddomain);
 				logtosyslog(message);
 			}
 			if (domain_flags & flags_drop)
 			{
-				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"action\":\"allow\",\"reason\":\"drop\"", iprange_item.policy_id, req_addr, querieddomain);
+				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"drop\"", iprange_item.policy_id, req_addr, domain, querieddomain);
 				logtosyslog(message);
 			}
 		}
@@ -341,7 +341,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 			{
 				sprintf(message, "\"message\":\"search %s\"", ptr + 1);
 				logtosyslog(message);
-				if ((result = search(ctx, ptr + 1, origin, request, last, req_addr, ipv4)) == KNOT_STATE_DONE)
+				if ((result = search(ctx, ptr + 1, origin, request, last, req_addr, ipv4, domain)) == KNOT_STATE_DONE)
 				{
 					return result;
 				}
@@ -353,7 +353,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 			{
 				sprintf(message, "\"message\":\"search %s\"", ptr);
 				logtosyslog(message);
-				if ((result = search(ctx, ptr, origin, request, last, req_addr, ipv4)) == KNOT_STATE_DONE)
+				if ((result = search(ctx, ptr, origin, request, last, req_addr, ipv4, domain)) == KNOT_STATE_DONE)
 				{
 					return result;
 				}
