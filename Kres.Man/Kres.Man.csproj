@@ -65,6 +65,9 @@
     <None Update="policy.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="publiclistenerconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="ranges.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

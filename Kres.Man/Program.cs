@@ -50,7 +50,9 @@ namespace Kres.Man
 
             listener.Listen();
 
-
+            log.Info("Starting Public HTTP Listener");
+            var publiclistener = new PublicListener();
+            publiclistener.Listen();
         }
 
         private static void RunScriptIfExists()

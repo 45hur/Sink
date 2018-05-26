@@ -36,6 +36,7 @@ namespace Kres.Man
         public static Thread tKresLoop;
         private Listener listener;
         private static EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private static EventWaitHandle updatedHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         public static object Push(bufferType buftype, IEnumerable<byte[]> data)
         {
@@ -155,6 +156,8 @@ namespace Kres.Man
                         continue;
                     }
 
+                    updatedHandle.Reset();
+
                     FreeCaches();
 
                     UpdateDomains();
@@ -172,6 +175,8 @@ namespace Kres.Man
                     {
                         log.Info("KresUpdate reloading on timeout.");
                     }
+
+                    updatedHandle.Set();
                 }
                 catch (Exception ex)
                 {
@@ -184,6 +189,15 @@ namespace Kres.Man
         public static void UpdateNow()
         {
             waitHandle.Set();
+
+            if (updatedHandle.WaitOne(30000, true))
+            {
+                log.Debug("Kresman updated caches ");
+            }
+            else
+            {
+                log.Debug("Kresman did not update caches in time");
+            }
         }
 
         private void UpdateDomains()

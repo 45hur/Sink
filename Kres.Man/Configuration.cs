@@ -28,6 +28,11 @@ namespace Kres.Man
             return GetValue("listener");
         }
 
+        internal static string GetPublicListener()
+        {
+            return GetValue("listener");
+        }
+
         internal static int GetKresUpdateInterval()
         {
             return Convert.ToInt32(GetValue("kres_update_interval"));

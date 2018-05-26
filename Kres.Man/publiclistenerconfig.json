@@ -1,0 +1,53 @@
+{
+    "views": [
+    {
+      "networks": [
+
+      ],
+      "legal": [
+        "cz-legal.html.cs",
+        "cz-legal.html.sk",
+        "cz-legal.html.en"
+      ],
+      "blacklist": [
+        "blacklist.html.cs",
+        "blacklist.html.sk",
+        "blacklist.html.en"
+      ],
+      "accuracy": [
+        "accuracy.html.cs",
+        "accuracy.html.sk",
+        "accuracy.html.en"
+      ],
+      "allow_bypass": [
+        "accuracy",
+        "blacklist"
+      ]
+    },
+    {
+      "networks": [
+        "192.168.100.0/24",
+        "192.168.200.0/24"
+      ],
+      "legal": [
+        "sk-legal.html.cs",
+        "sk-legal.html.sk",
+        "sk-legal.html.en"
+      ],
+      "blacklist": [
+        "blacklist.html.cs",
+        "blacklist.html.sk",
+        "blacklist.html.en"
+      ],
+      "accuracy": [
+        "accuracy.html.cs",
+        "accuracy.html.sk",
+        "accuracy.html.en"
+      ],
+      "allow_bypass": [
+        "accuracy",
+        "blacklist"
+      ]
+    }
+  ]
+}
