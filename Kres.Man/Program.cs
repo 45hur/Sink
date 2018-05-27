@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -30,6 +31,10 @@ namespace Kres.Man
 
             log.Info("Init cache");
             CacheLiveStorage.CoreCache = new Models.Cache();
+            CacheLiveStorage.CoreCache.CustomLists = new List<Models.CacheCustomList>();
+            CacheLiveStorage.CoreCache.Domains = new List<Models.CacheDomain>();
+            CacheLiveStorage.CoreCache.IPRanges = new List<Models.CacheIPRange>();
+            CacheLiveStorage.CoreCache.Policies = new List<Models.CachePolicy>();
             CacheLiveStorage.UdpCache = new System.Collections.Concurrent.ConcurrentDictionary<string, Models.CacheIPRange>();
 
             log.Info("Run shell script");

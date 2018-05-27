@@ -29,8 +29,8 @@ namespace Kres.Man
                     var content = reader.ReadToEnd();
 
                     content = content.Replace("{$targetUrl}", $"{url.Host} from {ipaddress}");
-                    content = content.Replace("{url}", $"{url.ToString()}");
-                    content = content.Replace("{authToken}", $"BFLMPSVZ");
+                    content = content.Replace("{$url}", $"{url.ToString()}");
+                    content = content.Replace("{$authToken}", $"BFLMPSVZ");
                     content = content.Replace("{$ipToBypass}", ipaddress);
                     content = content.Replace("{$domainToWhitelist}", url.Host);
                     content = content.Replace("{$redirectUrl}", encodedUrl);
