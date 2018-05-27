@@ -67,8 +67,26 @@ namespace Kres.Man
             }
             var kip = Kres.Man.Models.Int128.Convert(intip);
 
-            var ipranges = CacheLiveStorage.CoreCache.IPRanges.ToList();
-            var customlists = CacheLiveStorage.CoreCache.CustomLists.ToList();
+            List<Models.CacheIPRange> ipranges;
+            List<Models.CacheCustomList> customlists;
+            if (CacheLiveStorage.CoreCache.IPRanges != null)
+            {
+                ipranges = CacheLiveStorage.CoreCache.IPRanges.ToList();
+            }
+            else
+            {
+                ipranges = new List<Models.CacheIPRange>();
+            }
+
+            if (CacheLiveStorage.CoreCache.IPRanges != null)
+            {
+                customlists = CacheLiveStorage.CoreCache.CustomLists.ToList();
+            }
+            else
+            {
+                customlists = new List<Models.CacheCustomList>();
+            }
+
             ipranges.Add(new Models.CacheIPRange()
             {
                 Identity = identity,
