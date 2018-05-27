@@ -66,6 +66,7 @@ namespace Kres.Man
                 return new Exception($"unable to parse ip address {clientIpAddress}.");
             }
             var kip = Kres.Man.Models.Int128.Convert(intip);
+            log.Debug($"Ip to allow {kip}.")
 
             List<Models.CacheIPRange> ipranges;
             List<Models.CacheCustomList> customlists;
@@ -233,9 +234,13 @@ namespace Kres.Man
                                 {
                                     var ret = method.Invoke(this, @params) as string;
 
-                                    var outBuffer = Encoding.UTF8.GetBytes(ret);
-                                    ctx.Response.ContentLength64 = outBuffer.LongLength;
-                                    ctx.Response.OutputStream.Write(outBuffer, 0, outBuffer.Length);
+                                    if (ret != null)
+                                    {
+                                        var outBuffer = Encoding.UTF8.GetBytes(ret);
+                                        ctx.Response.ContentLength64 = outBuffer.LongLength;
+                                        ctx.Response.OutputStream.Write(outBuffer, 0, outBuffer.Length);
+                                    }
+
                                     ctx.Response.OutputStream.Close();
                                 }
                                 catch (HttpException ex)

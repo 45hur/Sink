@@ -34,7 +34,7 @@ namespace Kres.Man.Models
                 var int128 = BigMath.Int128.Parse(text);
                 return Int128.Convert(int128);
             }
-            set { Proto_IpFrom = new byte[] { 0 }; }
+            set { Proto_IpFrom = Encoding.ASCII.GetBytes(value.ToString()); }
         }
         public Int128 IpTo
         {
@@ -46,7 +46,7 @@ namespace Kres.Man.Models
                 var int128 = BigMath.Int128.Parse(text);
                 return Int128.Convert(int128);
             }
-            set { Proto_IpFrom = new byte[] { 0 }; }
+            set { Proto_IpFrom = Encoding.ASCII.GetBytes(value.ToString()); }
         }
 
         public string Text
