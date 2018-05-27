@@ -165,6 +165,8 @@ namespace Kres.Man
 
                     SwapCaches();
 
+                    log.Info("KresUpdate caches set.");
+
                     updatedHandle.Set();
 
                     if (waitHandle.WaitOne(Configuration.GetKresUpdateInterval(), true))
@@ -187,6 +189,7 @@ namespace Kres.Man
         public static void UpdateNow()
         {
             waitHandle.Set();
+            updatedHandle.Reset();
 
             if (updatedHandle.WaitOne(30000, true))
             {
