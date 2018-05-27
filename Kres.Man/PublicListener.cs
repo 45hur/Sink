@@ -65,8 +65,6 @@ namespace Kres.Man
             {
                 return new Exception($"unable to parse ip address {clientIpAddress}.");
             }
-            var kip = Kres.Man.Models.Int128.Convert(intip);
-            log.Debug($"Ip to allow {intip} H{kip.Hi} L{kip.Low}.");
 
             List<Models.CacheIPRange> ipranges;
             List<Models.CacheCustomList> customlists;
@@ -88,12 +86,12 @@ namespace Kres.Man
                 customlists = new List<Models.CacheCustomList>();
             }
 
-            var ipbytes = BitConverter.GetBytes(kip.Hi).Concat(BitConverter.GetBytes(kip.Low));
+           
             ipranges.Add(new Models.CacheIPRange()
             {
                 Identity = identity,
-                Proto_IpFrom = ipbytes,
-                Proto_IpTo = ipbytes,
+                Proto_IpFrom = Encoding.ASCII.GetBytes(intip.ToString()),
+                Proto_IpTo = Encoding.ASCII.GetBytes(intip.ToString()),
                 PolicyId = 0
             });
             var item = customlists.FirstOrDefault(t => string.Compare(t.Identity, identity, StringComparison.OrdinalIgnoreCase) == 0);
