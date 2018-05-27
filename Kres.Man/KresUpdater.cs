@@ -167,6 +167,8 @@ namespace Kres.Man
 
                     SwapCaches();
 
+                    updatedHandle.Set();
+
                     if (waitHandle.WaitOne(Configuration.GetKresUpdateInterval(), true))
                     {
                         log.Info("KresUpdate reloading on request.");
@@ -175,8 +177,6 @@ namespace Kres.Man
                     {
                         log.Info("KresUpdate reloading on timeout.");
                     }
-
-                    updatedHandle.Set();
                 }
                 catch (Exception ex)
                 {
