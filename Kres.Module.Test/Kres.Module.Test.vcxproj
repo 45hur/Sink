@@ -66,20 +66,22 @@
     </BuildCommandLine>
     <RemoteBuildOutputs>
     </RemoteBuildOutputs>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <IncludePath>../WhaleboneModule/whalebone/</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="program.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cache_customlist.h" />
-    <ClInclude Include="cache_domains.h" />
-    <ClInclude Include="cache_iprange.h" />
-    <ClInclude Include="cache_loader.h" />
-    <ClInclude Include="cache_policy.h" />
-    <ClInclude Include="crc64.h" />
-    <ClInclude Include="iprange.h" />
+    <ClInclude Include="..\WhaleboneModule\whalebone\cache_customlist.h" />
+    <ClInclude Include="..\WhaleboneModule\whalebone\cache_domains.h" />
+    <ClInclude Include="..\WhaleboneModule\whalebone\cache_iprange.h" />
+    <ClInclude Include="..\WhaleboneModule\whalebone\cache_loader.h" />
+    <ClInclude Include="..\WhaleboneModule\whalebone\cache_policy.h" />
+    <ClInclude Include="..\WhaleboneModule\whalebone\crc64.h" />
+    <ClInclude Include="..\WhaleboneModule\whalebone\iprange.h" />
+    <ClInclude Include="..\WhaleboneModule\whalebone\socket_srv.h" />
     <ClInclude Include="program.h" />
-    <ClInclude Include="socket_srv.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
