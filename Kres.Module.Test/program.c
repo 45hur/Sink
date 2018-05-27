@@ -222,6 +222,11 @@ int cache_list_policy()
 
 int cache_list_ranges()
 {
+	if (cached_iprange == NULL)
+	{
+		printf("ranges are emtpy\n");
+		return;
+	}
     printf("capacity: [%x]\n", cached_iprange->capacity);
     for(int i = 0; i < cached_iprange->capacity; i++)
     {
