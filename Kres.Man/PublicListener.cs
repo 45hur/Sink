@@ -88,11 +88,12 @@ namespace Kres.Man
                 customlists = new List<Models.CacheCustomList>();
             }
 
+            var ipbytes = BitConverter.GetBytes(kip.Hi).Concat(BitConverter.GetBytes(kip.Low));
             ipranges.Add(new Models.CacheIPRange()
             {
                 Identity = identity,
-                IpFrom = kip,
-                IpTo = kip,
+                Proto_IpFrom = ipbytes,
+                Proto_IpTo = ipbytes,
                 PolicyId = 0
             });
             var item = customlists.FirstOrDefault(t => string.Compare(t.Identity, identity, StringComparison.OrdinalIgnoreCase) == 0);
