@@ -29,7 +29,8 @@ namespace Kres.Man
                     var content = reader.ReadToEnd();
 
                     content = content.Replace("{$targetUrl}", $"{url.Host} from {ipaddress}");
-                    content = content.Replace("{Url}", $"{url.ToString()}");
+                    content = content.Replace("{url}", $"{url.ToString()}");
+                    content = content.Replace("{authToken}", $"BFLMPSVZ");
                     content = content.Replace("{$ipToBypass}", ipaddress);
                     content = content.Replace("{$domainToWhitelist}", url.Host);
                     content = content.Replace("{$redirectUrl}", encodedUrl);
@@ -142,6 +143,7 @@ namespace Kres.Man
                 while (true)
                 {
                     var prefix = Configuration.GetPublicListener();
+                    var prefixs = Configuration.GetPublicListenerS();
                     log.Info($"Starting PublicListener listener {prefix}.");
                     var listener = new HttpListener();
 
@@ -167,19 +169,10 @@ namespace Kres.Man
 
                                 MethodInfo method = null;
 
-                                try
-                                {
-                                    method = this.GetType()
-                                                        .GetMethods()
-                                                        .Where(mi => mi.GetCustomAttributes(true).Any(attr => attr is PublicMapping && ((PublicMapping)attr).Map == methodName))
-                                                        .First();
-                                }
-                                catch (Exception ex)
-                                {
-                                    ctx.Response.OutputStream.Close();
-
-                                    return;
-                                }
+                                method = this.GetType()
+                                                    .GetMethods()
+                                                    .Where(mi => mi.GetCustomAttributes(true).Any(attr => attr is PublicMapping && ((PublicMapping)attr).Map == methodName))
+                                                    .First();
 
                                 var args = method.GetParameters().Skip(2).Select((p, i) => Convert.ChangeType(strParams[i], p.ParameterType));
                                 var @params = new object[args.Count() + 2];
