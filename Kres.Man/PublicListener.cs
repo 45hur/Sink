@@ -125,11 +125,14 @@ namespace Kres.Man
             CacheLiveStorage.CoreCache.IPRanges = ipranges;
             CacheLiveStorage.CoreCache.CustomLists = customlists;
 
+            log.Info($"Updating kres modules.");
             KresUpdater.UpdateNow();
+            log.Info($"Kres modules have been updated.");
 
             var redirectUrl = Base64Decode(base64encodedUrlToRedirectTo);
             log.Debug($"Redirecting to {redirectUrl}");
-            ctx.Response.Redirect(redirectUrl);
+            ctx.Response.RedirectLocation = redirectUrl;
+            ctx.Response.StatusCode = 302;
 
             return null;
         }
