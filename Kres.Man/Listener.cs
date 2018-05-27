@@ -155,10 +155,11 @@ namespace Kres.Man
             {
                 while (true)
                 {
-                    log.Info($"Starting listener.");
+                    var prefix = Configuration.GetListener();
+                    log.Info($"Starting listener {prefix}");
                     HttpListener listener = new HttpListener();
-
-                    listener.Prefixes.Add(Configuration.GetListener());
+                    
+                    listener.Prefixes.Add(prefix);
                     listener.Start();
                     while (true)
                     {

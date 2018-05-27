@@ -29,6 +29,7 @@ namespace Kres.Man
                     var content = reader.ReadToEnd();
 
                     content = content.Replace("{$targetUrl}", $"{url.Host} from {ipaddress}");
+                    content = content.Replace("{Url}", $"{url.ToString()}");
                     content = content.Replace("{$ipToBypass}", ipaddress);
                     content = content.Replace("{$domainToWhitelist}", url.Host);
                     content = content.Replace("{$redirectUrl}", encodedUrl);
@@ -107,7 +108,9 @@ namespace Kres.Man
 
             KresUpdater.UpdateNow();
 
-            ctx.Response.Redirect(Base64Decode(base64encodedUrlToRedirectTo));
+            var redirectUrl = Base64Decode(base64encodedUrlToRedirectTo);
+            log.Debug($"Redirecting to {redirectUrl}");
+            ctx.Response.Redirect(redirectUrl);
 
             return null;
         }
@@ -138,10 +141,11 @@ namespace Kres.Man
             {
                 while (true)
                 {
-                    log.Info($"Starting PublicListener listener.");
-                    HttpListener listener = new HttpListener();
+                    var prefix = Configuration.GetPublicListener();
+                    log.Info($"Starting PublicListener listener {prefix}.");
+                    var listener = new HttpListener();
 
-                    listener.Prefixes.Add(Configuration.GetPublicListener());
+                    listener.Prefixes.Add(prefix);
                     listener.Start();
                     while (true)
                     {

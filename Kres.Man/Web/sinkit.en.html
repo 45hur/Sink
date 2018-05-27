@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
@@ -29,7 +29,10 @@
 				<div class="col-md-6">	
 					<h3>Dear user,</h3>
 					<p>access to the page was blocked because it represents a serious danger to you and your device.</p>
-					<p>You have tried to reach an address: <strong>{$targetUrl}</strong></p>
+                    <p>
+                        You have tried to reach an address: <strong>{$targetUrl}</strong><br />
+                        Url: {$url}
+                    </p>
 				</div>
 			</div>
 
@@ -46,7 +49,7 @@
 			<div class="row">
 				<div class="col-md-6">
 					<br>
-					<a href="bypass/{$ipToBypass}/{$domainToWhitelist}/{$redirectUrl}" class="btn btn-danger" role="button">Continue at your own risk</a>
+					<a href="bypass/{$ipToBypass}/{$domainToWhitelist}/{$authToken}/{$redirectUrl}" class="btn btn-danger" role="button">Continue at your own risk</a>
 				</div>
 			</div>
 		</div>
