@@ -66,7 +66,7 @@ namespace Kres.Man
                 return new Exception($"unable to parse ip address {clientIpAddress}.");
             }
             var kip = Kres.Man.Models.Int128.Convert(intip);
-            log.Debug($"Ip to allow {kip}.");
+            log.Debug($"Ip to allow {kip.ToString()}.");
 
             List<Models.CacheIPRange> ipranges;
             List<Models.CacheCustomList> customlists;

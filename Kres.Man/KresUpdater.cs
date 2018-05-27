@@ -156,8 +156,6 @@ namespace Kres.Man
                         continue;
                     }
 
-                    updatedHandle.Reset();
-
                     FreeCaches();
 
                     UpdateDomains();
