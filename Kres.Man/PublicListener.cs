@@ -112,6 +112,12 @@ namespace Kres.Man
                 if (item.WhiteList.Contains(domainToWhitelist))
                 {
                     log.Info($"Identity {identity} has {domainToWhitelist} already whitelisted.");
+
+                    var redirectTo = Base64Decode(base64encodedUrlToRedirectTo);
+                    log.Debug($"Redirecting to {redirectTo}");
+                    ctx.Response.RedirectLocation = redirectTo;
+                    ctx.Response.StatusCode = 302;
+
                     return null;
                 }
 
