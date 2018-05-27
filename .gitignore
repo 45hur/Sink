@@ -20,3 +20,7 @@ Kres\.Man/Kres\.Man\.log
 \.vs/
 
 PingFlood/obj/Release/
+
+KresModuleTest/KresModuleTest\.vcxproj\.user
+
+KresModuleTest/readme/
