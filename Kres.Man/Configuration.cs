@@ -30,7 +30,7 @@ namespace Kres.Man
 
         internal static string GetPublicListener()
         {
-            return GetValue("listener");
+            return GetValue("publiclistener");
         }
 
         internal static int GetKresUpdateInterval()

@@ -73,13 +73,18 @@ namespace Kres.Man
                     var addresstext = new BigMath.Int128(addr.Hi, addr.Low).ToString();
                     var addbytes2 = ASCIIEncoding.ASCII.GetBytes(addresstext);
 
+                    var matchingCustomList = CacheLiveStorage.CoreCache.CustomLists.Where(t => string.Compare(t.Identity, sessionid, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+                    var policyid = (matchingCustomList == null)
+                        ? 0
+                        : matchingCustomList.PolicyId;
+
                     var item = new Models.CacheIPRange()
                     {
                         Created = DateTime.UtcNow,
                         Identity = sessionid,
                         Proto_IpFrom = addbytes2,
                         Proto_IpTo = addbytes2,
-                        PolicyId = 0
+                        PolicyId = policyid
                     };
 
                     CacheLiveStorage.UdpCache.AddOrUpdate(sessionid, item, (key, oldValue) => item);

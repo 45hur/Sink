@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26906.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sink", "Sink\Sink.vcxproj", "{D1C8A710-1303-48BB-91A8-064A2C98879D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingFlood", "PingFlood\PingFlood.csproj", "{6A067724-1FE2-4361-AB66-67F15EF6B067}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kres.Man", "Kres.Man\Kres.Man.csproj", "{121E0CA9-7322-4D9F-ADD5-9AB677A7AAD2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KresModuleTest", "KresModuleTest\KresModuleTest.vcxproj", "{E0BDAA0C-9936-48A1-9166-0D051CD1D959}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kres.Module.Test", "Kres.Module.Test\Kres.Module.Test.vcxproj", "{E0BDAA0C-9936-48A1-9166-0D051CD1D959}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,18 +21,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Debug|ARM.ActiveCfg = Debug|Win32
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Debug|x64.ActiveCfg = Debug|x64
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Debug|x64.Build.0 = Debug|x64
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Debug|x86.ActiveCfg = Debug|Win32
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Debug|x86.Build.0 = Debug|Win32
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Release|Any CPU.ActiveCfg = Release|Win32
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Release|ARM.ActiveCfg = Release|Win32
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Release|x64.ActiveCfg = Release|x64
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Release|x64.Build.0 = Release|x64
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Release|x86.ActiveCfg = Release|Win32
-		{D1C8A710-1303-48BB-91A8-064A2C98879D}.Release|x86.Build.0 = Release|Win32
 		{6A067724-1FE2-4361-AB66-67F15EF6B067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6A067724-1FE2-4361-AB66-67F15EF6B067}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A067724-1FE2-4361-AB66-67F15EF6B067}.Debug|ARM.ActiveCfg = Debug|Any CPU

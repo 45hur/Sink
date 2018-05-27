@@ -642,8 +642,8 @@ static void* socket_server(void *arg)
 
 	//Prepare the sockaddr_in structure
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = INADDR_ANY;
-	for (int port = 8880; port < 9048; port++)
+	server.sin_addr.s_addr = inet_addr("127.0.0.1");
+	for (int port = 8880; port < 8896; port++)
 	{
 		server.sin_port = htons(port);
 		char message[255] = {};

@@ -24,3 +24,5 @@ PingFlood/obj/Release/
 KresModuleTest/KresModuleTest\.vcxproj\.user
 
 KresModuleTest/readme/
+
+*.user

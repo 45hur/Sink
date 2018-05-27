@@ -239,7 +239,7 @@ int cache_domain_contains(cache_domain* cache, unsigned long long value, domain 
 {
 	if (cache == NULL)
 	{
-		return 0;
+		return -1;
 	}
 
 	cache->searchers++;
