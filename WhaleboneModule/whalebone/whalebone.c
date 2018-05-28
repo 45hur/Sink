@@ -322,6 +322,11 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			logtosyslog(message);
 		}
 	}
+	else
+	{
+		sprintf(message, "\"type\":\"search\",\"message\":\"cache domains does not have a match to '%s'\"", querieddomain);
+		logtosyslog(message);
+	}
 
 	return KNOT_STATE_DONE;
 }
