@@ -35,12 +35,12 @@ int is_ip_in_range(const struct ip_addr *ip, const struct ip_addr *from, const s
     unsigned int addr_to = to->ipv4_sin_addr; 
 
 		result = (addr_ip >= addr_fr) && (addr_ip <= addr_to);
-		printf("%08x => %08x <= %08x -- %d\n",
-			addr_fr,
-			addr_ip,
-			addr_to,
-			result
-		);
+		//printf("%08x => %08x <= %08x -- %d\n",
+		//	addr_fr,
+		//	addr_ip,
+		//	addr_to,
+		//	result
+		//);
 		break;
 	}
 	case AF_INET6: {
