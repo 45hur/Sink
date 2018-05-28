@@ -117,7 +117,7 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 	struct kr_query *qry = req->current_query;
 	if (qry->flags.CACHED || !req->qsource.addr)
 	{
-		sprintf(message, "\"message\":\"consume has no valid address\"");
+		sprintf(message, "\"type\":\"consume\",\"message\":\"consume has no valid address\"");
 		logtosyslog(message);
 
 		return ctx->state;
@@ -140,12 +140,12 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 	}
 	default:
 	{
-		logtosyslog("\"message\":\"not valid addr\"");
+		logtosyslog("\"type\":\"consume\",\"message\":\"not valid addr\"");
 		return ctx->state;
 		break;
 	}
 	}
-	sprintf(message, "\"message\":\"consume address: %s\"", s);
+	sprintf(message, "\"type\":\"consume\",\"message\":\"consume address: %s\"", s);
 	logtosyslog(message);
 	free(s);
 
@@ -227,18 +227,18 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 	domain domain_item = {};
 	if (cache_domain_contains(cached_domain, crc, &domain_item) == 1)
 	{
-		sprintf(message, "\"message\":\"detected ioc '%s'\"", querieddomain);
+		sprintf(message, "\"type\":\"search\",\"message\":\"detected ioc '%s'\"", querieddomain);
 		logtosyslog(message);
 
 		iprange iprange_item = {};
 		if (cache_iprange_contains(cached_iprange, origin, &iprange_item) == 1)
 		{
-			sprintf(message, "\"message\":\"detected ioc '%s' matches ip range with ident '%s' policy '%d'\"", querieddomain, iprange_item.identity, iprange_item.policy_id);
+			sprintf(message, "\"type\":\"search\",\"message\":\"detected ioc '%s' matches ip range with ident '%s' policy '%d'\"", querieddomain, iprange_item.identity, iprange_item.policy_id);
 			logtosyslog(message);
 		}
 		else
 		{
-			sprintf(message, "\"message\":\"detected ioc '%s' does not matches any ip range\"", querieddomain);
+			sprintf(message, "\"type\":\"search\",\"message\":\"detected ioc '%s' does not matches any ip range\"", querieddomain);
 			logtosyslog(message);
 			iprange_item.identity = "";
 			iprange_item.policy_id = 0;
@@ -248,18 +248,18 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 		{
 			if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc) == 1)
 			{
-				sprintf(message, "\"message\":\"identity '%s' got ioc '%s' blacklisted.\"", iprange_item.identity, querieddomain);
+				sprintf(message, "\"type\":\"search\",\"message\":\"identity '%s' got ioc '%s' blacklisted.\"", iprange_item.identity, querieddomain);
 				logtosyslog(message);
 				return redirect(request, last, ipv4, origin);
 			}
 			if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc) == 1)
 			{
-				sprintf(message, "\"message\":\"identity '%s' got ioc '%s' whitelisted.\"", iprange_item.identity, querieddomain);
+				sprintf(message, "\"type\":\"search\",\"message\":\"identity '%s' got ioc '%s' whitelisted.\"", iprange_item.identity, querieddomain);
 				logtosyslog(message);
 				return KNOT_STATE_DONE;
 			}
 		}
-		sprintf(message, "\"message\":\"no identity match, checking policy..\"");
+		sprintf(message, "\"type\":\"search\",\"message\":\"no identity match, checking policy..\"");
 		logtosyslog(message);
 
 		policy policy_item = {};
@@ -268,7 +268,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			int domain_flags = cache_domain_get_flags(domain_item.flags, iprange_item.policy_id);
 			if (domain_flags == 0)
 			{
-				sprintf(message, "\"message\":\"policy has strategy flags_none\",\"flags\":\"%llu\",\"policy_id\":\"%d\"", domain_item.flags, iprange_item.policy_id);
+				sprintf(message, "\"type\":\"search\",\"message\":\"policy has strategy flags_none\",\"flags\":\"%llu\",\"policy_id\":\"%d\"", domain_item.flags, iprange_item.policy_id);
 				logtosyslog(message);
 			}
 			if (domain_flags & flags_accuracy)
@@ -293,7 +293,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					}
 					else
 					{
-						sprintf(message, "\"message\":\"policy has no action\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", domain_item.accuracy, policy_item.audit, policy_item.block);
+						sprintf(message, "\"type\":\"search\",\"message\":\"policy has no action\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", domain_item.accuracy, policy_item.audit, policy_item.block);
 						logtosyslog(message);
 					}
 				}
@@ -318,7 +318,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 		}
 		else
 		{
-			sprintf(message, "\"message\":\"cached_policy does not match\"");
+			sprintf(message, "\"type\":\"search\",\"message\":\"cached_policy does not match\"");
 			logtosyslog(message);
 		}
 	}
@@ -339,7 +339,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 		{
 			if (++found > 1)
 			{
-				sprintf(message, "\"message\":\"search %s\"", ptr + 1);
+				sprintf(message, "\"type\":\"explode\",\"message\":\"search %s\"", ptr + 1);
 				logtosyslog(message);
 				if ((result = search(ctx, ptr + 1, origin, request, last, req_addr, ipv4, domain)) == KNOT_STATE_DONE)
 				{
@@ -351,7 +351,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 		{
 			if (ptr == (char *)domain)
 			{
-				sprintf(message, "\"message\":\"search %s\"", ptr);
+				sprintf(message, "\"type\":\"explode\",\"message\":\"search %s\"", ptr);
 				logtosyslog(message);
 				if ((result = search(ctx, ptr, origin, request, last, req_addr, ipv4, domain)) == KNOT_STATE_DONE)
 				{
@@ -401,11 +401,11 @@ static int finish(kr_layer_t *ctx)
 	struct kr_request *request = (struct kr_request *)ctx->req;
 	struct kr_rplan *rplan = &request->rplan;
 
-	sprintf(message, "\"message\":\"finish\"");
+	sprintf(message, "\"type\":\"finish\",\"message\":\"enter\"");
 	logtosyslog(message);
 
 	if (!request->qsource.addr) {
-		sprintf(message, "\"message\":\"request has no source address\"");
+		sprintf(message, "\"type\":\"finish\",\"message\":\"request has no source address\"");
 		logtosyslog(message);
 
 		return ctx->state;
@@ -437,14 +437,14 @@ static int finish(kr_layer_t *ctx)
 	}
 	default:
 	{
-		sprintf(message, "\"message\":\"qsource is invalid\"");
+		sprintf(message, "\"type\":\"finish\",\"message\":\"qsource is invalid\"");
 		logtosyslog(message);
 		return ctx->state;
 		break;
 	}
 	}
 
-	sprintf(message, "\"message\":\"request from %s\"", req_addr);
+	sprintf(message, "\"type\":\"finish\",\"message\":\"request from %s\"", req_addr);
 	logtosyslog(message);
 
 	char qname_str[KNOT_DNAME_MAXLEN];
@@ -457,13 +457,13 @@ static int finish(kr_layer_t *ctx)
 
 		if (ns == NULL)
 		{
-			logtosyslog("\"message\":\"ns = NULL\"");
+			logtosyslog("\"type\":\"finish\",\"message\":\"ns = NULL\"");
 			goto cleanup;
 		}
 
 		if (ns->count == 0)
 		{
-			sprintf(message, "\"message\":\"query has no asnwer\"");
+			sprintf(message, "\"type\":\"finish\",\"message\":\"query has no asnwer\"");
 			logtosyslog(message);
 
 			const knot_pktsection_t *au = knot_pkt_section(request->answer, KNOT_AUTHORITY);
@@ -473,7 +473,7 @@ static int finish(kr_layer_t *ctx)
 
 				if (rr->type == KNOT_RRTYPE_SOA)
 				{
-					char querieddomain[KNOT_DNAME_MAXLEN];
+					char querieddomain[KNOT_DNAME_MAXLEN] = {};
 					knot_dname_to_str(querieddomain, rr->owner, KNOT_DNAME_MAXLEN);
 
 					int domainLen = strlen(querieddomain);
@@ -482,7 +482,7 @@ static int finish(kr_layer_t *ctx)
 						querieddomain[domainLen - 1] = '\0';
 					}
 
-					sprintf(message, "\"message\":\"authority for %s\"", querieddomain);
+					sprintf(message, "\"type\":\"finish\",\"message\":\"authority for %s\"", querieddomain);
 					logtosyslog(message);
 
 					//ctx->state = explode(ctx, (char *)&querieddomain, &origin, request, last, req_addr);
@@ -490,7 +490,7 @@ static int finish(kr_layer_t *ctx)
 				}
 				else
 				{
-					sprintf(message, "\"message\":\"authority rr type is not SOA [%d]\"", (int)rr->type);
+					sprintf(message, "\"type\":\"finish\",\"message\":\"authority rr type is not SOA [%d]\"", (int)rr->type);
 					logtosyslog(message);
 				}
 			}
@@ -511,7 +511,7 @@ static int finish(kr_layer_t *ctx)
 					querieddomain[domainLen - 1] = '\0';
 				}
 
-				sprintf(message, "\"message\":\"query for %s type %d\"", querieddomain, rr->type);
+				sprintf(message, "\"type\":\"finish\",\"message\":\"query for %s type %d\"", querieddomain, rr->type);
 				logtosyslog(message);
 
 
@@ -520,14 +520,14 @@ static int finish(kr_layer_t *ctx)
 			}
 			else
 			{
-				sprintf(message, "\"message\":\"rr type is not A or AAAA [%d]\"", (int)rr->type);
+				sprintf(message, "\"type\":\"finish\",\"message\":\"rr type is not A or AAAA [%d]\"", (int)rr->type);
 				logtosyslog(message);
 			}
 		}
 	}
 	else
 	{
-		sprintf(message, "\"message\":\"query has no resolve plan\"");
+		sprintf(message, "\"type\":\"finish\",\"message\":\"query has no resolve plan\"");
 		logtosyslog(message);
 	}
 
