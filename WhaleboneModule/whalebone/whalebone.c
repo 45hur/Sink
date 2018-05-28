@@ -246,6 +246,8 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 
 		if (strlen(iprange_item.identity) > 0)
 		{
+			sprintf(message, "\"type\":\"search\",\"message\":\"identity '%s' query '%s'.\"", iprange_item.identity, querieddomain);
+			logtosyslog(message);
 			if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc) == 1)
 			{
 				sprintf(message, "\"type\":\"search\",\"message\":\"identity '%s' got ioc '%s' blacklisted.\"", iprange_item.identity, querieddomain);

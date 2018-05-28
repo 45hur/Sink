@@ -105,29 +105,24 @@ namespace Kres.Man
                     BlackList = new List<string>(),
                     PolicyId = 0
                 };
+                log.Info($"Identity {identity} now has {domainToWhitelist} whitelisted.");
             }
             else
             {
-                if (item.WhiteList.Contains(domainToWhitelist))
+                if (!item.WhiteList.Contains(domainToWhitelist))
+                {
+                    var list = item.WhiteList.ToList();
+                    list.Add(domainToWhitelist);
+                    item.WhiteList = list;
+                    log.Info($"Identity {identity} now has {domainToWhitelist} whitelisted.");
+                }
+                else
                 {
                     log.Info($"Identity {identity} has {domainToWhitelist} already whitelisted.");
-
-                    var redirectTo = Base64Decode(base64encodedUrlToRedirectTo);
-                    log.Debug($"Redirecting to {redirectTo}");
-                    ctx.Response.RedirectLocation = redirectTo;
-                    ctx.Response.StatusCode = 302;
-
-                    return null;
                 }
-
-                var list = item.WhiteList.ToList();
-                list.Add(domainToWhitelist);
-                item.WhiteList = list;
             }
             customlists.RemoveAll(t => string.Compare(t.Identity, identity, StringComparison.OrdinalIgnoreCase) == 0);
             customlists.Add(item);
-
-            log.Info($"Identity {identity} now has {domainToWhitelist} whitelisted.");
 
             CacheLiveStorage.CoreCache.IPRanges = ipranges;
             CacheLiveStorage.CoreCache.CustomLists = customlists;
