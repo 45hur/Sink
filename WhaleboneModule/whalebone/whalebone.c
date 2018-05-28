@@ -225,7 +225,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 	char message[KNOT_DNAME_MAXLEN] = {};
 	unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
 	domain domain_item = {};
-	if (cache_domain_contains(cached_domain, crc, &domain_item) == 1)
+	if (cache_domain_contains(cached_domain, crc, &domain_item, 0) == 1)
 	{
 		sprintf(message, "\"type\":\"search\",\"message\":\"detected ioc '%s'\"", querieddomain);
 		logtosyslog(message);
