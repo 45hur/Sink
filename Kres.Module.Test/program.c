@@ -287,6 +287,24 @@ int test_list_ranges()
 	}
 
 }
+
+int domain_exists()
+{
+	printf("enter domain name to query:");
+	char query[80] = {};
+	scanf("%79s", query);
+	unsigned long long crc = crc64(0, (const unsigned char*)query, strlen(query));
+	domain item;
+	int result;
+	if ((result = cache_domain_contains(cached_domain, crc, &item)) == 1)
+	{
+		printf("cache contains domain %s", query);
+	}
+	else
+	{
+		printf("cache does not contain domain %s", query);
+	}
+}
      
 int listener()
 {
@@ -310,6 +328,7 @@ int listener()
       printf("exit\n");
       printf("iprangetest");
       printf("domains\n");
+	  printf("domain\n");
       printf("custom\n");
       printf("policy\n");
       printf("ranges\n\n");
@@ -325,6 +344,10 @@ int listener()
     {
       cache_contains_address();
     }
+	if (strcmp("domain", command) == 0)
+	{
+		domain_exists();
+	}
     if (strcmp("domains", command) == 0)
     {
       cache_list_domains(cached_domain, 0);
