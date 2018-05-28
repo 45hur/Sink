@@ -295,19 +295,62 @@ int test_list_ranges()
 
 int domain_exists()
 {
-	printf("enter domain name to query:");
+	printf("\nenter domain name to query:");
 	char query[80] = {};
 	scanf("%79s", query);
 	unsigned long long crc = crc64(0, (const unsigned char*)query, strlen(query));
 	domain item;
 	int result;
-	if ((result = cache_domain_contains(cached_domain, crc, &item)) == 1)
+	if ((result = cache_domain_contains(cached_domain, crc, &item, 0)) == 1)
 	{
 		printf("cache contains domain %s", query);
 	}
 	else
 	{
 		printf("cache does not contain domain %s", query);
+	}
+}
+
+int blacklist()
+{
+	printf("\nenter identity:");
+	char identity[80] = {};
+	scanf("%79s", identity);
+	printf("\nenter domain:");
+	char query[80] = {};
+	scanf("%79s", query);
+	unsigned long long crc = crc64(0, (const unsigned char*)query, strlen(query));
+	domain item;
+	int result;
+	if (cache_customlist_blacklist_contains(cached_customlist, identity, crc) == 1)
+	{
+		printf("cache contains blacklisted domain %s", query);
+	}
+	else
+	{
+		printf("cache does not contain blacklisted domain %s", query);
+	}
+}
+
+
+int whitelist()
+{
+	printf("\nenter identity:");
+	char identity[80] = {};
+	scanf("%79s", identity);
+	printf("\nenter domain:");
+	char query[80] = {};
+	scanf("%79s", query);
+	unsigned long long crc = crc64(0, (const unsigned char*)query, strlen(query));
+	domain item;
+	int result;
+	if (cache_customlist_whitelist_contains(cached_customlist, identity, crc) == 1)
+	{
+		printf("cache contains whitelisted domain %s", query);
+	}
+	else
+	{
+		printf("cache does not contain whitelisted domain %s", query);
 	}
 }
 
@@ -335,6 +378,8 @@ int listener()
 			printf("domains\n");
 			printf("domain\n");
 			printf("custom\n");
+			printf("blacklist\n");
+			printf("whitelist\n");
 			printf("policy\n");
 			printf("ranges\n\n");
 			printf("testrange\n\n");
@@ -360,6 +405,14 @@ int listener()
 		if (strcmp("custom", command) == 0)
 		{
 			cache_list_custom();
+		}
+		if (strcmp("blacklist", command) == 0)
+		{
+			blacklist();
+		}
+		if (strcmp("whitelist", command) == 0)
+		{
+			whitelist();
 		}
 		if (strcmp("policy", command) == 0)
 		{

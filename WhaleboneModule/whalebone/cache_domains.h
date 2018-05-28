@@ -235,7 +235,7 @@ void cache_domain_sort(cache_domain* cache)
 	qsort(cache->base, (size_t)cache->index, sizeof(unsigned long long), cache_domain_compare);
 }
 
-int cache_domain_contains(cache_domain* cache, unsigned long long value, domain *citem)
+int cache_domain_contains(cache_domain* cache, unsigned long long value, domain *citem, int iscustom)
 {
 	if (cache == NULL)
 	{
@@ -264,8 +264,11 @@ int cache_domain_contains(cache_domain* cache, unsigned long long value, domain 
 	
 	if (lowerbound <= upperbound)
 	{
-		citem->accuracy = (cache->accuracy[position]);
-		citem->flags = (cache->flags[position]);
+		if (iscustom == 0)
+		{
+			citem->accuracy = (cache->accuracy[position]);
+			citem->flags = (cache->flags[position]);
+		}
 	}
 
 	cache->searchers--;

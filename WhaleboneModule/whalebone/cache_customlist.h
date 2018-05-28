@@ -195,7 +195,7 @@ int cache_customlist_whitelist_contains(cache_customlist* cache, char *identity,
 		if (strcmp(cache->identity[position], identity) == 0)
 		{
 			domain item;
-			if ((result = cache_domain_contains(cache->whitelist[position], crc, &item)) == 1)
+			if ((result = cache_domain_contains(cache->whitelist[position], crc, &item, 1)) == 1)
 			{
 				break;
 			}
@@ -217,7 +217,7 @@ int cache_customlist_blacklist_contains(cache_customlist* cache, char *identity,
 		if (strcmp(cache->identity[position], identity) == 0)
 		{
 			domain item;
-			if ((result = cache_domain_contains(cache->blacklist[position], crc, &item)) == 1)
+			if ((result = cache_domain_contains(cache->blacklist[position], crc, &item, 1)) == 1)
 			{
 				break;
 			}
