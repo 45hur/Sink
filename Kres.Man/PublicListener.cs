@@ -263,7 +263,7 @@ namespace Kres.Man
                             }
                             catch (Exception ex)
                             {
-                                log.Error($"{ex}");
+                                // log.Error($"{ex}");
 
                                 try
                                 {
