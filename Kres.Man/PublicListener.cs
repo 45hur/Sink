@@ -51,7 +51,8 @@ namespace Kres.Man
                 return new Exception($"unable to parse ip address {clientIpAddress}.");
             }
 
-            var bytes = ip.GetAddressBytes();
+            //TODO: check ipv6 reverse
+            var bytes = ip.GetAddressBytes().Reverse().ToArray();
             BigMath.Int128 intip;
             if (bytes.Length == 4)
             {
