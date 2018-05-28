@@ -59,7 +59,7 @@ namespace Kres.Man
                         var headerCrc = Crc64.Compute(0, header.ToArray());
                         header = header.Concat(BitConverter.GetBytes(headerCrc));   // 8 byte -> crc of this header
 
-                        log.Debug($"Get stream");
+                        //log.Debug($"Get stream");
                         using (var stream = client.GetStream())
                         {
                             if (SendHeader(stream, header))
@@ -67,18 +67,19 @@ namespace Kres.Man
                                 SendBuffers(stream, data);
                             }
 
-                            log.Debug($"Closing ip stream.");
+                            //log.Debug($"Closing ip stream.");
                             stream.Flush();
                             stream.Close();
                         }
                         client.Close();
 
-                        log.Debug($"Return.");
+                        log.Debug($"Module on {port} updated");
+
                     }
                 }
                 catch
                 {
-                    log.Debug($"Unable to connect to kres on port {port}.");
+                    //log.Debug($"Unable to connect to kres on port {port}.");
                 }
             }
             return null;
@@ -89,21 +90,21 @@ namespace Kres.Man
             var headerBytes = header.ToArray();
             stream.Write(headerBytes, 0, headerBytes.Length);
 
-            log.Debug($"Written header");
+            //log.Debug($"Written header");
 
             var response = new byte[1];
             var bytesRead = stream.Read(response, 0, 1);
 
-            log.Debug($"Read header response");
+            //log.Debug($"Read header response");
             if (bytesRead == 1 && response[0] == '1')
             {
-                log.Debug($"Header understood");
+                //log.Debug($"Header understood");
 
                 return true;
             }
             else
             {
-                log.Debug($"Header not unmakederstood");
+                log.Debug($"Header not understood");
             }
 
             return false;
@@ -120,17 +121,17 @@ namespace Kres.Man
                 Array.Copy(BitConverter.GetBytes(Crc64.Compute(0, message)), 0, header, 8, sizeof(UInt64));            //8 bytes
 
                 stream.Write(header, 0, header.Length);
-                log.Debug($"Written {header.Length} header size, message {message.LongLength} bytes");
+                //log.Debug($"Written {header.Length} header size, message {message.LongLength} bytes");
 
-                log.Debug($"Write message.");
+                //log.Debug($"Write message.");
                 stream.Write(message, 0, message.Length);
-                log.Debug($"Message written.");
+                //log.Debug($"Message written.");
 
                 var bytesRead = stream.Read(response, 0, 1);
-                log.Debug($"Read response");
+                //log.Debug($"Read response");
                 if (bytesRead == 1 && response[0] == '1')
                 {
-                    log.Debug($"Message was sent successfully.");
+                    //log.Debug($"Message was sent successfully.");
                 }
                 else
                 {
