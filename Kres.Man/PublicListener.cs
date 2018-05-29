@@ -128,7 +128,7 @@ namespace Kres.Man
             CacheLiveStorage.CoreCache.CustomLists = customlists;
 
             log.Info($"Updating kres modules.");
-            //KresUpdater.UpdateSmallCaches();
+            KresUpdater.UpdateSmallCaches();
             KresUpdater.UpdateNow();
             log.Info($"Kres modules have been updated.");
 

@@ -329,8 +329,8 @@ void *connection_handler(void *socket_desc)
 		}
 		case bufferType_identitybufferpolicyid:
 		{
-			swappolicy_block = (int *)bufferMsg;
-			swappolicy_block_len = messageHeader.length / sizeof(int);
+			swapcustomlist_policyid_len = (int *)bufferMsg;
+			swapcustomlist_policyid_len = messageHeader.length / sizeof(int);
 			break;
 		}
 		}
