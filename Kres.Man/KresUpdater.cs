@@ -37,6 +37,7 @@ namespace Kres.Man
         private Listener listener;
         private static EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private static EventWaitHandle updatedHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private static bool updateSmallCaches = false;
 
         public static object Push(bufferType buftype, IEnumerable<byte[]> data)
         {
@@ -159,14 +160,20 @@ namespace Kres.Man
 
                     FreeCaches();
 
-                    UpdateDomains();
+                    if (!updateSmallCaches)
+                        UpdateDomains();
+
                     UpdateIPRanges();
-                    UpdatePolicies();
+
+                    if (!updateSmallCaches)
+                        UpdatePolicies();
+
                     UpdateCustomLists();
 
                     SwapCaches();
 
                     log.Info("KresUpdate caches set.");
+                    updateSmallCaches = false;
 
                     updatedHandle.Set();
 
@@ -185,6 +192,11 @@ namespace Kres.Man
                     log.Error($"{ex}");
                 }
             }
+        }
+
+        internal static void UpdateSmallCaches()
+        {
+            updateSmallCaches = true;
         }
 
         public static void UpdateNow()
