@@ -76,7 +76,7 @@
             oXMLHttpRequest.onreadystatechange = function () {
                 if (this.readyState == 4) {
                     if (this.status >= 200 && this.status < 400) {
-                        document.location.href = "{$url}"
+                        window.location.reload(false)
                     } else {
                         console.error("Encountered error")
                     }
