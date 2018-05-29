@@ -51,6 +51,9 @@ namespace Kres.Man
         {
             try
             {
+                if (CacheLiveStorage.CoreCache.CustomLists == null)
+                    return;
+
                 var receivedPacket = new FP.Radius.RadiusPacket(receivedResult);
                 if (receivedPacket.Valid)
                 {
@@ -73,10 +76,14 @@ namespace Kres.Man
                     var addresstext = new BigMath.Int128(addr.Hi, addr.Low).ToString();
                     var addbytes2 = ASCIIEncoding.ASCII.GetBytes(addresstext);
 
-                    var matchingCustomList = CacheLiveStorage.CoreCache.CustomLists.Where(t => string.Compare(t.Identity, sessionid, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
-                    var policyid = (matchingCustomList == null)
-                        ? 0
-                        : matchingCustomList.PolicyId;
+                    var policyid = 0;
+                    if (CacheLiveStorage.CoreCache.CustomLists != null)
+                    {
+                        var matchingCustomList = CacheLiveStorage.CoreCache.CustomLists.Where(t => string.Compare(t.Identity, sessionid, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+                        policyid = (matchingCustomList == null)
+                            ? 0
+                            : matchingCustomList.PolicyId;
+                    }
 
                     var item = new Models.CacheIPRange()
                     {
