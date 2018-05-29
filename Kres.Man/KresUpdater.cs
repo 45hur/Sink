@@ -154,7 +154,7 @@ namespace Kres.Man
                     if (!CacheLiveStorage.CoreCache.Updated)
                     {
                         log.Info("Cache has was not yet been loaded.");
-                        waitHandle.WaitOne(5000, true));
+                        waitHandle.WaitOne(5000, true);
                         continue;
                     }
 

@@ -51,9 +51,6 @@ namespace Kres.Man
         {
             try
             {
-                if (CacheLiveStorage.CoreCache.CustomLists == null)
-                    return;
-
                 var receivedPacket = new FP.Radius.RadiusPacket(receivedResult);
                 if (receivedPacket.Valid)
                 {
