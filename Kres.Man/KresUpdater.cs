@@ -177,6 +177,7 @@ namespace Kres.Man
 
                     updatedHandle.Set();
 
+                    log.Info("KresUpdate waiting on update interval.");
                     if (waitHandle.WaitOne(Configuration.GetKresUpdateInterval(), true))
                     {
                         log.Info("KresUpdate reloading on request.");
@@ -201,8 +202,8 @@ namespace Kres.Man
 
         public static void UpdateNow()
         {
-            waitHandle.Set();
             updatedHandle.Reset();
+            waitHandle.Set();
 
             if (updatedHandle.WaitOne(30000, true))
             {
