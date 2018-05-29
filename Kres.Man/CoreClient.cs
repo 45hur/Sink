@@ -110,6 +110,7 @@ namespace Kres.Man
                     var set = cache.Domains.Where(t => t.Crc64 == xx);
 
                     CacheLiveStorage.CoreCache = cache;
+                    KresUpdater.UpdateNow();
                 }
             }
         }
