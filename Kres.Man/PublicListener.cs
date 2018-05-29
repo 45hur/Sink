@@ -131,10 +131,9 @@ namespace Kres.Man
             KresUpdater.UpdateNow();
             log.Info($"Kres modules have been updated.");
 
-            var redirectUrl = Base64Decode(base64encodedUrlToRedirectTo);
-            log.Debug($"Redirecting to {redirectUrl}");
-            ctx.Response.RedirectLocation = redirectUrl;
-            ctx.Response.StatusCode = 302;
+            //var redirectUrl = Base64Decode(base64encodedUrlToRedirectTo);
+            //ctx.Response.RedirectLocation = redirectUrl;
+            ctx.Response.StatusCode = 200;
 
             return null;
         }

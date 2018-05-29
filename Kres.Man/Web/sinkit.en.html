@@ -1,71 +1,117 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="theme-color" content="#ffffff">
-		<meta name="author" content="Whalebone, s.r.o.">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="author" content="Whalebone, s.r.o.">
 
-		<title>{$companyName} - warning</title>
-		
-		<!--<link href="./assets/css/bootstrap.min.css" rel="stylesheet">
-		<link href="./assets/css/main.min.css" rel="stylesheet">-->
-	</head>
+    <title>{$companyName} - warning</title>
 
-	<body>
-		<header>
-			<div class="container">
-				<div class="row vcenter">
-					<div class="col-md-12">
-						<!--<img src="./assets/images/whalebone-logo.png" alt="Whalebone" title="Whalebone" />-->
-					</div>
-				</div>
-			</div>
-		</header>
+    <!--<link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/main.min.css" rel="stylesheet">-->
+</head>
 
-		<div class="container px-2" role="main">
-			<div class="row">
-				<div class="col-md-6">	
-					<h3>Dear user,</h3>
-					<p>access to the page was blocked because it represents a serious danger to you and your device.</p>
-                    <p>
-                        You have tried to reach an address: <strong>{$targetUrl}</strong><br />
-                        Url: {$url}
-                    </p>
-				</div>
-			</div>
+<body>
+    <header>
+        <div class="container">
+            <div class="row vcenter">
+                <div class="col-md-12">
+                    <!--<img src="./assets/images/whalebone-logo.png" alt="Whalebone" title="Whalebone" />-->
+                </div>
+            </div>
+        </div>
+    </header>
 
-			<div class="row">
-				<div class="col-md-6">
-					<p>
-						If you believe this to be an error, please contact your administrator.
-						<br>{if $email}Email:  <a href="mailto:{$email}">{$email}</a>
-						<br>{if $phone}Phone number: <a href="tel:{$phone}">{$phone}</a>{/if}.
-					</p>
-				</div>
-			</div>
+    <div class="container px-2" role="main">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Dear user,</h3>
+                <p>access to the page was blocked because it represents a serious danger to you and your device.</p>
+                <p>
+                    You have tried to reach an address: <strong>{$targetUrl}</strong><br />
+                    Url: {$url}
+                </p>
+            </div>
+        </div>
 
-			<div class="row">
-				<div class="col-md-6">
-					<br>
-					<a href="bypass/{$ipToBypass}/{$domainToWhitelist}/{$authToken}/{$redirectUrl}" class="btn btn-danger" role="button">Continue at your own risk</a>
-				</div>
-			</div>
-		</div>
-		<footer>
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-						<a href="mailto:{$email}">{$email}</a>
-					</div>
-					<div class="col-md-12">
-						<a href="{$website}" target="_blank">{$website}</a>
-					</div>
-				</div>
-			</div>
-		</footer>
-		<!--<script src="./assets/js/jquery.min.js"></script>
-		<script src="./assets/js/bootstrap.min.js"></script>-->
-	</body>
+        <div class="row">
+            <div class="col-md-6">
+                <p>
+                    If you believe this to be an error, please contact your administrator.
+                    <br>{if $email}Email:  <a href="mailto:{$email}">{$email}</a>
+                    <br>{if $phone}Phone number: <a href="tel:{$phone}">{$phone}</a>{/if}.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <br>
+                <a id="bypass_button" href="bypass/{$ipToBypass}/{$domainToWhitelist}/{$authToken}/{$redirectUrl}" class="btn btn-danger" role="button">Continue at your own risk</a>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="mailto:{$email}">{$email}</a>
+                </div>
+                <div class="col-md-12">
+                    <a href="{$website}" target="_blank">{$website}</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!--<script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>-->
+    <script>
+        function bypassUrl(event) {
+            event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+
+            var oXMLHttpRequest = new XMLHttpRequest;
+            oXMLHttpRequest.open("GET", "{$url}", true);
+            oXMLHttpRequest.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status >= 200 && this.status < 400) {
+                        document.location.href = "{$url}"
+                    } else {
+                        console.error("Encountered error")
+                    }
+                }
+            }
+            oXMLHttpRequest.send(null);
+        }
+
+        function addEventListener(el, eventName, handler) {
+            if (el.addEventListener) {
+                el.addEventListener(eventName, handler);
+            } else {
+                el.attachEvent('on' + eventName, function () { handler.call(el); });
+            }
+        }
+
+        function onReady() {
+            addEventListener(document.getElementById('bypass_button'), 'click', bypassUrl);
+        }
+
+        function ready() {
+            if (document.readyState != 'loading') {
+                onReady();
+            } else if (document.addEventListener) {
+                document.addEventListener('DOMContentLoaded', onReady);
+            } else {
+                document.attachEvent('onreadystatechange', function () {
+                    if (document.readyState != 'loading')
+                        onReady();
+                });
+            }
+        }
+
+        ready();
+    </script>
+
+</body>
 </html>
