@@ -70,12 +70,18 @@
     <script>
         function bypassUrl(event) {
             event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+            tryBypass();
+        }
+
+        function tryBypass() {
 
             var oXMLHttpRequest = new XMLHttpRequest;
             oXMLHttpRequest.open("GET", "bypass/{$ipToBypass}/{$domainToWhitelist}/{$authToken}/{$redirectUrl}", true);
             oXMLHttpRequest.onreadystatechange = function () {
                 if (this.readyState == 4) {
-                    if (this.status >= 200 && this.status < 400) {
+                    if (this.status == 418) {
+                        setTimeout(tryBypass, 500);
+                    } else if (this.status >= 200 && this.status < 400) {
                         window.location.reload(true)
                     } else {
                         console.error("Encountered error")

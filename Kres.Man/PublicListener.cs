@@ -134,7 +134,7 @@ namespace Kres.Man
 
             //var redirectUrl = Base64Decode(base64encodedUrlToRedirectTo);
             //ctx.Response.RedirectLocation = redirectUrl;
-            ctx.Response.StatusCode = 301;
+            ctx.Response.StatusCode = 418;
 
             return null;
         }
