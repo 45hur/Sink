@@ -169,7 +169,7 @@ namespace Kres.Man
                             if ((flags & (int)KresFlags.flags_blacklist) == (int)KresFlags.flags_blacklist)
                             {
                                 //block
-                                return GenerateContent(ctx, network.blacklist.First());
+                                return GenerateContent(ctx, network.legal.First());
                             }
                             if ((flags & (int)KresFlags.flags_whitelist) == (int)KresFlags.flags_whitelist)
                             {
