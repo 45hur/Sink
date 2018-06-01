@@ -275,7 +275,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			}
 			if (domain_flags & flags_accuracy)
 			{
-				if (domain_item.accuracy > policy_item.block)
+				if (policy_item.block > 0 && domain_item.accuracy > policy_item.block)
 				{
 					sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
 					logtosyslog(message);
@@ -286,7 +286,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				}
 				else
 				{
-					if (domain_item.accuracy > policy_item.audit)
+					if (policy_item.audit > 0 && domain_item.accuracy > policy_item.audit)
 					{
 						sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"audit\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
 						logtosyslog(message);
