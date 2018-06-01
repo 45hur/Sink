@@ -1,23 +1,24 @@
 {
-    "views": [
+  "views": [
     {
       "networks": [
-
+        "192.168.100.0/24",
+        "192.168.200.0/24"
       ],
       "legal": [
-        "cz-legal.html.cs",
-        "cz-legal.html.sk",
-        "cz-legal.html.en"
+        "sk-legal.cs.html",
+        "sk-legal.sk.html",
+        "sk-legal.en.html"
       ],
       "blacklist": [
-        "blacklist.html.cs",
-        "blacklist.html.sk",
-        "blacklist.html.en"
+        "blacklist.cs.html",
+        "blacklist.sk.html",
+        "blacklist.en.html"
       ],
       "accuracy": [
-        "accuracy.html.cs",
-        "accuracy.html.sk",
-        "accuracy.html.en"
+        "accuracy.cs.html",
+        "accuracy.sk.html",
+        "accuracy.en.html"
       ],
       "allow_bypass": [
         "accuracy",
@@ -26,23 +27,22 @@
     },
     {
       "networks": [
-        "192.168.100.0/24",
-        "192.168.200.0/24"
+        "0.0.0.0/0"
       ],
       "legal": [
-        "sk-legal.html.cs",
-        "sk-legal.html.sk",
-        "sk-legal.html.en"
+        "cz-legal.cs.html",
+        "cz-legal.sk.html",
+        "cz-legal.en.html"
       ],
       "blacklist": [
-        "blacklist.html.cs",
-        "blacklist.html.sk",
-        "blacklist.html.en"
+        "blacklist.cs.html",
+        "blacklist.sk.html",
+        "blacklist.en.html"
       ],
       "accuracy": [
-        "accuracy.html.cs",
-        "accuracy.html.sk",
-        "accuracy.html.en"
+        "accuracy.cs.html",
+        "accuracy.sk.html",
+        "accuracy.en.html"
       ],
       "allow_bypass": [
         "accuracy",

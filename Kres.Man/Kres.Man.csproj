@@ -7,37 +7,62 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Web\legal.cs.html" />
-    <None Remove="Web\legal.en.html" />
-    <None Remove="Web\legal.sk.html" />
-    <None Remove="Web\sinkit.cs.html" />
-    <None Remove="Web\sinkit.en.html" />
-    <None Remove="Web\sinkit.sk.html" />
+    <None Remove="Web\accuracy.cs.html" />
+    <None Remove="Web\accuracy.en.html" />
+    <None Remove="Web\accuracy.sk.html" />
+    <None Remove="Web\blacklist.cs.html" />
+    <None Remove="Web\blacklist.en.html" />
+    <None Remove="Web\blacklist.sk.html" />
+    <None Remove="Web\cz-legal.cs.html" />
+    <None Remove="Web\cz-legal.en.html" />
+    <None Remove="Web\cz-legal.sk.html" />
+    <None Remove="Web\sk-legal.cs.html" />
+    <None Remove="Web\sk-legal.en.html" />
+    <None Remove="Web\sk-legal.sk.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Web\legal.cs.html">
+    <Content Include="Web\accuracy.cs.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\legal.en.html">
+    <Content Include="Web\accuracy.en.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\legal.sk.html">
+    <Content Include="Web\accuracy.sk.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\sinkit.cs.html">
+    <Content Include="Web\cz-legal.cs.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\sinkit.en.html">
+    <Content Include="Web\cz-legal.en.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\sinkit.sk.html">
+    <Content Include="Web\cz-legal.sk.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\sk-legal.cs.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\sk-legal.en.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\sk-legal.sk.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\blacklist.cs.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\blacklist.en.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\blacklist.sk.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="7.1.0" />
+    <PackageReference Include="IPNetwork2" Version="2.1.2" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="protobuf-net" Version="2.3.6" />

@@ -49,6 +49,21 @@ namespace Kres.Man.Models
             set { Proto_IpFrom = Encoding.ASCII.GetBytes(value.ToString()); }
         }
 
+        public BigMath.Int128 BintFrom
+        {
+            get
+            {
+                return new BigMath.Int128(IpFrom.Hi, IpFrom.Low);
+            }
+        }
+        public BigMath.Int128 BintTo
+        {
+            get
+            {
+                return new BigMath.Int128(IpTo.Hi, IpTo.Low);
+            }
+        }
+
         public string Text
         {
             get { return Encoding.ASCII.GetString(Proto_IpTo.ToArray()).TrimStart('0'); }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
@@ -7,7 +7,7 @@
 		<meta name="theme-color" content="#ffffff">
 		<meta name="author" content="Whalebone, s.r.o.">
 
-		<title>{$companyName} - warning</title>
+		<title>{$companyName} - upozornenie</title>
 		
 		<link href="./assets/css/bootstrap.min.css" rel="stylesheet">
 		<link href="./assets/css/main.min.css" rel="stylesheet">
@@ -27,26 +27,26 @@
 		<div class="container px-2" role="main">
 			<div class="row">
 				<div class="col-md-6">	
-					<h3>Vážený zákazníku,</h3>
-					<p>přístup na stránku byl zablokován v souvislosti se zákonnými povinnostmi poskytovatele internetu, neboť tato stránka obsahuje nelegální hazardní hru.</p>
-					<p>Blokování bylo provedeno:</p>
-					<ul>
-						<li class="list-group-item">V České republice na základě rozhodnutí <a href="http://www.mfcr.cz/cs/soukromy-sektor/hazardni-hry/seznam-nepovolenych-internetovych-her">Ministerstva financí České republiky</a>, neboť na ní byla provozována hazardní hra v rozporu s § 7 odst. 2 písm. b) zákona č. 186/2016 Sb., o hazardních hrách.</li>
-						<li class="list-group-item">Na Slovensku na základě <a href="https://www.financnasprava.sk/sk/elektronicke-sluzby/verejne-sluzby/zoznamy">zde uvedených soudních příkazů</a>.</li>
-					</ul>
-					<br>
-					<p>Snažili jste se dostat na adresu: {$targetUrl}</p>
-					<p>Děkujeme za pochopení.</p>
+					<h3>Vážený užívateľ,</h3>
+					<p>prístup na stránku bol zablokovaný, pretože predstavuje vážne riziko pre Vás a vaše zariadenie.</p>
+					<p>Snažili ste sa dostať na adresu: <strong>{$targetUrl}</strong></p>
 				</div>
 			</div>
 
 			<div class="row">
 				<div class="col-md-6">
 					<p>
-						Pokud věříte, že jde o chybu, kontaktujte prosím svého administrátora.
+						Ak veríte, že ide o chybu, kontaktujte, prosím, svojho administrátora.
 						<br>{if $email}Email:  <a href="mailto:{$email}">{$email}</a>
-						<br>{if $phone}Telefonní číslo: <a href="tel:{$phone}">{$phone}</a>{/if}.
+						<br>{if $phone}Telefónne číslo: <a href="tel:{$phone}">{$phone}</a>{/if}.
 					</p>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<br>
+					<a href="#" class="btn btn-danger" role="button">Ísť na cieľový web na vlastné nebezpečenstvo</a>
 				</div>
 			</div>
 		</div>
@@ -54,7 +54,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12">
-						<a href="mailto:{$email}">{$email}</a>
+						<a href="{$email}">{$email}</a>
 					</div>
 					<div class="col-md-12">
 						<a href="{$website}" target="_blank">{$website}</a>
