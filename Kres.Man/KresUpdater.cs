@@ -122,7 +122,7 @@ namespace Kres.Man
                 Array.Copy(BitConverter.GetBytes(Crc64.Compute(0, message)), 0, header, 8, sizeof(UInt64));            //8 bytes
 
                 stream.Write(header, 0, header.Length);
-                log.Debug($"Written {header.Length} header size, message {message.LongLength} bytes");
+                //log.Debug($"Written {header.Length} header size, message {message.LongLength} bytes");
 
                 //log.Debug($"Write message.");
                 stream.Write(message, 0, message.Length);
@@ -157,6 +157,12 @@ namespace Kres.Man
                         waitHandle.WaitOne(5000, true);
                         continue;
                     }
+
+                    var itemsToRemove = CacheLiveStorage.UdpCache.Where(kvp => (kvp.Value).Created.AddDays(1) < DateTime.UtcNow);
+                    log.Info($"Removing old items in idenity cache {itemsToRemove.Count()}.");
+                    Models.CacheIPRange value;
+                    foreach (var item in itemsToRemove)
+                        CacheLiveStorage.UdpCache.TryRemove(item.Key, out value);
 
                     FreeCaches();
 
