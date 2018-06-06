@@ -62,10 +62,10 @@ namespace Kres.Man
                     buftype = buftype,
                     data = data
                 };
-                var task = new TaskFactory().StartNew(new Action<object>((args) =>
+                TaskList.Add(new TaskFactory().StartNew(new Action<object>((args) =>
                 {
                     TaskJob(args);
-                }), arg);
+                }), arg));
 
             }
 
@@ -111,7 +111,7 @@ namespace Kres.Man
                     }
                     client.Close();
 
-                    log.Debug($"Module on {port} updated");
+                    log.Debug($"Module {port} job {buftype} updated");
 
                 }
             }
