@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Kres.Man
 {
@@ -30,6 +31,13 @@ namespace Kres.Man
         swapfreebuffers = 16,
     }
 
+    struct TaskArgs
+    {
+        public int port;
+        public bufferType buftype;
+        public IEnumerable<byte[]> data;
+    }
+
     class KresUpdater
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -39,51 +47,80 @@ namespace Kres.Man
         private static EventWaitHandle updatedHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private static bool updateSmallCaches = false;
 
+        
+
         public static object Push(bufferType buftype, IEnumerable<byte[]> data)
         {
             log.Debug($"Push buftype {buftype}");
 
+            List<Task> TaskList = new List<Task>();
             for (var port = Configuration.GetMinPort(); port < Configuration.GetMaxPort(); port++)
             {
-                try
+                object arg = new TaskArgs()
                 {
-                    using (var client = new TcpClient())
+                    port = port,
+                    buftype = buftype,
+                    data = data
+                };
+                var task = new TaskFactory().StartNew(new Action<object>((args) =>
+                {
+                    TaskJob(args);
+                }), arg);
+
+            }
+
+            Task.WaitAll(TaskList.ToArray());
+
+            return null;
+        }
+
+
+
+        private static int TaskJob(object args)
+        {
+            TaskArgs arg = (TaskArgs)args;
+            int port = arg.port;
+            bufferType buftype = arg.buftype;
+            IEnumerable<byte[]> data = arg.data;
+            try
+            {
+                using (var client = new TcpClient())
+                {
+                    client.Client.Connect(IPAddress.Parse(Configuration.GetKres()), port);
+
+                    var messageType = (int)buftype;
+
+                    //+ 8 bytes (= last crc64 bytes)
+                    var header = BitConverter.GetBytes(messageType)             // 4 bytes -> message type
+                        .Concat(BitConverter.GetBytes(data.Count()));            // 4 bytes -> how many buffers
+
+                    var headerCrc = Crc64.Compute(0, header.ToArray());
+                    header = header.Concat(BitConverter.GetBytes(headerCrc));   // 8 byte -> crc of this header
+
+                    //log.Debug($"Get stream");
+                    using (var stream = client.GetStream())
                     {
-                        client.Client.Connect(IPAddress.Parse(Configuration.GetKres()), port);
-
-                        var messageType = (int)buftype;
-
-                        //+ 8 bytes (= last crc64 bytes)
-                        var header = BitConverter.GetBytes(messageType)             // 4 bytes -> message type
-                            .Concat(BitConverter.GetBytes(data.Count()));            // 4 bytes -> how many buffers
-
-                        var headerCrc = Crc64.Compute(0, header.ToArray());
-                        header = header.Concat(BitConverter.GetBytes(headerCrc));   // 8 byte -> crc of this header
-
-                        //log.Debug($"Get stream");
-                        using (var stream = client.GetStream())
+                        if (SendHeader(stream, header))
                         {
-                            if (SendHeader(stream, header))
-                            {
-                                SendBuffers(stream, data);
-                            }
-
-                            //log.Debug($"Closing ip stream.");
-                            stream.Flush();
-                            stream.Close();
+                            SendBuffers(stream, data);
                         }
-                        client.Close();
 
-                        log.Debug($"Module on {port} updated");
-
+                        //log.Debug($"Closing ip stream.");
+                        stream.Flush();
+                        stream.Close();
                     }
-                }
-                catch
-                {
-                    //log.Debug($"Unable to connect to kres on port {port}.");
+                    client.Close();
+
+                    log.Debug($"Module on {port} updated");
+
                 }
             }
-            return null;
+            catch
+            {
+                //log.Debug($"Unable to connect to kres on port {port}.");
+            }
+
+            return 0; 
         }
 
         private static bool SendHeader(NetworkStream stream, IEnumerable<byte> header)
@@ -93,20 +130,20 @@ namespace Kres.Man
 
             //log.Debug($"Written header");
 
-            var response = new byte[1];
-            var bytesRead = stream.Read(response, 0, 1);
+            //var response = new byte[1];
+            //var bytesRead = stream.Read(response, 0, 1);
 
-            //log.Debug($"Read header response");
-            if (bytesRead == 1 && response[0] == '1')
-            {
-                //log.Debug($"Header understood");
+            ////log.Debug($"Read header response");
+            //if (bytesRead == 1 && response[0] == '1')
+            //{
+            //    //log.Debug($"Header understood");
 
                 return true;
-            }
-            else
-            {
-                log.Debug($"Header not understood");
-            }
+            //}
+            //else
+            //{
+            //    log.Debug($"Header not understood");
+            //}
 
             return false;
         }
@@ -128,16 +165,16 @@ namespace Kres.Man
                 stream.Write(message, 0, message.Length);
                 //log.Debug($"Message written.");
 
-                var bytesRead = stream.Read(response, 0, 1);
-                //log.Debug($"Read response");
-                if (bytesRead == 1 && response[0] == '1')
-                {
-                    //log.Debug($"Message was sent successfully.");
-                }
-                else
-                {
-                    throw new Exception("unable to write to nework stream");
-                }
+                //var bytesRead = stream.Read(response, 0, 1);
+                ////log.Debug($"Read response");
+                //if (bytesRead == 1 && response[0] == '1')
+                //{
+                //    //log.Debug($"Message was sent successfully.");
+                //}
+                //else
+                //{
+                //    throw new Exception("unable to write to nework stream");
+                //}
             }
         }
 

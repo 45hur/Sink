@@ -123,12 +123,12 @@ void *connection_handler(void *socket_desc)
 	if (primeHeader.headercrc == crc)
 	{
 		//printf("crc1 succ\n");
-		write(sock, client_message, 1);
+		//write(sock, client_message, 1);
 	}
 	else
 	{
 		//printf("crc1 failed\n");
-		write(sock, client_message, 1);
+		//write(sock, client_message, 1);
 
 		goto flush;
 	}
@@ -162,7 +162,7 @@ void *connection_handler(void *socket_desc)
 		{
 			logtosyslog("\"message\":\"empty message\"");
 			sprintf(client_message, "1");
-			write(sock, client_message, 1);
+			//write(sock, client_message, 1);
 		}
 		else
 		{
@@ -193,12 +193,12 @@ void *connection_handler(void *socket_desc)
 			if (messageHeader.msgcrc == crc)
 			{
 				//printf("   crc3 succ\n");
-				write(sock, client_message, 1);
+				//write(sock, client_message, 1);
 			}
 			else
 			{
 				//printf("   crc3 fail\n");
-				write(sock, client_message, 1);
+				//write(sock, client_message, 1);
 				goto flush;
 			}
 		}
