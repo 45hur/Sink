@@ -115,9 +115,9 @@ namespace Kres.Man
 
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                //log.Debug($"Unable to connect to kres on port {port}.");
+                log.Error($"Unable to connect to kres on port {port}, ex: {ex}");
             }
 
             return 0; 
