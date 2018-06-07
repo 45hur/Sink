@@ -55,7 +55,7 @@ namespace Kres.Man
                 if (receivedPacket.Valid)
                 {
                     var ipaddress = receivedPacket.Attributes.Where(t => t.Type == FP.Radius.RadiusAttributeType.FRAMED_IP_ADDRESS).First().Value;
-                    var sessionid = ASCIIEncoding.ASCII.GetString(receivedPacket.Attributes.Where(t => t.Type == FP.Radius.RadiusAttributeType.ACCT_SESSION_ID).First().Data);
+                    var calledstationid = ASCIIEncoding.ASCII.GetString(receivedPacket.Attributes.Where(t => t.Type == FP.Radius.RadiusAttributeType.CALLED_STATION_ID).First().Data);
 
                     var addrbytes = IPAddress.Parse(ipaddress).GetAddressBytes();
                     var addr = new Models.Int128();
@@ -76,7 +76,7 @@ namespace Kres.Man
                     var policyid = 0;
                     if (CacheLiveStorage.CoreCache.CustomLists != null)
                     {
-                        var matchingCustomList = CacheLiveStorage.CoreCache.CustomLists.Where(t => string.Compare(t.Identity, sessionid, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+                        var matchingCustomList = CacheLiveStorage.CoreCache.CustomLists.Where(t => string.Compare(t.Identity, calledstationid, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
                         policyid = (matchingCustomList == null)
                             ? 0
                             : matchingCustomList.PolicyId;
@@ -85,15 +85,15 @@ namespace Kres.Man
                     var item = new Models.CacheIPRange()
                     {
                         Created = DateTime.UtcNow,
-                        Identity = sessionid,
+                        Identity = calledstationid,
                         Proto_IpFrom = addbytes2,
                         Proto_IpTo = addbytes2,
                         PolicyId = policyid
                     };
 
-                    CacheLiveStorage.UdpCache.AddOrUpdate(sessionid, item, (key, oldValue) => item);
+                    CacheLiveStorage.UdpCache.AddOrUpdate(calledstationid, item, (key, oldValue) => item);
 
-                    log.Info($"Processed {ipaddress} for {sessionid}.");
+                    log.Info($"Processed {ipaddress} for {calledstationid}.");
                 }
                 else
                 {
