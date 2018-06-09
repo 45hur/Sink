@@ -94,10 +94,8 @@ namespace Kres.Man
                 {
                     log.Debug($"Deserialize.");
                     var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
-
-                    var xx = Crc64.Compute(0, Encoding.UTF8.GetBytes("nceadwbnlvftsiyei.net"));
-
                     log.Debug($"Deserialized.");
+
                     if (cache.CustomLists != null)
                         log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
                     if (cache.Domains != null)
@@ -106,8 +104,6 @@ namespace Kres.Man
                         log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
                     if (cache.Policies != null)
                         log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
-
-                    var set = cache.Domains.Where(t => t.Crc64 == xx);
 
                     CacheLiveStorage.CoreCache = cache;
                     KresUpdater.UpdateNow();
@@ -125,12 +121,6 @@ namespace Kres.Man
             string password = Configuration.GetPfxPassword();
 
             var clientHandler = new HttpClientHandler() { ClientCertificateOptions = ClientCertificateOption.Manual };
-            //clientHandler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) =>
-            //{
-            //    // Log it, then use the same answer it would have had if we didn't make a callback.
-            //    return errors == SslPolicyErrors.None;
-            //};
-
             clientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
 
             X509Certificate2 clientCertificate = new X509Certificate2(certName, password);

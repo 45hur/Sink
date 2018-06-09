@@ -59,7 +59,7 @@ namespace Kres.Man
 
         public static object PushHdd(bufferType buftype, IEnumerable<byte[]> data, string filename)
         {
-            log.Debug($"Push buftype {buftype}");
+            //log.Debug($"Push buftype {buftype}");
 
             List<Task> TaskList = new List<Task>();
             object arg = new TaskHddArgs()
@@ -184,7 +184,7 @@ namespace Kres.Man
             }
             catch (Exception ex)
             {
-                log.Error($"Unable to connect to kres on port {port}, ex: {ex}");
+                log.Error($"Unable to connect to kres on port {port}, ex: {ex.Message}");
             }
 
             return 0; 

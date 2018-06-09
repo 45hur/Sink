@@ -268,7 +268,7 @@ namespace Kres.Man
                             }
                             catch (Exception ex)
                             {
-                                log.Error($"{ex}");
+                                log.Error($"Unable to process request {ctx.Request.Url}, ex: {ex.Message}");
                             }
                         });
                     }
