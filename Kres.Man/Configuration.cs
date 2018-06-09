@@ -83,6 +83,9 @@ namespace Kres.Man
             return Convert.ToInt32(GetValue("kres_max_port"));
         }
 
-
+        internal static string GetSharedFolder()
+        {
+            return GetValue("SHARED_FOLDER");
+        }
     }
 }

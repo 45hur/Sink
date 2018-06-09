@@ -12,6 +12,7 @@
 
 
 #include "cache_domains.h"
+#include "cache_loader.h"
 
 //Buffers to help to fetch data from socket
 //Can be assinged outside to the cache_ structures
@@ -81,7 +82,10 @@ enum
 	bufferType_identitybufferblacklist = 14,
 	bufferType_identitybufferpolicyid = 15,
 	bufferType_freeswaps = 16,
+	bufferType_loadfile = 17
 } bufferType;
+
+#include "file_loader.h"
 
 void *connection_handler(void *socket_desc)
 {
@@ -137,7 +141,7 @@ void *connection_handler(void *socket_desc)
 	//printf("action %d\n", primeHeader.action);
 
 	//Receive the messages
-	for (int i = 0; 0 < primeHeader.buffercount; i++)
+	for (int i = 0; i < primeHeader.buffercount; i++)
 	{
 		//printf(" cycle %d - %u\n", i, primeHeader.buffercount);
 		bufferPtr = (char *)&messageHeader;
@@ -331,6 +335,12 @@ void *connection_handler(void *socket_desc)
 		{
 			swapcustomlist_policyid_len = (int *)bufferMsg;
 			swapcustomlist_policyid_len = messageHeader.length / sizeof(int);
+			break;
+		}
+		case bufferType_loadfile:
+		{
+			char *file = (char *)bufferMsg;
+			load_file(file);
 			break;
 		}
 		}

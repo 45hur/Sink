@@ -15,6 +15,15 @@ namespace Kres.Man
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private Thread tLoop;
+        private static string filename = "";
+
+        //[Mapping("filename")] Disabled for security reasons
+        public object setFileHandler(HttpListenerContext ctx, string path)
+        {
+            filename = path;
+
+            return null;
+        }
 
         [Mapping("health")]
         public object getHealthHandler(HttpListenerContext ctx, string postData)
@@ -41,103 +50,103 @@ namespace Kres.Man
         [Mapping("pushswapcaches")]
         public object pushSwapCaches(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.swapcache, buffer);
+            return KresUpdater.PushHdd(bufferType.swapcache, buffer, filename);
         }
 
         [Mapping("pushfreecaches")]
         public object pushFreeCaches(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.swapfreebuffers, buffer);
+            return KresUpdater.PushHdd(bufferType.swapfreebuffers, buffer, filename);
         }
 
         [Mapping("pushdomaincrcbuffer")]
         public object pushDomainCrcBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.domainCrcBuffer, buffer); 
+            return KresUpdater.PushHdd(bufferType.domainCrcBuffer, buffer, filename); 
         }
 
         [Mapping("pushdomainaccuracybuffer")]
         public object pushDomainAccuracyBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.domainAccuracyBuffer, buffer); 
+            return KresUpdater.PushHdd(bufferType.domainAccuracyBuffer, buffer, filename); 
         }
 
         [Mapping("pushdomainflagsbuffer")]
         public object pushDomainFlagsBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.domainFlagsBuffer, buffer); 
+            return KresUpdater.PushHdd(bufferType.domainFlagsBuffer, buffer, filename); 
         }
 
         [Mapping("pushiprangefrombuffer")]
         public object pushIPRangeFromBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.iprangeipfrom, buffer);
+            return KresUpdater.PushHdd(bufferType.iprangeipfrom, buffer, filename);
         }
 
         [Mapping("pushiprangetobuffer")]
         public object pushIPRangeToBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.iprangeipto, buffer);
+            return KresUpdater.PushHdd(bufferType.iprangeipto, buffer, filename);
         }
 
         [Mapping("pushiprangeidentitybuffer")]
         public object pushIPRangeIdentityBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.iprangeidentity, buffer);
+            return KresUpdater.PushHdd(bufferType.iprangeidentity, buffer, filename);
         }
 
         [Mapping("pushiprangepolicybuffer")]
         public object pushIPRangePolicyBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.iprangepolicyid, buffer);
+            return KresUpdater.PushHdd(bufferType.iprangepolicyid, buffer, filename);
         }
 
         [Mapping("pushpolicyidbuffer")]
         public object pushPolicyIDBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.policyid, buffer);
+            return KresUpdater.PushHdd(bufferType.policyid, buffer, filename);
         }
 
         [Mapping("pushpolicystrategybuffer")]
         public object pushPolicyStrategyBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.policystrategy, buffer);
+            return KresUpdater.PushHdd(bufferType.policystrategy, buffer, filename);
         }
 
         [Mapping("pushpolicyauditbuffer")]
         public object pushPolicyAuditBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.policyaudit, buffer);
+            return KresUpdater.PushHdd(bufferType.policyaudit, buffer, filename);
         }
 
         [Mapping("pushpolicyblockbuffer")]
         public object pushPolicyBlockBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.policyblock, buffer);
+            return KresUpdater.PushHdd(bufferType.policyblock, buffer, filename);
         }
 
         [Mapping("pushcustomlistidentitkbuffer")]
         public object pushCustomListIdentityBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.identitybuffer, buffer);
+            return KresUpdater.PushHdd(bufferType.identitybuffer, buffer, filename);
         }
 
         [Mapping("pushcustomlistwhitelistbuffer")]
         public object pushCustomListWhitelistBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.identitybufferwhitelist, buffer);
+            return KresUpdater.PushHdd(bufferType.identitybufferwhitelist, buffer, filename);
         }
 
         [Mapping("pushcustomlistblacklistbuffer")]
         public object pushCustomListBlacklistBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.identitybufferblacklist, buffer);
+            return KresUpdater.PushHdd(bufferType.identitybufferblacklist, buffer, filename);
         }
 
         [Mapping("pushcustomlistblacklistbuffer")]
         public object pushCustomListPolicyIdBuffer(HttpListenerContext ctx, List<byte[]> buffer)
         {
-            return KresUpdater.Push(bufferType.identitybufferpolicyid, buffer);
+            return KresUpdater.PushHdd(bufferType.identitybufferpolicyid, buffer, filename);
         }
 
         [Mapping("updatenow")]
@@ -145,6 +154,12 @@ namespace Kres.Man
         {
             KresUpdater.UpdateNow();
             return 0;
+        }
+
+        [Mapping("pushloadfile")]
+        public object pushLoadFileFromBuffer(HttpListenerContext ctx, List<byte[]> buffer)
+        {
+            return KresUpdater.PushTcp(bufferType.loadfile, buffer);
         }
 
         private void ThreadProc()
@@ -266,7 +281,8 @@ namespace Kres.Man
                 log.Fatal($"{ex}");
             }
         }
-        
+
+
 
         public void Listen()
         {

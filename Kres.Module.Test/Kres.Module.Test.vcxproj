@@ -79,6 +79,7 @@
     <ClInclude Include="..\WhaleboneModule\whalebone\cache_loader.h" />
     <ClInclude Include="..\WhaleboneModule\whalebone\cache_policy.h" />
     <ClInclude Include="..\WhaleboneModule\whalebone\crc64.h" />
+    <ClInclude Include="..\WhaleboneModule\whalebone\file_loader.h" />
     <ClInclude Include="..\WhaleboneModule\whalebone\iprange.h" />
     <ClInclude Include="..\WhaleboneModule\whalebone\socket_srv.h" />
     <ClInclude Include="program.h" />
@@ -89,6 +90,10 @@
       <AdditionalLibraryDirectories>lpthread;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LibraryDependencies>pthread</LibraryDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

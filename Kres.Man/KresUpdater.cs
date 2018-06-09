@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -29,14 +30,23 @@ namespace Kres.Man
         identitybufferblacklist = 14,
         identitybufferpolicyid = 15,
         swapfreebuffers = 16,
+        loadfile = 17
     }
 
-    struct TaskArgs
+    struct TaskTcpArgs
     {
         public int port;
         public bufferType buftype;
         public IEnumerable<byte[]> data;
     }
+
+    struct TaskHddArgs
+    {
+        public string filename;
+        public bufferType buftype;
+        public IEnumerable<byte[]> data;
+    }
+
 
     class KresUpdater
     {
@@ -47,16 +57,30 @@ namespace Kres.Man
         private static EventWaitHandle updatedHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private static bool updateSmallCaches = false;
 
-        
+        public static object PushHdd(bufferType buftype, IEnumerable<byte[]> data, string filename)
+        {
+            log.Debug($"Push buftype {buftype}");
 
-        public static object Push(bufferType buftype, IEnumerable<byte[]> data)
+            List<Task> TaskList = new List<Task>();
+            object arg = new TaskHddArgs()
+            {
+                filename = filename,
+                buftype = buftype,
+                data = data
+            };
+            TaskHDDJob(arg);
+
+            return null;
+        }
+
+        public static object PushTcp(bufferType buftype, IEnumerable<byte[]> data)
         {
             log.Debug($"Push buftype {buftype}");
 
             List<Task> TaskList = new List<Task>();
             for (var port = Configuration.GetMinPort(); port < Configuration.GetMaxPort(); port++)
             {
-                object arg = new TaskArgs()
+                object arg = new TaskTcpArgs()
                 {
                     port = port,
                     buftype = buftype,
@@ -64,7 +88,7 @@ namespace Kres.Man
                 };
                 TaskList.Add(new TaskFactory().StartNew(new Action<object>((args) =>
                 {
-                    TaskJob(args);
+                    TaskTCPJob(args);
                 }), arg));
 
             }
@@ -74,11 +98,54 @@ namespace Kres.Man
             return null;
         }
 
-
-
-        private static int TaskJob(object args)
+        private static int TaskHDDJob(object args)
         {
-            TaskArgs arg = (TaskArgs)args;
+            TaskHddArgs arg = (TaskHddArgs)args;
+            string filename = arg.filename;
+            bufferType buftype = arg.buftype;
+            IEnumerable<byte[]> data = arg.data;
+            try
+            {
+                using (var stream = new FileStream(filename, FileMode.Append, FileAccess.Write, FileShare.None))
+                {
+                    var messageType = (int)buftype;
+
+                    //+ 8 bytes (= last crc64 bytes)
+                    var header = BitConverter.GetBytes(messageType)             // 4 bytes -> message type
+                        .Concat(BitConverter.GetBytes(data.Count()));            // 4 bytes -> how many buffers
+
+                    var headerCrc = Crc64.Compute(0, header.ToArray());
+                    header = header.Concat(BitConverter.GetBytes(headerCrc));   // 8 byte -> crc of this header
+
+                    //log.Debug($"Get stream");
+                    //using (var stream = client.GetStream())
+                    {
+                        if (SendHeader(stream, header))
+                        {
+                            SendBuffers(stream, data);
+                        }
+
+                        //log.Debug($"Closing ip stream.");
+                        stream.Flush();
+                        stream.Close();
+                    }
+                    //client.Close();
+
+                    log.Debug($"File {filename} was updated.");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Unable to write to {filename}.");
+            }
+
+            return 0;
+        }
+
+        private static int TaskTCPJob(object args)
+        {
+            TaskTcpArgs arg = (TaskTcpArgs)args;
             int port = arg.port;
             bufferType buftype = arg.buftype;
             IEnumerable<byte[]> data = arg.data;
@@ -111,7 +178,7 @@ namespace Kres.Man
                     }
                     client.Close();
 
-                    log.Debug($"Module {port} job {buftype} updated");
+                    log.Debug($"Kres {port} job {buftype} updated");
 
                 }
             }
@@ -123,7 +190,7 @@ namespace Kres.Man
             return 0; 
         }
 
-        private static bool SendHeader(NetworkStream stream, IEnumerable<byte> header)
+        private static bool SendHeader(Stream stream, IEnumerable<byte> header)
         {
             var headerBytes = header.ToArray();
             stream.Write(headerBytes, 0, headerBytes.Length);
@@ -148,7 +215,7 @@ namespace Kres.Man
             return false;
         }
 
-        private static void SendBuffers(NetworkStream stream, IEnumerable<byte[]> messages)
+        private static void SendBuffers(Stream stream, IEnumerable<byte[]> messages)
         {
             
             var response = new byte[1];
@@ -201,19 +268,26 @@ namespace Kres.Man
                     foreach (var item in itemsToRemove)
                         CacheLiveStorage.UdpCache.TryRemove(item.Key, out value);
 
-                    FreeCaches();
+                    DeletePreviousDatFiles(Configuration.GetSharedFolder());
+
+                    var file = Path.Combine(Configuration.GetSharedFolder(), Guid.NewGuid().ToString() + ".dat");
+                    SetFile(file);
+
+                    HDDFreeCaches();
 
                     if (!updateSmallCaches)
-                        UpdateDomains();
+                        HDDUpdateDomains();
 
-                    UpdateIPRanges();
+                    HDDUpdateIPRanges();
 
                     if (!updateSmallCaches)
-                        UpdatePolicies();
+                        HDDUpdatePolicies();
 
-                    UpdateCustomLists();
+                    HDDUpdateCustomLists();
 
-                    SwapCaches();
+                    HDDSwapCaches();
+
+                    TCPLoadFile(file);
 
                     log.Info("KresUpdate caches set.");
                     updateSmallCaches = false;
@@ -238,6 +312,36 @@ namespace Kres.Man
             }
         }
 
+        private void DeletePreviousDatFiles(string directory)
+        {
+            try
+            {
+                Directory.Delete(directory, true);
+            }
+            catch
+            {
+            
+            }
+            
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+        }
+
+        private void TCPLoadFile(string file)
+        {
+            var buffer = ASCIIEncoding.ASCII.GetBytes(file);
+            var list = new List<byte[]>();
+            list.Add(buffer);
+            listener.pushLoadFileFromBuffer(null, list);
+        }
+
+        private void SetFile(string filename)
+        {
+            listener.setFileHandler(null, filename);
+        }
+
         internal static void UpdateSmallCaches()
         {
             updateSmallCaches = true;
@@ -258,7 +362,7 @@ namespace Kres.Man
             }
         }
 
-        private void UpdateDomains()
+        private void HDDUpdateDomains()
         {
             if (CacheLiveStorage.CoreCache.Domains == null)
             {
@@ -299,7 +403,7 @@ namespace Kres.Man
             listener.pushDomainFlagsBuffer(null, new List<byte[]>() { cacheFlags });
         }
 
-        private void UpdateIPRanges()
+        private void HDDUpdateIPRanges()
         {
             var ipRange = CacheLiveStorage.UdpCache.Select(t => t.Value).ToArray();
             Models.CacheIPRange[] ipRangeCore = null;
@@ -385,7 +489,7 @@ namespace Kres.Man
             listener.pushIPRangePolicyBuffer(null, new List<byte[]>() { cachePolicy });
         }
 
-        private void UpdatePolicies()
+        private void HDDUpdatePolicies()
         {
             if (CacheLiveStorage.CoreCache.Policies == null)
             {
@@ -416,7 +520,7 @@ namespace Kres.Man
             listener.pushPolicyBlockBuffer(null, new List<byte[]>() { cachePolicyBlock });
         }
 
-        private void UpdateCustomLists()
+        private void HDDUpdateCustomLists()
         {
             if (CacheLiveStorage.CoreCache.CustomLists == null)
             {
@@ -459,12 +563,12 @@ namespace Kres.Man
             }
         }
 
-        private void SwapCaches()
+        private void HDDSwapCaches()
         {
             listener.pushSwapCaches(null, new List<byte[]>());
         }
 
-        private void FreeCaches()
+        private void HDDFreeCaches()
         {
             listener.pushFreeCaches(null, new List<byte[]>());
         }
