@@ -21,6 +21,11 @@ namespace Kres.Man
             log.Info("Starting Radius UDP Server thread.");
 
             var port = Configuration.GetUdpPort();
+            if (port == 0)
+            {
+                log.Info("Radius UDP Server is disabled.");
+                return;
+            }
             while (true)
             {
                 using (var listener = new UdpClient(port, AddressFamily.InterNetwork))
