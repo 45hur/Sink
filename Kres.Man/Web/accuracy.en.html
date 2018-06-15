@@ -46,10 +46,12 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <br>
-                <a id="bypass_button" href="bypass/{$ipToBypass}/{$domainToWhitelist}/{$authToken}/{$redirectUrl}" class="btn btn-danger" role="button">Continue at your own risk</a>
+        <div class="text-center">
+            <a id="bypass_button" href="bypass/{$ipToBypass}/{$domainToWhitelist}/{$authToken}/{$redirectUrl}" class="btn btn-danger" role="button">Continue at your own risk</a>
+            <div class="spinner" id="loading" style="display: none;">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
             </div>
         </div>
     </div>
