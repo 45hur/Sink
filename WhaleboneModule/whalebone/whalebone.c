@@ -277,7 +277,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			{
 				if (policy_item.block > 0 && domain_item.accuracy > policy_item.block)
 				{
-					sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
+					sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block, iprange_item.identity);
 					logtosyslog(message);
 					logtofile(message);
 					logtoaudit(message);
@@ -288,33 +288,33 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				{
 					if (policy_item.audit > 0 && domain_item.accuracy > policy_item.audit)
 					{
-						sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"audit\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block);
+						sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"audit\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block, iprange_item.identity);
 						logtosyslog(message);
 						logtofile(message);
 						logtoaudit(message);
 					}
 					else
 					{
-						sprintf(message, "\"type\":\"search\",\"message\":\"policy has no action\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\"", domain_item.accuracy, policy_item.audit, policy_item.block);
+						sprintf(message, "\"type\":\"search\",\"message\":\"policy has no action\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\",\"identity\":\"%s\"", domain_item.accuracy, policy_item.audit, policy_item.block, iprange_item.identity);
 						logtosyslog(message);
 					}
 				}
 			}
 			if (domain_flags & flags_blacklist)
 			{
-				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain);
+				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, iprange_item.identity);
 				logtosyslog(message);
 				logtofile(message);
 				return redirect(request, last, ipv4, origin);
 			}
 			if (domain_flags & flags_whitelist)
 			{
-				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain);
+				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, iprange_item.identity);
 				logtosyslog(message);
 			}
 			if (domain_flags & flags_drop)
 			{
-				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"drop\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain);
+				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"drop\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, iprange_item.identity);
 				logtosyslog(message);
 			}
 		}
