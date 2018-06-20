@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Xml;
 
 using Microsoft.AspNetCore.Hosting;
@@ -61,7 +62,9 @@ namespace Kres.Man
             //var publiclistener = new PublicListener();
             //publiclistener.Listen();
 
-            var host = new WebHostBuilder()
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                var host = new WebHostBuilder()
                 .UseKestrel(options =>
                     options.Listen(IPAddress.Any, 443, listenOptions =>
                 listenOptions.UseHttps("sinkhole.pfx", "P@ssw0rd")))
@@ -70,7 +73,21 @@ namespace Kres.Man
                 .UseStartup<Startup>()
                 .Build();
 
-            host.Run();
+                host.Run();
+            }
+            else
+            {
+                var host = new WebHostBuilder()
+                .UseKestrel(options =>
+                    options.Listen(IPAddress.Any, 443, listenOptions =>
+                listenOptions.UseHttps("/app/sinkhole.pfx")))
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup<Startup>()
+                .Build();
+
+                host.Run();
+            }
 
         }
 

@@ -1,5 +1,5 @@
 FROM nginx
 
 COPY ./nginx.conf /etc/nginx/nginx.conf
-COPY ./server.crt /etc/nginx/server.crt
-COPY ./server.key /etc/nginx/server.key
+COPY ./sinkhole.crt /etc/nginx/sinkhole.crt
+COPY ./sinkhole.key /etc/nginx/sinkhole.key
