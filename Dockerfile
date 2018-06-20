@@ -1,4 +1,4 @@
-FROM microsoft/dotnet
+FROM microsoft/aspnetcore:2.0 AS build-env
 
 ENV RESOLVER_ID -
 
@@ -9,16 +9,14 @@ RUN mkdir /wwwroot
 RUN mkdir /Properties
 
 COPY /Kres.Man/*.csproj ./
-COPY /Kres.Man/*.json ./
-COPY /Kres.Man/Web/*.html ./Web/
-COPY /Kres.Man/Properties/*.json ./Properties/
-COPY /Kres.Man/*.pfx ./
-COPY /Kres.Man/*.config ./
-COPY /Kres.Man/startup.sh /usr/local/bin/startup.sh
-
 RUN dotnet restore
+
+COPY /Kres.Man/ ./
+RUN dotnet publish -c Release -o out
 RUN chmod +x /usr/local/bin/startup.sh
-
-COPY . ./
-
 CMD /usr/local/bin/startup.sh
+
+FROM microsoft/aspnetcore:2.0
+WORKDIR /app
+COPY --from=build-env /app/out .
+ENTRYPOINT ["dotnet", "aspnetapp.dll"]
