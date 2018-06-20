@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Xml;
+
+using Microsoft.AspNetCore.Hosting;
 
 namespace Kres.Man
 {
@@ -37,8 +40,8 @@ namespace Kres.Man
             CacheLiveStorage.CoreCache.Policies = new List<Models.CachePolicy>();
             CacheLiveStorage.UdpCache = new System.Collections.Concurrent.ConcurrentDictionary<string, Models.CacheIPRange>();
 
-            log.Info("Run shell script");
-            RunScriptIfExists();
+            //log.Info("Run shell script");
+            //RunScriptIfExists();
 
             log.Info("Starting UDP Server");
             UdpServer.Listen();
@@ -46,18 +49,29 @@ namespace Kres.Man
             log.Info("Starting CoreClient Updater");
             CoreClient.Start();
 
-            log.Info("Starting HTTP Listener");
             var listener = new Listener();
             var kresUpdater = new KresUpdater();
 
             log.Info("Starting Knot-Resolver Updater");
             kresUpdater.Start(listener);
 
-            listener.Listen();
+            //listener.Listen();
 
-            log.Info("Starting Public HTTP Listener");
-            var publiclistener = new PublicListener();
-            publiclistener.Listen();
+            //log.Info("Starting Public HTTP Listener");
+            //var publiclistener = new PublicListener();
+            //publiclistener.Listen();
+
+            var host = new WebHostBuilder()
+                .UseKestrel(options =>
+                    options.Listen(IPAddress.Any, 443, listenOptions =>
+                listenOptions.UseHttps("sinkhole.pfx", "P@ssw0rd")))
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup<Startup>()
+                .Build();
+
+            host.Run();
+
         }
 
         private static void RunScriptIfExists()
