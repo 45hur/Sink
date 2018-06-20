@@ -1,4 +1,5 @@
 FROM microsoft/aspnetcore-build
+FROM microsoft/aspnetcore 
 
 ENV RESOLVER_ID -
 
@@ -17,7 +18,6 @@ CMD /usr/local/bin/startup.sh
 
 RUN dotnet publish -c Release -o out
 
-FROM microsoft/aspnetcore 
 WORKDIR /app
-COPY --from=build-env /app/out .
+
 ENTRYPOINT ["dotnet", "aspnetapp.dll"]
