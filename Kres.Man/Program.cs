@@ -66,8 +66,11 @@ namespace Kres.Man
             {
                 var host = new WebHostBuilder()
                 .UseKestrel(options =>
+                {
                     options.Listen(IPAddress.Any, 443, listenOptions =>
-                listenOptions.UseHttps("sinkhole.pfx", "P@ssw0rd")))
+                        listenOptions.UseHttps("/app/sinkhole.pfx", "P@ssw0rd"));
+                    options.Listen(IPAddress.Any, 80);
+                })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
@@ -79,8 +82,11 @@ namespace Kres.Man
             {
                 var host = new WebHostBuilder()
                 .UseKestrel(options =>
-                    options.Listen(IPAddress.Any, 443, listenOptions =>
-                listenOptions.UseHttps("/app/sinkhole.pfx", "P@ssw0rd")))
+                    {
+                        options.Listen(IPAddress.Any, 443, listenOptions =>
+                          listenOptions.UseHttps("sinkhole.pfx", "P@ssw0rd"));
+                        options.Listen(IPAddress.Any, 80);
+                    })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
