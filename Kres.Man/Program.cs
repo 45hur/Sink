@@ -80,7 +80,7 @@ namespace Kres.Man
                 var host = new WebHostBuilder()
                 .UseKestrel(options =>
                     options.Listen(IPAddress.Any, 443, listenOptions =>
-                listenOptions.UseHttps("/app/sinkhole.pfx")))
+                listenOptions.UseHttps("/app/sinkhole.pfx", "P@ssw0rd")))
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
