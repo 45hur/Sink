@@ -14,10 +14,9 @@ COPY /Kres.Man/ ./
 COPY /Kres.Man/startup.sh /usr/local/bin/startup.sh 
 RUN chmod +x /usr/local/bin/startup.sh
 CMD /usr/local/bin/startup.sh
+RUN dotnet publish -c Release -o out
 
 FROM microsoft/aspnetcore
 WORKDIR /app
-RUN dotnet publish -c Release -o out
 COPY --from=build-env /app/out .
-
 ENTRYPOINT ["dotnet", "Kres.Man.dll"]
