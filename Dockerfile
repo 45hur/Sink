@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore-build
+FROM microsoft/aspnetcore-build AS build-env
 
 ENV RESOLVER_ID -
 
@@ -18,6 +18,6 @@ CMD /usr/local/bin/startup.sh
 FROM microsoft/aspnetcore
 WORKDIR /app
 RUN dotnet publish -c Release -o out
+COPY --from=build-env /app/out .
 
-COPY /out/ .
 ENTRYPOINT ["dotnet", "Kres.Man.dll"]
