@@ -19,4 +19,5 @@ RUN dotnet publish -c Release -o out
 FROM microsoft/aspnetcore
 WORKDIR /app
 COPY --from=build-env /app/out .
+COPY --from=build-env /app/*.pfx .
 ENTRYPOINT ["dotnet", "Kres.Man.dll"]
