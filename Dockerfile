@@ -1,12 +1,9 @@
-FROM microsoft/aspnetcore:2.0 AS build-env
+FROM microsoft/aspnetcore-build:2.0 AS build-env
 
 ENV RESOLVER_ID -
 
 RUN mkdir /app
 WORKDIR /app
-RUN mkdir /Web
-RUN mkdir /wwwroot
-RUN mkdir /Properties
 
 COPY /Kres.Man/*.csproj ./
 RUN dotnet restore
