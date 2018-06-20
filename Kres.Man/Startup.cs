@@ -75,7 +75,7 @@ namespace Kres.Man
             var filename = $"Web/{page}";
             if (!File.Exists(filename))
             {
-                return $"file {filename} does not exist";
+                return GenerateContent(ctx, "/blacklist.en.html");
             }
 
             using (var file = File.OpenRead(filename))
