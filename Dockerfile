@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore-build AS build-env
+FROM microsoft/aspnetcore-build
 
 ENV RESOLVER_ID -
 
