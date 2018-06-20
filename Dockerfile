@@ -11,9 +11,11 @@ RUN dotnet restore
 RUN dotnet new global.json
 
 COPY /Kres.Man/ ./
-RUN dotnet publish -c Release -o out
+COPY /Kres.Man/startup.sh /usr/local/bin/startup.sh 
 RUN chmod +x /usr/local/bin/startup.sh
 CMD /usr/local/bin/startup.sh
+
+RUN dotnet publish -c Release -o out
 
 FROM microsoft/aspnetcore 
 WORKDIR /app
