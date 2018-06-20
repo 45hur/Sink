@@ -1,5 +1,4 @@
 FROM microsoft/aspnetcore-build
-FROM microsoft/aspnetcore 
 
 ENV RESOLVER_ID -
 
@@ -18,6 +17,7 @@ CMD /usr/local/bin/startup.sh
 
 RUN dotnet publish -c Release -o out
 
+FROM microsoft/aspnetcore 
 WORKDIR /app
 
 ENTRYPOINT ["dotnet", "aspnetapp.dll"]
