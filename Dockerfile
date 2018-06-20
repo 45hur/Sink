@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore
+FROM microsoft/aspnetcore-build
 
 ENV RESOLVER_ID -
 
@@ -15,6 +15,8 @@ COPY /Kres.Man/startup.sh /usr/local/bin/startup.sh
 RUN chmod +x /usr/local/bin/startup.sh
 CMD /usr/local/bin/startup.sh
 
+FROM microsoft/aspnetcore
+WORKDIR /app
 RUN dotnet publish -c Release -o out
 
 COPY /out/ .
