@@ -50,7 +50,14 @@ namespace Kres.Man
             {
                 if (string.Compare(context.Request.Path, "/passthrough", StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
-                    await context.Response.WriteAsync(PassThrough(context, string.Empty));
+                    string postdata;
+
+                    using (var reader = new StreamReader(context.Request.Body))
+                    {
+                        postdata = reader.ReadToEnd();
+                    }
+
+                    await context.Response.WriteAsync(PassThrough(context, postdata));
                 }
                 else
                 if (context.Request.Path.ToString().StartsWith("/bypass"))
@@ -58,6 +65,7 @@ namespace Kres.Man
                     var split = context.Request.Path.ToString().Split('/');
                     if (split.Length != 4)
                         return;
+
                     await context.Response.WriteAsync(Bypass(context, string.Empty, split[0], split[1], split[2], split[3]));
                 }
                 else
