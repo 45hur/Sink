@@ -89,13 +89,18 @@ namespace Kres.Man
             {
                 using (var reader = new StreamReader(file))
                 {
+                    var protocol = ctx.Request.Protocol.ToString();
                     var host = ctx.Request.Host.ToString();
                     var request = ctx.Request.Path.ToString();
-                    var encodedUrl = Base64Encode(request);
+                    var port = ctx.Connection.LocalPort;
+
+                    var url = $"{protocol}://{host}:{port}{request}";
+
+                    var encodedUrl = Base64Encode(url);
                     var ipaddress = ctx.Connection.RemoteIpAddress;
                     var content = reader.ReadToEnd();
 
-                    content = content.Replace("{$targetUrl}", $"{host} from {ipaddress}");
+                    content = content.Replace("{$targetUrl}", $"{url}");
                     content = content.Replace("{$url}", $"{request}");
                     content = content.Replace("{$authToken}", $"BFLMPSVZ");
                     content = content.Replace("{$ipToBypass}", ipaddress.ToString());
@@ -260,6 +265,11 @@ namespace Kres.Man
 
         public string Bypass(HttpContext ctx, string postdata, string clientIpAddress, string domainToWhitelist, string authToken, string base64encodedUrlToRedirectTo)
         {
+            if (string.Compare(authToken, "BFLMPSVZ", StringComparison.OrdinalIgnoreCase) != 0)
+            {
+                return "";
+            }
+
             string identity = clientIpAddress.GetHashCode().ToString("X");
 
             IPAddress ip;
