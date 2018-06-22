@@ -50,19 +50,28 @@ namespace Kres.Man
             {
                 if (string.Compare(context.Request.Path, "/passthrough", StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
-                    await context.Response.WriteAsync(PassThrough(context, string.Empty));
+                    string postdata;
+                    using (var reader = new StreamReader(context.Request.Body))
+                    {
+                        postdata = reader.ReadToEnd();
+                    }
+
+                    await context.Response.WriteAsync(PassThrough(context, postdata));
                 }
                 else
                 if (context.Request.Path.ToString().StartsWith("/bypass"))
                 {
                     var split = context.Request.Path.ToString().Split('/');
-                    if (split.Length != 4)
+                    if (split.Length != 6)
                         return;
-                    await context.Response.WriteAsync(Bypass(context, string.Empty, split[0], split[1], split[2], split[3]));
+
+                    Bypass(context, split[2], split[3], split[4], split[5]);
+                    
+                    context.Response.StatusCode = 200;
                 }
                 else
                 {
-                    await context.Response.WriteAsync(GenerateContent(context, context.Request.Path));
+                    await context.Response.WriteAsync(PassThrough(context, string.Empty));
                 }
             });
         }
@@ -82,13 +91,20 @@ namespace Kres.Man
             {
                 using (var reader = new StreamReader(file))
                 {
+                    var protocol = (ctx.Request.IsHttps)
+                        ? "https"
+                        : "http";
                     var host = ctx.Request.Host.ToString();
                     var request = ctx.Request.Path.ToString();
-                    var encodedUrl = Base64Encode(request);
+                    var port = ctx.Connection.LocalPort;
+
+                    var url = $"{protocol}://{host}:{port}{request}";
+
+                    var encodedUrl = Base64Encode(url);
                     var ipaddress = ctx.Connection.RemoteIpAddress;
                     var content = reader.ReadToEnd();
 
-                    content = content.Replace("{$targetUrl}", $"{host} from {ipaddress}");
+                    content = content.Replace("{$targetUrl}", $"{url}");
                     content = content.Replace("{$url}", $"{request}");
                     content = content.Replace("{$authToken}", $"BFLMPSVZ");
                     content = content.Replace("{$ipToBypass}", ipaddress.ToString());
@@ -251,8 +267,15 @@ namespace Kres.Man
         }
 
 
-        public string Bypass(HttpContext ctx, string postdata, string clientIpAddress, string domainToWhitelist, string authToken, string base64encodedUrlToRedirectTo)
+        public string Bypass(HttpContext ctx, string clientIpAddress, string domainToWhitelist, string authToken, string base64encodedUrlToRedirectTo)
         {
+            log.Info($"Bypass request, ip={clientIpAddress}, {domainToWhitelist}.");
+
+            if (string.Compare(authToken, "BFLMPSVZ", StringComparison.OrdinalIgnoreCase) != 0)
+            {
+                return "";
+            }
+
             string identity = clientIpAddress.GetHashCode().ToString("X");
 
             IPAddress ip;
@@ -344,7 +367,7 @@ namespace Kres.Man
 
             //var redirectUrl = Base64Decode(base64encodedUrlToRedirectTo);
             //ctx.Response.RedirectLocation = redirectUrl;
-            ctx.Response.StatusCode = 418;
+            
 
             return null;
         }
