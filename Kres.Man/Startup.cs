@@ -62,11 +62,12 @@ namespace Kres.Man
                 if (context.Request.Path.ToString().StartsWith("/bypass"))
                 {
                     var split = context.Request.Path.ToString().Split('/');
-                    log.Info($"Bypass request, {split.Length} {split[2]}-{split[3]}-{split[4]}-{split[5]}.");
                     if (split.Length != 6)
                         return;
 
-                    await context.Response.WriteAsync(Bypass(context, split[2], split[3], split[4], split[5]));
+                    Bypass(context, split[2], split[3], split[4], split[5]);
+                    
+                    context.Response.StatusCode = 418;
                 }
                 else
                 {
@@ -366,7 +367,7 @@ namespace Kres.Man
 
             //var redirectUrl = Base64Decode(base64encodedUrlToRedirectTo);
             //ctx.Response.RedirectLocation = redirectUrl;
-            ctx.Response.StatusCode = 418;
+            
 
             return null;
         }
