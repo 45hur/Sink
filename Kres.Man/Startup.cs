@@ -67,7 +67,11 @@ namespace Kres.Man
 
                     Bypass(context, split[2], split[3], split[4], split[5]);
                     
-                    context.Response.StatusCode = 200;
+                    context.Response.StatusCode = 418;
+                }
+                if (context.Request.Path.ToString().StartsWith("/wbbpschk"))
+                {
+                    context.Response.StatusCode = 418;
                 }
                 else
                 {
