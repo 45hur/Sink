@@ -92,7 +92,7 @@ namespace Kres.Man
                     var protocol = (ctx.Request.IsHttps)
                         ? "https"
                         : "http";
-                    var host = ctx.Request.IsHttps.ToString();
+                    var host = ctx.Request.Host.ToString();
                     var request = ctx.Request.Path.ToString();
                     var port = ctx.Connection.LocalPort;
 
