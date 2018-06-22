@@ -63,43 +63,56 @@
         </footer>
 
         <script>
-            function bypassUrl(event) {
-                event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+            var bypassCookieName = "wbbypass";
+
+            function checkBypassCookie() {
+                var name = bypassCookieName + "=";
+                var ca = document.cookie.split(';');
+                var i;
+                var c;
+                for (i = 0; i < ca.length; i++) {
+                    c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function setBypassCookie(minutes) {
+                var d = new Date();
+                d.setTime(d.getTime() + minutes * 60 * 1000); // minutes in milliseconds
+                document.cookie = bypassCookieName + '=true;path=/;expires=' + d.toGMTString() + ';';
+            }
+
+            function showLoading() {
                 document.getElementById('loading').style.display = '';
                 document.getElementById('bypass_button').style.display = 'none';
+            }
+
+            function reload() {
+                window.location.reload(true);
+            }
+
+            function bypassUrl(event) {
+                event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+                showLoading();
                 tryBypass();
             }
 
-            function tryBypassCheck() {
-
-                var oXMLHttpRequest = new XMLHttpRequest;
-                oXMLHttpRequest.open("GET", "wbbpschk", true);
-                oXMLHttpRequest.onreadystatechange = function () {
-                    if (this.readyState == 4) {
-                        if (this.status == 418) {
-                            setTimeout(tryBypassCheck, 500);
-                        } else if (this.status >= 200 && this.status < 400) {
-                            window.location.reload(true)
-                        } else {
-                            console.error("Encountered error")
-                        }
-                    }
-                }
-                oXMLHttpRequest.send(null);
-            }
-
             function tryBypass() {
-
                 var oXMLHttpRequest = new XMLHttpRequest;
                 oXMLHttpRequest.open("GET", "bypass/{$ipToBypass}/{$domainToWhitelist}/{$authToken}/{$redirectUrl}", true);
                 oXMLHttpRequest.onreadystatechange = function () {
                     if (this.readyState == 4) {
                         if (this.status == 418) {
-                            setTimeout(tryBypassCheck, 500);
-                        } else if (this.status >= 200 && this.status < 400) {
-                            window.location.reload(true)
+                            setBypassCookie(5);
+                            setTimeout(reload, 3000);
                         } else {
-                            console.error("Encountered error")
+                            setTimeout(tryBypass, 500);
                         }
                     }
                 }
@@ -115,7 +128,12 @@
             }
 
             function onReady() {
-                addEventListener(document.getElementById('bypass_button'), 'click', bypassUrl);
+                if (checkBypassCookie()) {
+                    showLoading();
+                    setTimeout(reload, 3000);
+                } else {
+                    addEventListener(document.getElementById('bypass_button'), 'click', bypassUrl);
+                }
             }
 
             function ready() {
