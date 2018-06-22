@@ -62,15 +62,13 @@ namespace Kres.Man
                 if (context.Request.Path.ToString().StartsWith("/bypass"))
                 {
                     var split = context.Request.Path.ToString().Split('/');
-                    log.Info($"Bypass request, count={split.Length}-{context.Request.Path.ToString()}.");
-                    if (split.Length != 5)
+                    if (split.Length != 6)
                         return;
 
-                    await context.Response.WriteAsync(Bypass(context, split[1], split[2], split[3], split[4]));
+                    await context.Response.WriteAsync(Bypass(context, split[2], split[3], split[4], split[5]));
                 }
                 else
                 {
-                    log.Info($"Passthrough request");
                     await context.Response.WriteAsync(PassThrough(context, string.Empty));
                 }
             });
