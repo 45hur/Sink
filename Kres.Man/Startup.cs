@@ -65,7 +65,7 @@ namespace Kres.Man
                     if (split.Length != 5)
                         return;
 
-                    await context.Response.WriteAsync(Bypass(context, string.Empty, split[1], split[2], split[3], split[4]));
+                    await context.Response.WriteAsync(Bypass(context, split[1], split[2], split[3], split[4]));
                 }
                 else
                 {
@@ -89,8 +89,10 @@ namespace Kres.Man
             {
                 using (var reader = new StreamReader(file))
                 {
-                    var protocol = ctx.Request.Protocol.ToString();
-                    var host = ctx.Request.Host.ToString();
+                    var protocol = (ctx.Request.IsHttps)
+                        ? "https"
+                        : "http";
+                    var host = ctx.Request.IsHttps.ToString();
                     var request = ctx.Request.Path.ToString();
                     var port = ctx.Connection.LocalPort;
 
@@ -263,7 +265,7 @@ namespace Kres.Man
         }
 
 
-        public string Bypass(HttpContext ctx, string postdata, string clientIpAddress, string domainToWhitelist, string authToken, string base64encodedUrlToRedirectTo)
+        public string Bypass(HttpContext ctx, string clientIpAddress, string domainToWhitelist, string authToken, string base64encodedUrlToRedirectTo)
         {
             if (string.Compare(authToken, "BFLMPSVZ", StringComparison.OrdinalIgnoreCase) != 0)
             {
