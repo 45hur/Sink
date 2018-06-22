@@ -62,6 +62,7 @@ namespace Kres.Man
                 if (context.Request.Path.ToString().StartsWith("/bypass"))
                 {
                     var split = context.Request.Path.ToString().Split('/');
+                    log.Info($"Bypass request, count={split.Length}.");
                     if (split.Length != 5)
                         return;
 
@@ -69,6 +70,7 @@ namespace Kres.Man
                 }
                 else
                 {
+                    log.Info($"Passthrough request");
                     await context.Response.WriteAsync(PassThrough(context, string.Empty));
                 }
             });
@@ -267,6 +269,8 @@ namespace Kres.Man
 
         public string Bypass(HttpContext ctx, string clientIpAddress, string domainToWhitelist, string authToken, string base64encodedUrlToRedirectTo)
         {
+            log.Info($"Bypass request, ip={clientIpAddress}, {domainToWhitelist}.");
+
             if (string.Compare(authToken, "BFLMPSVZ", StringComparison.OrdinalIgnoreCase) != 0)
             {
                 return "";
