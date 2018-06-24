@@ -251,12 +251,14 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc) == 1)
 			{
 				sprintf(message, "\"type\":\"search\",\"message\":\"identity '%s' got ioc '%s' blacklisted.\"", iprange_item.identity, querieddomain);
+				logtofile(message);
 				logtosyslog(message);
 				return redirect(request, last, ipv4, origin);
 			}
 			if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc) == 1)
 			{
 				sprintf(message, "\"type\":\"search\",\"message\":\"identity '%s' got ioc '%s' whitelisted.\"", iprange_item.identity, querieddomain);
+				logtofile(message);
 				logtosyslog(message);
 				return KNOT_STATE_DONE;
 			}
