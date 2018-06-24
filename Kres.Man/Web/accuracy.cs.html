@@ -54,6 +54,7 @@
                       <div class="bounce3"></div>
                   </div>
                 </div>
+                <p id="popup_needed" class="alert alert-info" style="display:none;">Abychom vás mohli na požadovanou stránku přesměrovat, povolte prosím v prohlížeči vyskakovací okno</p>
             </div>
         </div>
 
@@ -90,6 +91,8 @@
             }
 
             function openInNewTab() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('popup_needed').style.display = '';
                 window.open( '{$targetUrl}', '_blank');
             }
 
@@ -146,7 +149,7 @@
                 }
                 
                 showLoading();
-                if ( cookieVal < 20 ) {
+                if ( cookieVal < 6 ) {
                     setBypassCookie(5, cookieVal+1);
                     setTimeout(reload, 5000);
                     return;
