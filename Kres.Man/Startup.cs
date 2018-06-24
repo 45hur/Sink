@@ -212,7 +212,7 @@ namespace Kres.Man
                                 {
                                     //allow
                                     //return "allow";
-                                    return GenerateContent(ctx, network.blacklist.First());
+                                    return GenerateContent(ctx, network.accuracy.First());
                                 }
                             }
                         }
