@@ -56,6 +56,7 @@ namespace Kres.Man
                         postdata = reader.ReadToEnd();
                     }
 
+                    context.Response.Headers.Add("Connection", "Close");
                     await context.Response.WriteAsync(PassThrough(context, postdata));
                 }
                 else
@@ -66,15 +67,18 @@ namespace Kres.Man
                         return;
 
                     Bypass(context, split[2], split[3], split[4], split[5]);
-                    
+
+                    context.Response.Headers.Add("Connection", "Close");
                     context.Response.StatusCode = 418;
                 }
                 if (context.Request.Path.ToString().StartsWith("/wbbpschk"))
                 {
+                    context.Response.Headers.Add("Connection", "Close");
                     context.Response.StatusCode = 418;
                 }
                 else
                 {
+                    context.Response.Headers.Add("Connection", "Close");
                     await context.Response.WriteAsync(PassThrough(context, string.Empty));
                 }
             });
