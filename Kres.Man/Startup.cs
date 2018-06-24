@@ -356,7 +356,10 @@ namespace Kres.Man
                     var list = item.WhiteList.ToList();
                     list.Add(domainToWhitelist);
                     item.WhiteList = list;
-                    log.Info($"Identity {identity} now has {domainToWhitelist} whitelisted.");
+                    foreach (var entry in item.WhiteList)
+                    {
+                        log.Info($"Identity {identity} now has {entry} whitelisted.");
+                    }
                 }
                 else
                 {
