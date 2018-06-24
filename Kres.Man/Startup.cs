@@ -71,6 +71,7 @@ namespace Kres.Man
                     context.Response.Headers.Add("Connection", "Close");
                     context.Response.StatusCode = 418;
                 }
+                else
                 if (context.Request.Path.ToString().StartsWith("/wbbpschk"))
                 {
                     context.Response.Headers.Add("Connection", "Close");
