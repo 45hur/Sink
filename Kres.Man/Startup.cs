@@ -285,7 +285,9 @@ namespace Kres.Man
                 return "";
             }
 
-            string identity = clientIpAddress.GetHashCode().ToString("X");
+            var idbytes = Encoding.ASCII.GetBytes(clientIpAddress);
+            var idcrc = Crc64.Compute(0, idbytes);
+            string identity = idcrc.ToString("X");
 
             IPAddress ip;
             if (!IPAddress.TryParse(clientIpAddress, out ip))
