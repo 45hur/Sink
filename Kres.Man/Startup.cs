@@ -101,12 +101,12 @@ namespace Kres.Man
                     }
                     if (lang.Contains("en"))
                     {
-                        page = pages.Skip(1).First();
+                        page = pages.Skip(2).First();
                         break;
                     }
                     if (lang.Contains("sk"))
                     {
-                        page = pages.Skip(2).First();
+                        page = pages.Skip(1).First();
                         break;
                     }
                 }
