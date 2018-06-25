@@ -85,15 +85,44 @@ namespace Kres.Man
             });
         }
 
-        private string GenerateContent(HttpContext ctx, string page)
+        private string GenerateContent(HttpContext ctx, IEnumerable<string> pages)
         {
+            var page = pages.First();
+            try
+            {
+                var supportedLanguages = ctx.Request.Headers["Accept-Language"];
+                var list = supportedLanguages.ToString().Split(';');
+                foreach (var lang in list)
+                {
+                    if (lang.Contains("cs"))
+                    {
+                        page = pages.First();
+                        break;
+                    }
+                    if (lang.Contains("en"))
+                    {
+                        page = pages.Skip(1).First();
+                        break;
+                    }
+                    if (lang.Contains("sk"))
+                    {
+                        page = pages.Skip(2).First();
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                page = pages.First();
+            }
+
             if (page.Contains(".."))
                 return string.Empty;
 
             var filename = $"Web/{page}";
             if (!File.Exists(filename))
             {
-                return GenerateContent(ctx, "/blacklist.en.html");
+                return GenerateContent(ctx, new[] { "blacklist.cs.html", "blacklist.en.html", "blacklist.sk.html" });
             }
 
             using (var file = File.OpenRead(filename))
@@ -211,13 +240,13 @@ namespace Kres.Man
                             {
                                 if (custom.BlackList.Contains(joined))
                                 {
-                                    return GenerateContent(ctx, network.blacklist.First());
+                                    return GenerateContent(ctx, network.blacklist);
                                 }
                                 else if (custom.WhiteList.Contains(joined))
                                 {
                                     //allow
                                     //return "allow";
-                                    return GenerateContent(ctx, network.accuracy.First());
+                                    return GenerateContent(ctx, network.accuracy);
                                 }
                             }
                         }
@@ -227,7 +256,7 @@ namespace Kres.Man
                         {
                             //no policy
                             //return "no policy";
-                            return GenerateContent(ctx, network.blacklist.First());
+                            return GenerateContent(ctx, network.blacklist);
                         }
                         else
                         {
@@ -237,7 +266,7 @@ namespace Kres.Man
                             {
                                 if (policy.Block > 0 && domain.Accuracy > policy.Block)
                                 {
-                                    return GenerateContent(ctx, network.accuracy.First());
+                                    return GenerateContent(ctx, network.accuracy);
                                 }
                                 else
                                 {
@@ -245,26 +274,26 @@ namespace Kres.Man
                                     {
                                         //audit
                                         //return "audit";
-                                        return GenerateContent(ctx, network.blacklist.First());
+                                        return GenerateContent(ctx, network.blacklist);
                                     }
                                     else
                                     {
                                         //no accuracy action
                                         //return "no accuracy action";
-                                        return GenerateContent(ctx, network.blacklist.First());
+                                        return GenerateContent(ctx, network.blacklist);
                                     }
                                 }
                             }
                             if ((flags & (int)KresFlags.flags_blacklist) == (int)KresFlags.flags_blacklist)
                             {
                                 //block
-                                return GenerateContent(ctx, network.legal.First());
+                                return GenerateContent(ctx, network.legal);
                             }
                             if ((flags & (int)KresFlags.flags_whitelist) == (int)KresFlags.flags_whitelist)
                             {
                                 //allow whitelist
                                 //return "allow whitelist";
-                                return GenerateContent(ctx, network.blacklist.First());
+                                return GenerateContent(ctx, network.blacklist);
                             }
                         }
                     }
