@@ -7217,7 +7217,9 @@
                     <div class="bounce1"></div>
                     <div class="bounce2"></div>
                     <div class="bounce3"></div>
+                  </div>
                 </div>
+                <p id="popup_needed" class="alert alert-info" style="display:none;">Aby sme vás mohli na rizikovú stránku presmerovať, je potrebné v prehliadači povoliť vyskakovacie okno.</p>
             </div>
         </div>
 
@@ -7234,43 +7236,62 @@
         </footer>
 
         <script>
-            function bypassUrl(event) {
-                event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+            var bypassCookieName = "wbbypass";
+
+            function getBypassCookieValue() {
+                var name = bypassCookieName + "=";
+                var ca = document.cookie.split(';');
+                var i;
+                var c;
+                for(i = 0; i < ca.length; i++) {
+                    c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return parseInt( c.split('=')[1], 10);
+                    }
+                }
+                return false;
+            }
+
+            function openInNewTab() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('popup_needed').style.display = '';
+                window.open( '{$targetUrl}', '_blank');
+            }
+
+            function setBypassCookie(minutes, value) {
+                var d = new Date();
+                d.setTime(d.getTime() + minutes*60*1000); // minutes in milliseconds
+                document.cookie = bypassCookieName + '=' + value + ';path=/;expires='+d.toGMTString()+';';
+            }
+
+            function showLoading() {
                 document.getElementById('loading').style.display = '';
                 document.getElementById('bypass_button').style.display = 'none';
+            }
+
+            function reload() {
+                window.location.reload(true);
+            }
+
+            function bypassUrl(event) {
+                event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+                showLoading();
                 tryBypass();
             }
 
-            function tryBypassCheck() {
-
-                var oXMLHttpRequest = new XMLHttpRequest;
-                oXMLHttpRequest.open("GET", "wbbpschk", true);
-                oXMLHttpRequest.onreadystatechange = function () {
-                    if (this.readyState == 4) {
-                        if (this.status == 418) {
-                            setTimeout(tryBypassCheck, 500);
-                        } else if (this.status >= 200 && this.status < 400) {
-                            window.location.reload(true)
-                        } else {
-                            console.error("Encountered error")
-                        }
-                    }
-                }
-                oXMLHttpRequest.send(null);
-            }
-
             function tryBypass() {
-
                 var oXMLHttpRequest = new XMLHttpRequest;
                 oXMLHttpRequest.open("GET", "bypass/{$ipToBypass}/{$domainToWhitelist}/{$authToken}/{$redirectUrl}", true);
                 oXMLHttpRequest.onreadystatechange = function () {
                     if (this.readyState == 4) {
                         if (this.status == 418) {
-                            setTimeout(tryBypassCheck, 500);
-                        } else if (this.status >= 200 && this.status < 400) {
-                            window.location.reload(true)
+                            setBypassCookie(5, 1);
+                            setTimeout(reload, 5000);
                         } else {
-                            console.error("Encountered error")
+                            setTimeout(tryBypass, 500);
                         }
                     }
                 }
@@ -7286,7 +7307,19 @@
             }
 
             function onReady() {
-                addEventListener(document.getElementById('bypass_button'), 'click', bypassUrl);
+                var cookieVal = getBypassCookieValue();
+                if ( cookieVal === false ) {
+                    addEventListener(document.getElementById('bypass_button'), 'click', bypassUrl);
+                    return;
+                }
+                
+                showLoading();
+                if ( cookieVal < 6 ) {
+                    setBypassCookie(5, cookieVal+1);
+                    setTimeout(reload, 5000);
+                    return;
+                }
+                openInNewTab();
             }
 
             function ready() {
