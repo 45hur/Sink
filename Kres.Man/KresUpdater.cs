@@ -540,18 +540,32 @@ namespace Kres.Man
 
                 var cachecustomlist_whitelist = new byte[(customlist[i].WhiteList.Count() * sizeof(UInt64))];
                 var wlarray = customlist[i].WhiteList.ToArray();
+                var sortedWl = new List<ulong>(wlarray.Length);
                 for (var j = 0; j < customlist[i].WhiteList.Count(); j++)
                 {
                     var crc = Crc64.Compute(0, ASCIIEncoding.ASCII.GetBytes(wlarray[j]));
-                    Array.Copy(BitConverter.GetBytes(crc), 0, cachecustomlist_whitelist, j * sizeof(UInt64), sizeof(UInt64));
+                    sortedWl.Add(crc);
+                }
+
+                sortedWl.Sort();
+                for (var j = 0; j < wlarray.Length; j++)
+                {
+                    Array.Copy(BitConverter.GetBytes(sortedWl[j]), 0, cachecustomlist_whitelist, j * sizeof(UInt64), sizeof(UInt64));
                 }
 
                 var cachecustomlist_blacklist = new byte[(customlist[i].BlackList.Count() * sizeof(UInt64))];
                 var blarray = customlist[i].BlackList.ToArray();
+                var sortedBl = new List<ulong>(blarray.Length);
                 for (var j = 0; j < customlist[i].BlackList.Count(); j++)
                 {
                     var crc = Crc64.Compute(0, ASCIIEncoding.ASCII.GetBytes(blarray[j]));
-                    Array.Copy(BitConverter.GetBytes(crc), 0, cachecustomlist_blacklist, j * sizeof(UInt64), sizeof(UInt64));
+                    
+                }
+
+                sortedBl.Sort();
+                for (var j = 0; j < blarray.Length; j++)
+                {
+                    Array.Copy(BitConverter.GetBytes(sortedBl[j]), 0, cachecustomlist_blacklist, j * sizeof(UInt64), sizeof(UInt64));
                 }
 
                 Array.Copy(BitConverter.GetBytes(customlist[i].PolicyId), 0, cachecustomlist_policyid, 0, sizeof(Int32));
