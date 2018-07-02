@@ -246,21 +246,24 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 
 		if (strlen(iprange_item.identity) > 0)
 		{
+			unsigned long long crcIoC = crc64(0, (const unsigned char*)querieddomain, strlen(originaldomain));
 			sprintf(message, "\"type\":\"search\",\"message\":\"identity '%s' query '%s'.\"", iprange_item.identity, querieddomain);
 			logtosyslog(message);
-			if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc) == 1)
-			{
-				sprintf(message, "\"client_ip\":\"%s\",\"identity\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", req_addr, iprange_item.identity, originaldomain, querieddomain);
-				logtofile(message);
-				logtosyslog(message);
-				return redirect(request, last, ipv4, origin);
-			}
-			if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc) == 1)
+			if (cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crc) == 1 ||
+                            cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crcIoC) == 1)
 			{
 				sprintf(message, "\"client_ip\":\"%s\",\"identity\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\"", req_addr, iprange_item.identity, originaldomain, querieddomain);
 				logtofile(message);
 				logtosyslog(message);
 				return KNOT_STATE_DONE;
+			}
+			if (cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crc) == 1 ||
+		            cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crcIoC) == 1)
+			{
+				sprintf(message, "\"client_ip\":\"%s\",\"identity\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", req_addr, iprange_item.identity, originaldomain, querieddomain);
+				logtofile(message);
+				logtosyslog(message);
+				return redirect(request, last, ipv4, origin);
 			}
 		}
 		sprintf(message, "\"type\":\"search\",\"message\":\"no identity match, checking policy..\"");
@@ -302,17 +305,18 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					}
 				}
 			}
+			if (domain_flags & flags_whitelist)
+			{
+				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, iprange_item.identity);
+				logtosyslog(message);
+                                return KNOT_STATE_DONE;
+			}
 			if (domain_flags & flags_blacklist)
 			{
 				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, iprange_item.identity);
 				logtosyslog(message);
 				logtofile(message);
 				return redirect(request, last, ipv4, origin);
-			}
-			if (domain_flags & flags_whitelist)
-			{
-				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, iprange_item.identity);
-				logtosyslog(message);
 			}
 			if (domain_flags & flags_drop)
 			{
