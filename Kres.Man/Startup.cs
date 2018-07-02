@@ -238,15 +238,16 @@ namespace Kres.Man
                             var custom = CacheLiveStorage.CoreCache.CustomLists.Where(t => string.Compare(t.Identity, range_identity, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
                             if (custom != null)
                             {
-                                if (custom.BlackList.Contains(joined))
-                                {
-                                    return GenerateContent(ctx, network.blacklist);
-                                }
-                                else if (custom.WhiteList.Contains(joined))
+                                var dmn = string.Join('.', list);
+                                if (custom.WhiteList.Contains(joined) || custom.WhiteList.Contains(dmn))
                                 {
                                     //allow
                                     //return "allow";
                                     return GenerateContent(ctx, network.accuracy);
+                                }
+                                else if (custom.BlackList.Contains(joined) || custom.BlackList.Contains(dmn))
+                                {
+                                    return GenerateContent(ctx, network.blacklist);
                                 }
                             }
                         }
@@ -284,16 +285,16 @@ namespace Kres.Man
                                     }
                                 }
                             }
-                            if ((flags & (int)KresFlags.flags_blacklist) == (int)KresFlags.flags_blacklist)
-                            {
-                                //block
-                                return GenerateContent(ctx, network.legal);
-                            }
                             if ((flags & (int)KresFlags.flags_whitelist) == (int)KresFlags.flags_whitelist)
                             {
                                 //allow whitelist
                                 //return "allow whitelist";
                                 return GenerateContent(ctx, network.blacklist);
+                            }
+                            if ((flags & (int)KresFlags.flags_blacklist) == (int)KresFlags.flags_blacklist)
+                            {
+                                //block
+                                return GenerateContent(ctx, network.legal);
                             }
                         }
                     }
