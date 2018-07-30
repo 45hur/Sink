@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.IO;
 using System.Net;
@@ -173,136 +174,153 @@ namespace Kres.Man
 
         public string PassThrough(HttpContext ctx, string postdata)
         {
-            var list = ctx.Request.Host.ToString().Split('.');
-
-            if (!string.IsNullOrEmpty(postdata))
-                list = postdata.Split('.');
-
-            for (var i = 0; i < list.Length - 1; i++)
+            try
             {
-                var joined = string.Join('.', list, i, list.Length - i);
-                var bytes = Encoding.ASCII.GetBytes(joined);
-                var crc = Crc64.Compute(0, bytes);
-                var domain = CacheLiveStorage.CoreCache.Domains.Where(t => t.Crc64 == crc).FirstOrDefault();
-                if (domain == null)
-                    continue;
+                var list = ctx.Request.Host.ToString().Split('.');
 
-                var ipaddress = ctx.Connection.RemoteIpAddress;
-                var addrbytes = ipaddress.GetAddressBytes().Reverse().ToArray();
-                var addr = new Models.Int128();
-                if (addrbytes.Length == 4)
-                {
-                    addr.Hi = 0;
-                    addr.Low = BitConverter.ToUInt32(addrbytes, 0);
-                }
-                else if (addrbytes.Length == 16)
-                {
-                    addr.Hi = BitConverter.ToUInt64(addrbytes, 0);
-                    addr.Low = BitConverter.ToUInt64(addrbytes, 8);
-                }
-                var ip = new BigMath.Int128(addr.Hi, addr.Low);
+                if (!string.IsNullOrEmpty(postdata))
+                    list = postdata.Split('.');
 
-                var ipRange = CacheLiveStorage.UdpCache.Select(t => t.Value).ToArray();
-                Models.CacheIPRange[] ipRangeCore = null;
-                if (CacheLiveStorage.CoreCache.IPRanges != null)
+                for (var i = 0; i < list.Length - 1; i++)
                 {
-                    ipRangeCore = CacheLiveStorage.CoreCache.IPRanges.ToArray();
-                    ipRange = ipRange.Concat(ipRangeCore).ToArray();
-                }
+                    var joined = string.Join('.', list, i, list.Length - i);
+                    var bytes = Encoding.ASCII.GetBytes(joined);
+                    var crc = Crc64.Compute(0, bytes);
+                    var domain = CacheLiveStorage.CoreCache.Domains.Where(t => t.Crc64 == crc).FirstOrDefault();
+                    if (domain == null)
+                        continue;
 
-                var range = ipRange.Where(t => t.BintFrom >= ip && ip <= t.BintTo).FirstOrDefault();
-                var range_identity = string.Empty;
-                var range_policyid = 0;
-                if (range != null)
-                {
-                    range_identity = range.Identity;
-                    range_policyid = range.PolicyId;
-                }
-
-                Models.PublicListenerConfig views;
-                using (var sr = new StreamReader("publiclistenerconfig.json"))
-                {
-                    views = JsonConvert.DeserializeObject<Models.PublicListenerConfig>(sr.ReadToEnd());
-                }
-
-                foreach (var network in views.views)
-                {
-                    foreach (var cidr in network.networks)
+                    var ipaddress = ctx.Connection.RemoteIpAddress;
+                    var addrbytes = ipaddress.GetAddressBytes().Reverse().ToArray();
+                    var addr = new Models.Int128();
+                    if (addrbytes.Length == 4)
                     {
-                        IPNetwork n = IPNetwork.Parse(cidr.ToString());
-                        if (!n.Contains(ipaddress))
-                            continue;
+                        addr.Hi = 0;
+                        addr.Low = BitConverter.ToUInt32(addrbytes, 0);
+                    }
+                    else if (addrbytes.Length == 16)
+                    {
+                        addr.Hi = BitConverter.ToUInt64(addrbytes, 0);
+                        addr.Low = BitConverter.ToUInt64(addrbytes, 8);
+                    }
+                    var ip = new BigMath.Int128(addr.Hi, addr.Low);
 
-                        if (!string.IsNullOrEmpty(range_identity))
+                    var ipRange = new List<Models.CacheIPRange>();
+                    if (CacheLiveStorage.UdpCache != null)
+                    {
+                        ipRange = CacheLiveStorage.UdpCache.Select(t => t.Value).ToList();
+                        Models.CacheIPRange[] ipRangeCore = null;
+                        if (CacheLiveStorage.CoreCache.IPRanges != null)
                         {
-                            var custom = CacheLiveStorage.CoreCache.CustomLists.Where(t => string.Compare(t.Identity, range_identity, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
-                            if (custom != null)
+                            ipRangeCore = CacheLiveStorage.CoreCache.IPRanges.ToArray();
+                            ipRange = ipRange.Concat(ipRangeCore).ToList();
+                        }
+                    }
+
+                    var range = ipRange.Where(t => t.BintFrom >= ip && ip <= t.BintTo).FirstOrDefault();
+                    var range_identity = string.Empty;
+                    var range_policyid = 0;
+                    if (range != null)
+                    {
+                        range_identity = range.Identity;
+                        range_policyid = range.PolicyId;
+                    }
+
+                    Models.PublicListenerConfig views;
+                    using (var sr = new StreamReader("publiclistenerconfig.json"))
+                    {
+                        views = JsonConvert.DeserializeObject<Models.PublicListenerConfig>(sr.ReadToEnd());
+                    }
+
+                    foreach (var network in views.views)
+                    {
+                        foreach (var cidr in network.networks)
+                        {
+                            IPNetwork n = IPNetwork.Parse(cidr.ToString());
+                            if (!n.Contains(ipaddress))
+                                continue;
+
+                            if (!string.IsNullOrEmpty(range_identity))
                             {
-                                var dmn = string.Join('.', list);
-                                if (custom.WhiteList.Contains(joined) || custom.WhiteList.Contains(dmn))
+                                if (CacheLiveStorage.CoreCache.CustomLists != null)
                                 {
-                                    //allow
-                                    //return "allow";
-                                    return GenerateContent(ctx, network.accuracy);
-                                }
-                                else if (custom.BlackList.Contains(joined) || custom.BlackList.Contains(dmn))
-                                {
-                                    return GenerateContent(ctx, network.blacklist);
+                                    var custom = CacheLiveStorage.CoreCache.CustomLists.Where(t => string.Compare(t.Identity, range_identity, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+                                    if (custom != null)
+                                    {
+                                        var dmn = string.Join('.', list);
+                                        if (custom.WhiteList.Contains(joined) || custom.WhiteList.Contains(dmn))
+                                        {
+                                            //allow
+                                            //return "allow";
+                                            return GenerateContent(ctx, network.accuracy);
+                                        }
+                                        else if (custom.BlackList.Contains(joined) || custom.BlackList.Contains(dmn))
+                                        {
+                                            return GenerateContent(ctx, network.blacklist);
+                                        }
+                                    }
                                 }
                             }
-                        }
 
-                        var policy = CacheLiveStorage.CoreCache.Policies.Where(t => t.Policy_id == range_policyid).FirstOrDefault();
-                        if (policy == null)
-                        {
-                            //no policy
-                            //return "no policy";
-                            return GenerateContent(ctx, network.blacklist);
-                        }
-                        else
-                        {
-                            var flags = domain.Flags.ToArray()[policy.Policy_id];
-
-                            if ((flags & (int)KresFlags.flags_accuracy) == (int)KresFlags.flags_accuracy)
+                            if (CacheLiveStorage.CoreCache.Policies != null)
                             {
-                                if (policy.Block > 0 && domain.Accuracy > policy.Block)
+                                var policy = CacheLiveStorage.CoreCache.Policies.Where(t => t.Policy_id == range_policyid).FirstOrDefault();
+                                if (policy == null)
                                 {
-                                    return GenerateContent(ctx, network.accuracy);
+                                    //no policy
+                                    //return "no policy";
+                                    return GenerateContent(ctx, network.blacklist);
                                 }
                                 else
                                 {
-                                    if (policy.Audit > 0 && domain.Accuracy > policy.Audit)
+                                    var flags = domain.Flags.ToArray()[policy.Policy_id];
+
+                                    if ((flags & (int)KresFlags.flags_accuracy) == (int)KresFlags.flags_accuracy)
                                     {
-                                        //audit
-                                        //return "audit";
+                                        if (policy.Block > 0 && domain.Accuracy > policy.Block)
+                                        {
+                                            return GenerateContent(ctx, network.accuracy);
+                                        }
+                                        else
+                                        {
+                                            if (policy.Audit > 0 && domain.Accuracy > policy.Audit)
+                                            {
+                                                //audit
+                                                //return "audit";
+                                                return GenerateContent(ctx, network.blacklist);
+                                            }
+                                            else
+                                            {
+                                                //no accuracy action
+                                                //return "no accuracy action";
+                                                return GenerateContent(ctx, network.blacklist);
+                                            }
+                                        }
+                                    }
+                                    if ((flags & (int)KresFlags.flags_whitelist) == (int)KresFlags.flags_whitelist)
+                                    {
+                                        //allow whitelist
+                                        //return "allow whitelist";
                                         return GenerateContent(ctx, network.blacklist);
                                     }
-                                    else
+                                    if ((flags & (int)KresFlags.flags_blacklist) == (int)KresFlags.flags_blacklist)
                                     {
-                                        //no accuracy action
-                                        //return "no accuracy action";
-                                        return GenerateContent(ctx, network.blacklist);
+                                        //block
+                                        return GenerateContent(ctx, network.legal);
                                     }
                                 }
-                            }
-                            if ((flags & (int)KresFlags.flags_whitelist) == (int)KresFlags.flags_whitelist)
-                            {
-                                //allow whitelist
-                                //return "allow whitelist";
-                                return GenerateContent(ctx, network.blacklist);
-                            }
-                            if ((flags & (int)KresFlags.flags_blacklist) == (int)KresFlags.flags_blacklist)
-                            {
-                                //block
-                                return GenerateContent(ctx, network.legal);
                             }
                         }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                log.Error("ERROR: ", ex);
+            }
 
             //return "no-action";
-            return "";
+            return GenerateContent(ctx, new[] { "blacklist.cs.html", "blacklist.en.html", "blacklist.sk.html" });
         }
 
 
