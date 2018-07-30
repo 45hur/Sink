@@ -186,6 +186,9 @@ namespace Kres.Man
                     var joined = string.Join('.', list, i, list.Length - i);
                     var bytes = Encoding.ASCII.GetBytes(joined);
                     var crc = Crc64.Compute(0, bytes);
+                    if (CacheLiveStorage.CoreCache.Domains == null)
+                        break;
+
                     var domain = CacheLiveStorage.CoreCache.Domains.Where(t => t.Crc64 == crc).FirstOrDefault();
                     if (domain == null)
                         continue;
