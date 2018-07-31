@@ -318,9 +318,9 @@ namespace Kres.Man
             {
                 Directory.Delete(directory, true);
             }
-            catch
+            catch (Exception ex)
             {
-            
+                log.Error(ex);
             }
             
             if (!Directory.Exists(directory))
