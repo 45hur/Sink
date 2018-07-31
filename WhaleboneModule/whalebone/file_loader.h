@@ -520,6 +520,7 @@ void load_file(char *filename)
 	}
 
 flush:
+	fclose(file);
 
 	return 0;
 }
