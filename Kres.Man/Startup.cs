@@ -149,9 +149,9 @@ namespace Kres.Man
                     content = content.Replace("{$ipToBypass}", ipaddress.ToString());
                     content = content.Replace("{$domainToWhitelist}", host);
                     content = content.Replace("{$redirectUrl}", encodedUrl);
-                    content = content.Replace("{$companyName}", "O2");
-                    content = content.Replace("{$email}", "support@o2.cz");
-                    content = content.Replace("{$phone}", "+420 800 02 02 02");
+                    content = content.Replace("{$companyName}", "Whalebone");
+                    content = content.Replace("{$email}", "support@whalebone.io");
+                    content = content.Replace("{$phone}", "+420 800 00 00 00");
                     content = content.Replace("{$website}", "2018 - Whalebone");
 
 

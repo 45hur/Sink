@@ -62,39 +62,6 @@ namespace Kres.Man
             //var publiclistener = new PublicListener();
             //publiclistener.Listen();
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                var host = new WebHostBuilder()
-                .UseKestrel(options =>
-                {
-                    options.Listen(IPAddress.Any, 443, listenOptions =>
-                        listenOptions.UseHttps("sinkhole.pfx", "P@ssw0rd"));
-                    options.Listen(IPAddress.Any, 80);
-                })
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
-
-                host.Run();
-            }
-            else
-            {
-                var host = new WebHostBuilder()
-                .UseKestrel(options =>
-                    {
-                        options.Listen(IPAddress.Any, 443, listenOptions =>
-                          listenOptions.UseHttps("sinkhole.pfx", "P@ssw0rd"));
-                        options.Listen(IPAddress.Any, 80);
-                    })
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
-
-                host.Run();
-            }
-
         }
 
         private static void RunScriptIfExists()
