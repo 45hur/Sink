@@ -12,5 +12,4 @@ echo "Resolver ID is $RESOLVER_ID"
 
 #remove temp files (leave just pfx)
 rm cacert.pem cert.pem key.pem
-dotnet run
-
+dotnet Kres.Man.dll
