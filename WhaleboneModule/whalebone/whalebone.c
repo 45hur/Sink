@@ -513,7 +513,7 @@ static int finish(kr_layer_t *ctx)
 		{
 			const knot_rrset_t *rr = knot_pkt_rr(ns, i);
 
-			if (rr->type == KNOT_RRTYPE_A || rr->type == KNOT_RRTYPE_AAAA)
+			if (rr->type == KNOT_RRTYPE_A || rr->type == KNOT_RRTYPE_AAAA || rr->type == KNOT_RRTYPE_CNAME)
 			{
 				char querieddomain[KNOT_DNAME_MAXLEN];
 				knot_dname_to_str(querieddomain, rr->owner, KNOT_DNAME_MAXLEN);
@@ -533,7 +533,7 @@ static int finish(kr_layer_t *ctx)
 			}
 			else
 			{
-				sprintf(message, "\"type\":\"finish\",\"message\":\"rr type is not A or AAAA [%d]\"", (int)rr->type);
+				sprintf(message, "\"type\":\"finish\",\"message\":\"rr type is not A, AAAA or CNAME [%d]\"", (int)rr->type);
 				logtosyslog(message);
 			}
 		}
