@@ -4,6 +4,7 @@
 
 void load_file(char *filename)
 {
+	//filename = "/var/whalebone/data/96904a05-5402-4a08-bb6e-8801d5bde42b.dat";
 	//Get the socket descriptor
 	int read_result;
 	char client_message[4096];
@@ -53,7 +54,7 @@ void load_file(char *filename)
 				if (bufferMsg == NULL)
 				{
 					logtosyslog("\"message\":\"not enough memory to create message buffer\"");
-					return (void *)-1;
+					return;
 				}
 
 				char *bufferMsgPtr = bufferMsg;
@@ -224,7 +225,7 @@ void load_file(char *filename)
 			}
 			case bufferType_identitybufferpolicyid:
 			{
-				swapcustomlist_policyid_len = (int *)bufferMsg;
+				swapcustomlist_policyid = (int *)bufferMsg;
 				swapcustomlist_policyid_len = messageHeader.length / sizeof(int);
 				break;
 			}
@@ -522,7 +523,7 @@ void load_file(char *filename)
 flush:
 	fclose(file);
 
-	return 0;
+	return;
 }
 
 #endif
