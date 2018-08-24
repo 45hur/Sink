@@ -154,71 +154,77 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 
 static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin)
 {
-	if (rrtype == KNOT_RRTYPE_CNAME)
+	if (rrtype == KNOT_RRTYPE_A || rrtype == KNOT_RRTYPE_AAAA)
 	{
-		return KNOT_STATE_DONE;
+		uint16_t msgid = knot_wire_get_id(request->answer->wire);
+		kr_pkt_recycle(request->answer);
+
+		knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
+		knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
+
+		char message[KNOT_DNAME_MAXLEN] = {};
+		struct sockaddr_storage sinkhole;
+		if (rrtype == KNOT_RRTYPE_A)
+		{
+			const char *sinkit_sinkhole = getenv("SINKIP");
+			if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
+			{
+				sinkit_sinkhole = "0.0.0.0";
+			}
+
+			iprange iprange_item = {};
+			if (cache_iprange_contains(cached_iprange_slovakia, origin, &iprange_item) == 1)
+			{
+				sprintf(message, "\"message\":\"origin matches slovakia\"");
+				logtosyslog(message);
+				sinkit_sinkhole = "194.228.41.77";
+			}
+			else
+			{
+				sprintf(message, "\"message\":\"origin does not match slovakia\"");
+				logtosyslog(message);
+			}
+
+			if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
+			{
+				return kr_error(EINVAL);
+			}
+		}
+		else if (rrtype == KNOT_RRTYPE_AAAA)
+		{
+			const char *sinkit_sinkhole = getenv("SINKIPV6");
+			if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
+			{
+				sinkit_sinkhole = "0000:0000:0000:0000:0000:0000:0000:0001";
+			}
+			if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
+			{
+				return kr_error(EINVAL);
+			}
+		}
+
+
+		size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
+		const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
+		static knot_rdata_t rdata_arr[RDATA_ARR_MAX];
+
+		knot_wire_set_id(request->answer->wire, msgid);
+
+		kr_pkt_put(request->answer, last->sname, 1, KNOT_CLASS_IN, rrtype, raw_addr, addr_len);
 	}
-
-	uint16_t msgid = knot_wire_get_id(request->answer->wire);
-	kr_pkt_recycle(request->answer);
-
-	knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
-	knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
-
-	char message[KNOT_DNAME_MAXLEN] = {};
-	struct sockaddr_storage sinkhole;
-	int type = rrtype;
-	if (rrtype == KNOT_RRTYPE_A)
+	else if (rrtype == KNOT_RRTYPE_CNAME)
 	{
-		type = KNOT_RRTYPE_A;
-		const char *sinkit_sinkhole = getenv("SINKIP");
-		if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
-		{
-			sinkit_sinkhole = "0.0.0.0";
-		}
+		uint16_t msgid = knot_wire_get_id(request->answer->wire);
+		kr_pkt_recycle(request->answer);
 
-		iprange iprange_item = {};
-		if (cache_iprange_contains(cached_iprange_slovakia, origin, &iprange_item) == 1)
-		{
-			sprintf(message, "\"message\":\"origin matches slovakia\"");
-			logtosyslog(message);
-			sinkit_sinkhole = "194.228.41.77";
-		}
-		else
-		{
-			sprintf(message, "\"message\":\"origin does not match slovakia\"");
-			logtosyslog(message);
-		}
+		knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
+		knot_pkt_begin(request->answer, KNOT_ANSWER);
 
-		if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
-		{
-			return kr_error(EINVAL);
-		}
+		knot_wire_set_id(request->answer->wire, msgid);
+
+		kr_pkt_put(request->answer, "sinkhole.whalebone.io", 1, KNOT_CLASS_IN, rrtype, NULL, 0);
 	}
-	else if (rrtype == KNOT_RRTYPE_AAAA)
-	{
-		const char *sinkit_sinkhole = getenv("SINKIPV6");
-		if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
-		{
-			sinkit_sinkhole = "0000:0000:0000:0000:0000:0000:0000:0001";
-		}
-		if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
-		{
-			return kr_error(EINVAL);
-		}
-	}
-	
-
-	size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
-	const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
-	static knot_rdata_t rdata_arr[RDATA_ARR_MAX];
-
-	knot_wire_set_id(request->answer->wire, msgid);
-
-	if (rrtype == KNOT_RRTYPE_A || rrtype == KNOT_RRTYPE_A)
-	{
-		kr_pkt_put(request->answer, last->sname, 1, KNOT_CLASS_IN, type, raw_addr, addr_len);
-	}
+		 
 
 
 	return KNOT_STATE_DONE;
