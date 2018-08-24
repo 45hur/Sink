@@ -215,10 +215,16 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 	}
 	else if (rrtype == KNOT_RRTYPE_CNAME)
 	{
+		uint8_t buff[KNOT_DNAME_MAXLEN];
+		knot_dname_t *dname = knot_dname_from_str(buff, querieddomain, sizeof(buff));
+		if (dname == NULL) {
+			return KNOT_EINVAL;
+		}
+
 		uint16_t msgid = knot_wire_get_id(request->answer->wire);
 		kr_pkt_recycle(request->answer);
 
-		knot_pkt_put_question(request->answer, (knot_dname_t * )querieddomain, KNOT_CLASS_IN, KNOT_RRTYPE_A);
+		knot_pkt_put_question(request->answer, dname, KNOT_CLASS_IN, KNOT_RRTYPE_A);
 		knot_pkt_begin(request->answer, KNOT_ANSWER);
 		
 		struct sockaddr_storage sinkhole;
@@ -252,7 +258,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 
 		knot_wire_set_id(request->answer->wire, msgid);
 
-		kr_pkt_put(request->answer, (knot_dname_t *)querieddomain, 1, KNOT_CLASS_IN, rrtype, raw_addr, addr_len);
+		kr_pkt_put(request->answer, dname, 1, KNOT_CLASS_IN, rrtype, raw_addr, addr_len);
 	}
 		 
 
