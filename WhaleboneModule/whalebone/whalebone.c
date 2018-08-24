@@ -152,7 +152,7 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 	return ctx->state;
 }
 
-static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin)
+static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin, char * querieddomain)
 {
 	if (rrtype == KNOT_RRTYPE_A || rrtype == KNOT_RRTYPE_AAAA)
 	{
@@ -217,12 +217,40 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 		uint16_t msgid = knot_wire_get_id(request->answer->wire);
 		kr_pkt_recycle(request->answer);
 
-		knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
+		knot_pkt_put_question(request->answer, querieddomain, KNOT_CLASS_IN, KNOT_RRTYPE_A);
 		knot_pkt_begin(request->answer, KNOT_ANSWER);
+
+		const char *sinkit_sinkhole = getenv("SINKIP");
+		if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
+		{
+			sinkit_sinkhole = "0.0.0.0";
+		}
+
+		iprange iprange_item = {};
+		if (cache_iprange_contains(cached_iprange_slovakia, origin, &iprange_item) == 1)
+		{
+			sprintf(message, "\"message\":\"origin matches slovakia\"");
+			logtosyslog(message);
+			sinkit_sinkhole = "194.228.41.77";
+		}
+		else
+		{
+			sprintf(message, "\"message\":\"origin does not match slovakia\"");
+			logtosyslog(message);
+		}
+
+		if (parse_addr_str(&sinkhole, sinkit_sinkhole) != 0)
+		{
+			return kr_error(EINVAL);
+		}
+
+		size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
+		const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
+		static knot_rdata_t rdata_arr[RDATA_ARR_MAX];
 
 		knot_wire_set_id(request->answer->wire, msgid);
 
-		kr_pkt_put(request->answer, "sinkhole.whalebone.io", 1, KNOT_CLASS_IN, rrtype, NULL, 0);
+		kr_pkt_put(request->answer, querieddomain, 1, KNOT_CLASS_IN, rrtype, raw_addr, addr_len);
 	}
 		 
 
@@ -273,7 +301,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				sprintf(message, "\"client_ip\":\"%s\",\"identity\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", req_addr, iprange_item.identity, originaldomain, querieddomain);
 				logtofile(message);
 				logtosyslog(message);
-				return redirect(request, last, rrtype, origin);
+				return redirect(request, last, rrtype, origin, querieddomain);
 			}
 		}
 		sprintf(message, "\"type\":\"search\",\"message\":\"no identity match, checking policy..\"");
@@ -297,7 +325,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					logtofile(message);
 					logtoaudit(message);
 
-					return redirect(request, last, rrtype, origin);
+					return redirect(request, last, rrtype, origin, querieddomain);
 				}
 				else
 				{
@@ -326,7 +354,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, iprange_item.identity);
 				logtosyslog(message);
 				logtofile(message);
-				return redirect(request, last, rrtype, origin);
+				return redirect(request, last, rrtype, origin, querieddomain);
 			}
 			if (domain_flags & flags_drop)
 			{
