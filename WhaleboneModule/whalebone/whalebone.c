@@ -220,7 +220,8 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 
 		knot_pkt_put_question(request->answer, (knot_dname_t * )querieddomain, KNOT_CLASS_IN, KNOT_RRTYPE_A);
 		knot_pkt_begin(request->answer, KNOT_ANSWER);
-
+		
+		struct sockaddr_storage sinkhole;
 		const char *sinkit_sinkhole = getenv("SINKIP");
 		if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
 		{
