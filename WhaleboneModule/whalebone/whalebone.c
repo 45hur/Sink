@@ -152,7 +152,7 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 	return ctx->state;
 }
 
-static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin, char * querieddomain)
+static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin, const char * querieddomain)
 {
 	if (rrtype == KNOT_RRTYPE_A || rrtype == KNOT_RRTYPE_AAAA)
 	{
@@ -217,7 +217,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 		uint16_t msgid = knot_wire_get_id(request->answer->wire);
 		kr_pkt_recycle(request->answer);
 
-		knot_pkt_put_question(request->answer, querieddomain, KNOT_CLASS_IN, KNOT_RRTYPE_A);
+		knot_pkt_put_question(request->answer, (knot_dname_t * )querieddomain, KNOT_CLASS_IN, KNOT_RRTYPE_A);
 		knot_pkt_begin(request->answer, KNOT_ANSWER);
 
 		const char *sinkit_sinkhole = getenv("SINKIP");
@@ -250,7 +250,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 
 		knot_wire_set_id(request->answer->wire, msgid);
 
-		kr_pkt_put(request->answer, querieddomain, 1, KNOT_CLASS_IN, rrtype, raw_addr, addr_len);
+		kr_pkt_put(request->answer, (knot_dname_t *)querieddomain, 1, KNOT_CLASS_IN, rrtype, raw_addr, addr_len);
 	}
 		 
 
