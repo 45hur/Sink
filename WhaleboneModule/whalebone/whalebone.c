@@ -154,6 +154,8 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 
 static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin, const char * querieddomain)
 {
+	char message[KNOT_DNAME_MAXLEN] = {};
+
 	if (rrtype == KNOT_RRTYPE_A || rrtype == KNOT_RRTYPE_AAAA)
 	{
 		uint16_t msgid = knot_wire_get_id(request->answer->wire);
@@ -162,7 +164,6 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 		knot_pkt_put_question(request->answer, last->sname, last->sclass, last->stype);
 		knot_pkt_begin(request->answer, KNOT_ANSWER); //AUTHORITY?
 
-		char message[KNOT_DNAME_MAXLEN] = {};
 		struct sockaddr_storage sinkhole;
 		if (rrtype == KNOT_RRTYPE_A)
 		{
