@@ -103,6 +103,8 @@ static __inline void logtosyslog(char *text)
 	fflush(log_debug);
 	fclose(log_debug);
 
+
+	printf(message);
 	//memset(text, 0, strlen(text));
 
 	pthread_mutex_unlock(&(p->mutex));
