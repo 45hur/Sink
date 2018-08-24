@@ -258,10 +258,8 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 
 		knot_wire_set_id(request->answer->wire, msgid);
 
-		kr_pkt_put(request->answer, dname, 1, KNOT_CLASS_IN, rrtype, raw_addr, addr_len);
+		kr_pkt_put(request->answer, dname, 1, KNOT_CLASS_IN, KNOT_RRTYPE_A, raw_addr, addr_len);
 	}
-		 
-
 
 	return KNOT_STATE_DONE;
 }
