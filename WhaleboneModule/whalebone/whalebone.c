@@ -154,6 +154,11 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 
 static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin)
 {
+	if (rrtype == KNOT_RRTYPE_CNAME)
+	{
+		return KNOT_STATE_DONE;
+	}
+
 	uint16_t msgid = knot_wire_get_id(request->answer->wire);
 	kr_pkt_recycle(request->answer);
 
@@ -214,10 +219,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 	{
 		kr_pkt_put(request->answer, last->sname, 1, KNOT_CLASS_IN, type, raw_addr, addr_len);
 	}
-	if (rrtype == KNOT_RRTYPE_CNAME)
-	{
 
-	}
 
 	return KNOT_STATE_DONE;
 }
