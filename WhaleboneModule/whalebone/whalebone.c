@@ -163,7 +163,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 	char message[KNOT_DNAME_MAXLEN] = {};
 	struct sockaddr_storage sinkhole;
 	int type = rrtype;
-	if (rrtype == KNOT_RRTYPE_A || rrtype == KNOT_RRTYPE_CNAME)
+	if (rrtype == KNOT_RRTYPE_A)
 	{
 		type = KNOT_RRTYPE_A;
 		const char *sinkit_sinkhole = getenv("SINKIP");
@@ -190,7 +190,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 			return kr_error(EINVAL);
 		}
 	}
-	else //if (rrtype == KNOT_RRTYPE_AAAA)
+	else if (rrtype == KNOT_RRTYPE_AAAA)
 	{
 		const char *sinkit_sinkhole = getenv("SINKIPV6");
 		if (sinkit_sinkhole == NULL || strlen(sinkit_sinkhole) == 0)
@@ -202,6 +202,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 			return kr_error(EINVAL);
 		}
 	}
+	
 
 	size_t addr_len = kr_inaddr_len((struct sockaddr *)&sinkhole);
 	const uint8_t *raw_addr = (const uint8_t *)kr_inaddr((struct sockaddr *)&sinkhole);
@@ -209,8 +210,14 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 
 	knot_wire_set_id(request->answer->wire, msgid);
 
-	kr_pkt_put(request->answer, last->sname, 1, KNOT_CLASS_IN, type, raw_addr, addr_len);
-	
+	if (rrtype == KNOT_RRTYPE_A || rrtype == KNOT_RRTYPE_A)
+	{
+		kr_pkt_put(request->answer, last->sname, 1, KNOT_CLASS_IN, type, raw_addr, addr_len);
+	}
+	if (rrtype == KNOT_RRTYPE_CNAME)
+	{
+
+	}
 
 	return KNOT_STATE_DONE;
 }
