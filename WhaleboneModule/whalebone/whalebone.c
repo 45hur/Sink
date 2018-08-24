@@ -152,7 +152,7 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 	return ctx->state;
 }
 
-static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin, const char * querieddomain)
+static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin, const char * originaldomain)
 {
 	char message[KNOT_DNAME_MAXLEN] = {};
 
@@ -216,7 +216,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 	else if (rrtype == KNOT_RRTYPE_CNAME)
 	{
 		uint8_t buff[KNOT_DNAME_MAXLEN];
-		knot_dname_t *dname = knot_dname_from_str(buff, querieddomain, sizeof(buff));
+		knot_dname_t *dname = knot_dname_from_str(buff, originaldomain, sizeof(buff));
 		if (dname == NULL) {
 			return KNOT_EINVAL;
 		}
@@ -309,7 +309,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				sprintf(message, "\"client_ip\":\"%s\",\"identity\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", req_addr, iprange_item.identity, originaldomain, querieddomain);
 				logtofile(message);
 				logtosyslog(message);
-				return redirect(request, last, rrtype, origin, querieddomain);
+				return redirect(request, last, rrtype, origin, originaldomain);
 			}
 		}
 		sprintf(message, "\"type\":\"search\",\"message\":\"no identity match, checking policy..\"");
@@ -333,7 +333,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					logtofile(message);
 					logtoaudit(message);
 
-					return redirect(request, last, rrtype, origin, querieddomain);
+					return redirect(request, last, rrtype, origin, originaldomain);
 				}
 				else
 				{
@@ -362,7 +362,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, iprange_item.identity);
 				logtosyslog(message);
 				logtofile(message);
-				return redirect(request, last, rrtype, origin, querieddomain);
+				return redirect(request, last, rrtype, origin, originaldomain);
 			}
 			if (domain_flags & flags_drop)
 			{
