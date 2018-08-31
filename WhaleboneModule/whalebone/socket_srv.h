@@ -662,7 +662,7 @@ static void* socket_server(void *arg)
 		{
 			sprintf(message, "\"message\":\"bind failed on port %d\"", port);
 			logtosyslog(message);
-			if (port == 8895)
+			if (port == 9048)
 			{
 				return (void*)-1;
 			}
