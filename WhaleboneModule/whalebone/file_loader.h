@@ -4,7 +4,7 @@
 
 void load_file(char *filename)
 {
-	//filename = "/var/whalebone/data/96904a05-5402-4a08-bb6e-8801d5bde42b.dat";
+	//filename = "/mnt/c/var/whalebone/data/21658d0c-e2e6-4aea-8ea0-8753fffe6cd7.dat";
 	//Get the socket descriptor
 	int read_result;
 	char client_message[4096];

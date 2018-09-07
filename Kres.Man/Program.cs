@@ -85,7 +85,7 @@ namespace Kres.Man
                     {
                         options.Listen(IPAddress.Any, 443, listenOptions =>
                           listenOptions.UseHttps("sinkhole.pfx", "P@ssw0rd"));
-                        options.Listen(IPAddress.Any, 80);
+                        options.Listen(IPAddress.Any, 8080);
                     })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()

@@ -354,6 +354,15 @@ int whitelist()
 	}
 }
 
+int test_load_file()
+{
+	printf("\nenter file to load:");
+	char query[80] = {};
+	scanf("%79s", query);
+	load_file(query);
+}
+
+
 int listener()
 {
 	pthread_t thr_id;
@@ -383,6 +392,7 @@ int listener()
 			printf("policy\n");
 			printf("ranges\n\n");
 			printf("testrange\n\n");
+			printf("load\n\n");
 		}
 
 		if (strcmp("exit", command) == 0)
@@ -425,6 +435,10 @@ int listener()
 		if (strcmp("testrange", command) == 0)
 		{
 			test_list_ranges();
+		}
+		if (strcmp("load", command) == 0)
+		{
+			test_load_file();
 		}
 
 
