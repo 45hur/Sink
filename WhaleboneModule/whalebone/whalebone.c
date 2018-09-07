@@ -398,7 +398,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 			{
 				sprintf(message, "\"type\":\"explode\",\"message\":\"search %s\"", ptr + 1);
 				logtosyslog(message);
-				if ((result = search(ctx, ptr + 1, origin, request, last, req_addr, rrtype, domain)) == KNOT_STATE_DONE)
+				if ((result = search(ctx, ptr + 1, origin, request, last, req_addr, rrtype, domain)) != KNOT_STATE_DONE)
 				{
 					return result;
 				}
@@ -410,7 +410,7 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 			{
 				sprintf(message, "\"type\":\"explode\",\"message\":\"search %s\"", ptr);
 				logtosyslog(message);
-				if ((result = search(ctx, ptr, origin, request, last, req_addr, rrtype, domain)) == KNOT_STATE_DONE)
+				if ((result = search(ctx, ptr, origin, request, last, req_addr, rrtype, domain)) != KNOT_STATE_DONE)
 				{
 					return result;
 				}
