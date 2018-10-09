@@ -264,7 +264,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 	return KNOT_STATE_DONE;
 }
 
-static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, int rrtype, char * originaldomain)
+static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, int rrtype, char * originaldomain, char * logmessage)
 {
 	char message[KNOT_DNAME_MAXLEN] = {};
 	unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
@@ -297,7 +297,8 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
                             cache_customlist_whitelist_contains(cached_customlist, iprange_item.identity, crcIoC) == 1)
 			{
 				sprintf(message, "\"client_ip\":\"%s\",\"identity\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"allow\",\"reason\":\"whitelist\"", req_addr, iprange_item.identity, originaldomain, querieddomain);
-				logtofile(message);
+				//logtofile(message);
+				sprintf(logmessage, "%s\0", message);
 				logtosyslog(message);
 				return KNOT_STATE_DONE;
 			}
@@ -305,7 +306,8 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 		            cache_customlist_blacklist_contains(cached_customlist, iprange_item.identity, crcIoC) == 1)
 			{
 				sprintf(message, "\"client_ip\":\"%s\",\"identity\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\"", req_addr, iprange_item.identity, originaldomain, querieddomain);
-				logtofile(message);
+				//logtofile(message);
+				sprintf(logmessage, "%s\0", message);
 				logtosyslog(message);
 				return redirect(request, last, rrtype, origin, originaldomain);
 			}
@@ -328,7 +330,8 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 				{
 					sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block, iprange_item.identity);
 					logtosyslog(message);
-					logtofile(message);
+					//logtofile(message);
+					sprintf(logmessage, "%s\0", message);
 					logtoaudit(message);
 
 					return redirect(request, last, rrtype, origin, originaldomain);
@@ -339,7 +342,8 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 					{
 						sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"audit\",\"reason\":\"accuracy\",\"accuracy\":\"%d\",\"audit\":\"%d\",\"block\":\"%d\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, domain_item.accuracy, policy_item.audit, policy_item.block, iprange_item.identity);
 						logtosyslog(message);
-						logtofile(message);
+						//logtofile(message);
+						sprintf(logmessage, "%s\0", message);
 						logtoaudit(message);
 					}
 					else
@@ -359,7 +363,8 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 			{
 				sprintf(message, "\"policy_id\":\"%d\",\"client_ip\":\"%s\",\"domain\":\"%s\",\"ioc\":\"%s\",\"action\":\"block\",\"reason\":\"blacklist\",\"identity\":\"%s\"", iprange_item.policy_id, req_addr, originaldomain, querieddomain, iprange_item.identity);
 				logtosyslog(message);
-				logtofile(message);
+				//logtofile(message);
+				sprintf(logmessage, "%s\0", message);
 				return redirect(request, last, rrtype, origin, originaldomain);
 			}
 			if (domain_flags & flags_drop)
@@ -386,6 +391,7 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, int rrtype)
 {
 	char message[KNOT_DNAME_MAXLEN] = {};
+	char logmessage[KNOT_DNAME_MAXLEN] = {};
 	char *ptr = domain;
 	ptr += strlen(domain);
 	int result = ctx->state;
@@ -398,8 +404,12 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 			{
 				sprintf(message, "\"type\":\"explode\",\"message\":\"search %s\"", ptr + 1);
 				logtosyslog(message);
-				if ((result = search(ctx, ptr + 1, origin, request, last, req_addr, rrtype, domain)) != KNOT_STATE_DONE)
+				if ((result = search(ctx, ptr + 1, origin, request, last, req_addr, rrtype, domain, logmessage)) != KNOT_STATE_DONE)
 				{
+					if (logmessage[0] != '\0')
+					{
+						logtofile(logmessage);
+					}
 					return result;
 				}
 			}
@@ -410,12 +420,20 @@ static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, stru
 			{
 				sprintf(message, "\"type\":\"explode\",\"message\":\"search %s\"", ptr);
 				logtosyslog(message);
-				if ((result = search(ctx, ptr, origin, request, last, req_addr, rrtype, domain)) != KNOT_STATE_DONE)
+				if ((result = search(ctx, ptr, origin, request, last, req_addr, rrtype, domain, logmessage)) != KNOT_STATE_DONE)
 				{
+					if (logmessage[0] != '\0')
+					{
+						logtofile(logmessage);
+					}
 					return result;
 				}
 			}
 		}
+	}
+	if (logmessage[0] != '\0')
+	{
+		logtofile(logmessage);
 	}
 
 	return ctx->state;
