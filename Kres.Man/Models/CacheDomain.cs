@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 using ProtoBuf;
@@ -8,15 +9,19 @@ using ProtoBuf;
 namespace Kres.Man.Models
 {
     [ProtoContract]
+    [DataContract]
     public class CacheDomain
     {
         [ProtoMember(1)]
+        [DataMember]
         public IEnumerable<byte> Proto_Crc64 { get; set; }
 
         [ProtoMember(2)]
+        [DataMember]
         public int Accuracy { get; set; }
 
         [ProtoMember(3)]
+        [DataMember]
         public IEnumerable<int> Flags { get; set; }
 
         public UInt64 Crc64

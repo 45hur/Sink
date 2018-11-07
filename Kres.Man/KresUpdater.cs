@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,6 +9,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Newtonsoft.Json;
 
 namespace Kres.Man
 {
@@ -255,6 +258,8 @@ namespace Kres.Man
                 {
                     log.Info("KresUpdater loop.");
 
+                    NourishUDPCache();
+
                     if (!CacheLiveStorage.CoreCache.Updated)
                     {
                         log.Info("Cache has was not yet been loaded.");
@@ -309,6 +314,41 @@ namespace Kres.Man
                     tKresLoop = null;
                     log.Error($"{ex}");
                 }
+            }
+        }
+
+        private void NourishUDPCache()
+        {
+            try
+            {
+                if (File.Exists("udp.cache"))
+                {
+                    DateTime creation = File.GetCreationTime("udp.cache");
+                    if (CacheLiveStorage.UdpCache.Count() == 0 && DateTime.UtcNow < creation.ToUniversalTime().AddHours(6))
+                    {
+                        using (var reader = new FileStream("udp.cache", FileMode.Open, FileAccess.Read))
+                        {
+                            using (StreamReader sr = new StreamReader(reader))
+                            {
+                                var udpcache = sr.ReadToEnd();
+                                CacheLiveStorage.UdpCache = JsonConvert.DeserializeObject<ConcurrentDictionary<string, Models.CacheIPRange>>(udpcache);
+                            }
+                        }
+                    }
+                }
+
+                using (var writer = new FileStream("udp.cache", FileMode.Create, FileAccess.ReadWrite))
+                {
+                    using (StreamWriter sw = new StreamWriter(writer))
+                    {
+                        var udpcache = JsonConvert.SerializeObject(CacheLiveStorage.UdpCache);
+                        sw.Write(udpcache);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
             }
         }
 

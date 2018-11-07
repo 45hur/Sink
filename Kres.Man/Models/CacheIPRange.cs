@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 using ProtoBuf;
@@ -8,18 +9,23 @@ using ProtoBuf;
 namespace Kres.Man.Models
 {
     [ProtoContract]
+    [DataContract]
     public class CacheIPRange
     {
         [ProtoMember(1)]
+        [DataMember]
         public IEnumerable<byte> Proto_IpFrom { get; set; }
 
         [ProtoMember(2)]
+        [DataMember]
         public IEnumerable<byte> Proto_IpTo { get; set; }
 
         [ProtoMember(3)]
+        [DataMember]
         public string Identity { get; set; }
 
         [ProtoMember(4)]
+        [DataMember]
         public Int32 PolicyId { get; set; }
 
         public DateTime Created { get; set; }

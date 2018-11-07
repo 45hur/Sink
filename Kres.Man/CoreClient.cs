@@ -111,6 +111,34 @@ namespace Kres.Man
             }
         }
 
+        public static void TestCoreCache(string path, string domain)
+        {
+            log.Info("GetCoreCacheManual()");
+
+            using (var stream = new System.IO.FileStream(path, System.IO.FileMode.Open))
+            {
+                log.Debug($"Deserialize.");
+                var cache = ProtoBuf.Serializer.Deserialize<Models.Cache>(stream);
+                log.Debug($"Deserialized.");
+
+                if (cache.CustomLists != null)
+                    log.Debug($"Custom List count = {cache.CustomLists.ToArray().Count()}");
+                if (cache.Domains != null)
+                    log.Debug($"Domains count = {cache.Domains.ToArray().Count()}");
+                if (cache.IPRanges != null)
+                    log.Debug($"IPRanges count = {cache.IPRanges.ToArray().Count()}");
+                if (cache.Policies != null)
+                    log.Debug($"Policies count = {cache.Policies.ToArray().Count()}");
+
+                var crc64 = Crc64.Compute(0, ASCIIEncoding.ASCII.GetBytes(domain));
+                if (cache.Domains.Any(t => t.Crc64 == crc64))
+                {
+                    log.Debug("contains " + domain);
+                }
+            }
+        }
+
+
         private static void GetCoreCacheLinux()
         {
             log.Info("GetCoreCacheLinux()");

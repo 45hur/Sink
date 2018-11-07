@@ -44,6 +44,8 @@ namespace Kres.Man
             //log.Info("Run shell script");
             //RunScriptIfExists();
 
+            //CoreClient.TestCoreCache(@"c:\var\whalebone\data\540_resolver_cache.bin", "seznam.cz");
+
             log.Info("Starting UDP Server");
             UdpServer.Listen();
 
@@ -84,7 +86,7 @@ namespace Kres.Man
                 .UseKestrel(options =>
                     {
                         options.Listen(IPAddress.Any, 443, listenOptions =>
-                          listenOptions.UseHttps("sinkhole.pfx", "P@ssw0rd"));
+                        listenOptions.UseHttps("sinkhole.pfx", "P@ssw0rd"));
                         options.Listen(IPAddress.Any, 8080);
                     })
                 .UseContentRoot(Directory.GetCurrentDirectory())
