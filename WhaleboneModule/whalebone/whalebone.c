@@ -112,7 +112,7 @@ static int parse_addr_str(struct sockaddr_storage *sa, const char *addr) {
 
 static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 {
-	char message[KNOT_DNAME_MAXLEN] = {};
+	char message[2048] = {};
 	struct kr_request *req = ctx->req;
 	struct kr_query *qry = req->current_query;
 	if (qry->flags.CACHED || !req->qsource.addr)
@@ -154,7 +154,7 @@ static int consume(kr_layer_t *ctx, knot_pkt_t *pkt)
 
 static int redirect(struct kr_request * request, struct kr_query *last, int rrtype, struct ip_addr * origin, const char * originaldomain)
 {
-	char message[KNOT_DNAME_MAXLEN] = {};
+	char message[2048] = {};
 
 	if (rrtype == KNOT_RRTYPE_A || rrtype == KNOT_RRTYPE_AAAA)
 	{
@@ -266,7 +266,7 @@ static int redirect(struct kr_request * request, struct kr_query *last, int rrty
 
 static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, int rrtype, char * originaldomain, char * logmessage)
 {
-	char message[KNOT_DNAME_MAXLEN] = {};
+	char message[2048] = {};
 	unsigned long long crc = crc64(0, (const unsigned char*)querieddomain, strlen(querieddomain));
 	domain domain_item = {};
 	if (cache_domain_contains(cached_domain, crc, &domain_item, 0) == 1)
@@ -390,8 +390,8 @@ static int search(kr_layer_t *ctx, const char * querieddomain, struct ip_addr * 
 
 static int explode(kr_layer_t *ctx, char * domain, struct ip_addr * origin, struct kr_request * request, struct kr_query * last, char * req_addr, int rrtype)
 {
-	char message[KNOT_DNAME_MAXLEN] = {};
-	char logmessage[KNOT_DNAME_MAXLEN] = {};
+	char message[2048] = {};
+	char logmessage[2048] = {};
 	char *ptr = domain;
 	ptr += strlen(domain);
 	int result = ctx->state;
@@ -446,7 +446,7 @@ static int can_satisfy(struct kr_query *qry)
 
 static int produce(kr_layer_t *ctx, knot_pkt_t *pkt)
 {
-	char message[KNOT_DNAME_MAXLEN] = {};
+	char message[2048] = {};
 	struct kr_request *req = ctx->req;
 	struct kr_query *qry = req->current_query;
 
@@ -472,7 +472,7 @@ static int produce(kr_layer_t *ctx, knot_pkt_t *pkt)
 
 static int finish(kr_layer_t *ctx)
 {
-	char message[KNOT_DNAME_MAXLEN] = {};
+	char message[2048] = {};
 	struct kr_request *request = (struct kr_request *)ctx->req;
 	struct kr_rplan *rplan = &request->rplan;
 

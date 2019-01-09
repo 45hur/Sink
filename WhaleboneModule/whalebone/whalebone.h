@@ -31,7 +31,7 @@ static __inline void logtofile(char *text)
 	pthread_mutex_lock(&(p->mutex));
 
 	FILE *log_whalebone = 0;
-	char message[255] = {};
+	char message[2048] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
 	struct tm * timeinfo;
@@ -72,7 +72,7 @@ static __inline void logtosyslog(char *text)
 	pthread_mutex_lock(&(p->mutex));
 	
 	FILE *log_debug = 0;
-	char message[255] = {};
+	char message[2048] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
 	struct tm * timeinfo;
@@ -120,7 +120,7 @@ static __inline void logtoaudit(char *text)
 	pthread_mutex_lock(&(p->mutex));
 
 	FILE *log_audit = 0;
-	char message[255] = {};
+	char message[2048] = {};
 	char timebuf[30] = {};
 	time_t rawtime;
 	struct tm * timeinfo;
