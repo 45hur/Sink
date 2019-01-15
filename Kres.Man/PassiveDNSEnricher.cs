@@ -42,12 +42,13 @@ namespace Kres.Man
             var processedLines = 0;
             while (true)
             {
+                Thread.Sleep(5000);
+
                 try
                 {
                     if (CacheLiveStorage.UdpCache == null)
                     {
                         log.Info("Waiting for UDP Cache");
-                        Thread.Sleep(5000);
                         continue;
                     }
 
@@ -111,7 +112,6 @@ namespace Kres.Man
                 {
                     processedLines = 0;
                     log.ErrorFormat("PassiveDNS error: {0}", ex);
-                    Thread.Sleep(5000);
                 }
             }
         }
