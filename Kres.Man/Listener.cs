@@ -166,6 +166,12 @@ namespace Kres.Man
         {
             log.Info("Starting Listener thread.");
 
+            if (string.IsNullOrEmpty(Configuration.GetListener()))
+            {
+                log.Info("listener (configuration) not set, Listener thread exiting.");
+                return;
+            }
+
             try
             {
                 while (true)

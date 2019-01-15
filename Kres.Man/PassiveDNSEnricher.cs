@@ -42,6 +42,12 @@ namespace Kres.Man
             var processedLines = 0;
             while (true)
             {
+                if (string.IsNullOrEmpty(filename_in))
+                {
+                    log.Info("ENRICH_PASSIVEDNS_SOURCE not set, PassiveDNS thread exiting.");
+                    return;
+                }
+
                 Thread.Sleep(5000);
 
                 try
