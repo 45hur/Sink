@@ -77,7 +77,7 @@ namespace Kres.Man
                             }
 
                             using (var fileout = File.AppendText(filename_out))
-                            { 
+                            {
                                 while (sr.Peek() >= 0)
                                 {
                                     var line = sr.ReadLine();
@@ -101,8 +101,15 @@ namespace Kres.Man
                                     var range = ipRange.Where(t => t.BintFrom >= ip && t.BintTo <= ip).FirstOrDefault();
 
                                     var strippedLine = line.Substring(0, line.Length - 1);
-                                    var newLine = string.Format("{0},identity=\"{1}\"}}", strippedLine, (range == null) ? "unknown" : range.Identity);
-                                    fileout.WriteLine(newLine);
+                                    if (range == null)
+                                    {
+                                        fileout.WriteLine(line);
+                                    }
+                                    else
+                                    {
+                                        var newLine = string.Format("{0},identity=\"{1}\"}}", strippedLine, range.Identity);
+                                        fileout.WriteLine(newLine);
+                                    }
                                     processedLines++;
                                 }
                             }
