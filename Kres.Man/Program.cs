@@ -30,9 +30,15 @@ namespace Kres.Man
 
         public static void Main(string[] args)
         {
+            //DatLoader.Load(@"c:\var\whalebone\data\57895c20-9a60-42f0-8564-306cb7b844a8.dat");
+
             LoadLogConfig();
             log.Info("Main");
 
+            log.Info("Init passive dns enricher");
+            var pe = new PassiveDNSEnricher();
+            pe.Listen(); 
+                
             log.Info("Init cache");
             CacheLiveStorage.CoreCache = new Models.Cache();
             CacheLiveStorage.CoreCache.CustomLists = new List<Models.CacheCustomList>();
@@ -58,11 +64,9 @@ namespace Kres.Man
             log.Info("Starting Knot-Resolver Updater");
             kresUpdater.Start(listener);
 
-            //listener.Listen();
-
-            //log.Info("Starting Public HTTP Listener");
-            //var publiclistener = new PublicListener();
-            //publiclistener.Listen();
+            //comment back in to enable custom API
+            log.Info("Starting custom API");
+            listener.Listen();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {

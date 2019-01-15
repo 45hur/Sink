@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace Kres.Man
 {
-    enum bufferType
+    public enum bufferType
     {
         swapcache = 0,
         domainCrcBuffer = 1,
@@ -36,14 +36,14 @@ namespace Kres.Man
         loadfile = 17
     }
 
-    struct TaskTcpArgs
+    public struct TaskTcpArgs
     {
         public int port;
         public bufferType buftype;
         public IEnumerable<byte[]> data;
     }
 
-    struct TaskHddArgs
+    public struct TaskHddArgs
     {
         public string filename;
         public bufferType buftype;
@@ -140,7 +140,7 @@ namespace Kres.Man
             }
             catch (Exception ex)
             {
-                log.Error($"Unable to write to {filename}.");
+                log.Error($"Unable to write to {filename}. Ex: {ex}");
             }
 
             return 0;
@@ -215,7 +215,7 @@ namespace Kres.Man
             //    log.Debug($"Header not understood");
             //}
 
-            return false;
+            //return false;
         }
 
         private static void SendBuffers(Stream stream, IEnumerable<byte[]> messages)

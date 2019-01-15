@@ -87,5 +87,15 @@ namespace Kres.Man
         {
             return GetValue("SHARED_FOLDER");
         }
+
+        internal static string GetPassiveDnsSource()
+        {
+            return GetValue("ENRICH_PASSIVEDNS_SOURCE");
+        }
+
+        internal static string GetPassiveDnsDestination()
+        {
+            return GetValue("ENRICH_PASSIVEDNS_DESTINATION");
+        }
     }
 }

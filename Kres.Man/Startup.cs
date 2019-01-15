@@ -220,7 +220,7 @@ namespace Kres.Man
                         }
                     }
 
-                    var range = ipRange.Where(t => t.BintFrom >= ip && ip <= t.BintTo).FirstOrDefault();
+                    var range = ipRange.Where(t => t.BintFrom >= ip && t.BintTo <= ip).FirstOrDefault();
                     var range_identity = string.Empty;
                     var range_policyid = 0;
                     if (range != null)

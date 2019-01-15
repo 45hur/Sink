@@ -55,6 +55,8 @@ enum
   flags_whitelist = 4, 
   flags_drop = 8,
   flags_audit = 16,
+  flags_content = 32,
+  flags_legal = 64
 } flags;
 
 unsigned char cache_domain_get_flags(unsigned long long flags, int n)
