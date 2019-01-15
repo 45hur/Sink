@@ -52,6 +52,8 @@ namespace Kres.Man
                         continue;
                     }
 
+                    var ipRange = CacheLiveStorage.UdpCache.Select(t => t.Value).ToList();
+
                     using (var filein = File.OpenRead(filename_in))
                     {
                         using (var sr = new StreamReader(filein))
@@ -96,7 +98,6 @@ namespace Kres.Man
                                     }
 
                                     var ip = new BigMath.Int128(addr.Hi, addr.Low);
-                                    var ipRange = CacheLiveStorage.UdpCache.Select(t => t.Value).ToList();
                                     var range = ipRange.Where(t => t.BintFrom >= ip && t.BintTo <= ip).FirstOrDefault();
 
                                     var strippedLine = line.Substring(0, line.Length - 1);
