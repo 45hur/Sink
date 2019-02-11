@@ -147,6 +147,11 @@ void cache_customlist_destroy(cache_customlist *cache)
 
 int cache_customlist_add(cache_customlist* cache, char *identity, cache_domain *whitelist, cache_domain *blacklist, int policyid)
 {
+	if (cache == NULL)
+	{
+		return -1;
+	}
+
 	if (cache->index > cache->capacity)
 		return -1;
 
@@ -208,6 +213,11 @@ int cache_customlist_whitelist_contains(cache_customlist* cache, char *identity,
 
 int cache_customlist_blacklist_contains(cache_customlist* cache, char *identity, unsigned long long crc)
 {
+	if (cache == NULL)
+	{
+		return 0;
+	}
+
 	cache->searchers++;
 	int result = 0;
 	int position = cache->index;
