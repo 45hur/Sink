@@ -26,6 +26,7 @@ void load_file(char *filename)
 		sprintf(client_message, (primeHeader.headercrc == crc) ? "1" : "0");
 		if (primeHeader.headercrc != crc)
 		{
+			logtosyslog("\"message\":\"unable to read prime header from .dat\"");
 			goto flush;
 		}
 
@@ -38,6 +39,7 @@ void load_file(char *filename)
 			//Receive a header from client
 			if (fread(client_message, sizeof(struct MessageHeader), 1, file) == 0)
 			{
+				logtosyslog("\"message\":\"unable to read message header from .dat\"");
 				goto flush;
 			}
 			memcpy(bufferXPtr, client_message, sizeof(struct MessageHeader));
@@ -95,6 +97,7 @@ void load_file(char *filename)
 				{
 					//printf("   crc3 fail\n");
 					//write(sock, client_message, 1);
+					logtosyslog("\"message\":\"unable to read checksum from .dat\"");
 					goto flush;
 				}
 			}
@@ -521,7 +524,8 @@ void load_file(char *filename)
 	}
 
 flush:
-	fclose(file);
+	if (file)
+		fclose(file);
 
 	return;
 }
