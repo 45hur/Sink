@@ -419,7 +419,11 @@ void load_file(char *filename)
 				//printf(" iprange low\n");
 				for (int i = 0; i < swapiprange_low_len; i++)
 				{
-					free(swapiprange_low[i]);
+					if (swapiprange_low[i] != NULL)
+					{
+						free(swapiprange_low[i]);
+						swapiprange_low[i] = NULL;
+					}
 				}
 
 				free(swapiprange_low);
@@ -431,7 +435,11 @@ void load_file(char *filename)
 				//printf(" iprange high\n");  
 				for (int i = 0; i < swapiprange_high_len; i++)
 				{
-					free(swapiprange_high[i]);
+					if (swapiprange_low[i] != NULL)
+					{
+						free(swapiprange_high[i]);
+						swapiprange_high[i] = NULL;
+					}
 				}
 
 				free(swapiprange_high);
@@ -443,7 +451,11 @@ void load_file(char *filename)
 				//printf(" iprange identity\n");
 				for (int i = 0; i < swapiprange_identity_len; i++)
 				{
-					free(swapiprange_identity[i]);
+					if (swapiprange_identity[i] != NULL)
+					{
+						free(swapiprange_identity[i]);
+						swapiprange_identity[i] = NULL;
+					}
 				}
 
 				free(swapiprange_identity);
@@ -483,7 +495,7 @@ void load_file(char *filename)
 			if (swappolicy_block != NULL)
 			{
 				//printf(" policy blopraock\n");
-				free(swappolicy_policy_id);
+				free(swappolicy_block);
 				swappolicy_block = NULL;
 				swappolicy_block_len = 0;
 			}
