@@ -67,7 +67,7 @@ static __inline void logtofile(char *text)
 
 static __inline void logtosyslog(char *text)
 {
-	//return;
+	return;
 
 	pthread_mutex_lock(&(p->mutex));
 	
