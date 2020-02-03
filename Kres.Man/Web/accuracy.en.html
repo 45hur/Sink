@@ -47,14 +47,15 @@
             <div class="text-center">
                 <a id="bypass_button" href="bypass/{$ipToBypass}/{$domainToWhitelist}/{$authToken}/{$redirectUrl}" class="btn btn-danger" role="button">Continue at my own risk</a>
                 <div class="loading" id="loading" style="display: none;">
-                  <p>We are working on the redirection to the site. This operation could take a while.</p>
-                    <div class="spinner">
-                        <div class="bounce1"></div>
-                        <div class="bounce2"></div>
-                        <div class="bounce3"></div>
+                    <p>We are working on the redirection to the site. This operation could take a while.</p>
+                    <div class="progress">
+                      <div id="progress_bar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                        <span id="progress_bar_text" class="sr-only">0%</span>
+                      </div>
                     </div>
                 </div>
-                <p id="popup_needed" class="alert alert-info" style="display:none;">Please allow popup window to continue to the requested page</p>
+                <p id="popup_needed" class="alert alert-info" style="display:none;">Please allow popup window to continue to the requested page.</p>
+                <p id="popup_failed" class="alert alert-danger" style="display:none;">Failed to redirect to requested page, please contact support.</p>
             </div>
         </div>
 
@@ -71,20 +72,37 @@
         </footer>
 
         <script>
-            var bypassCookieName = "wbbypass";
+            var BYPASS_COOKIE_NAME = "wbbypass";
+            var BYPASS_COOKIE_EXPIRE = 5 * 60 * 1000; // in ms
+            var BYPASS_RELOAD_TIME = 5000;
+            var BYPASS_POPUP_TIME = 61 * 1000;
+            var BYPASS_POPUP_LIMIT = 3;
+            var PAGE_START_TIME = (new Date()).getTime();
+
+            function updateProgress(percent) {
+                var el = document.getElementById('progress_bar');
+                el.style.width = percent + '%';
+                el.setAttribute('aria-valuenow', percent);
+                document.getElementById('progress_bar_text').textContent = percent + '%';
+            }
 
             function getBypassCookieValue() {
-                var name = bypassCookieName + "=";
+                var name = BYPASS_COOKIE_NAME + "=";
                 var ca = document.cookie.split(';');
                 var i;
                 var c;
+                var values;
                 for(i = 0; i < ca.length; i++) {
                     c = ca[i];
                     while (c.charAt(0) == ' ') {
                         c = c.substring(1);
                     }
                     if (c.indexOf(name) == 0) {
-                        return parseInt( c.split('=')[1], 10);
+                        values = c.split('=')[1].split('~');
+                        return {
+                            popup: parseInt(values[0] || 0, 10),
+                            wait: parseInt(values[1] || 0, 10)
+                        };
                     }
                 }
                 return false;
@@ -93,18 +111,37 @@
             function openInNewTab() {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('popup_needed').style.display = '';
-                window.open( '{$targetUrl}', '_blank');
+                return window.open( '{$targetUrl}', '_blank');
             }
 
-            function setBypassCookie(minutes, value) {
+            function setBypassCookie(value) {
                 var d = new Date();
-                d.setTime(d.getTime() + minutes*60*1000); // minutes in milliseconds
-                document.cookie = bypassCookieName + '=' + value + ';path=/;expires='+d.toGMTString()+';';
+                d.setTime(d.getTime() + BYPASS_COOKIE_EXPIRE);
+                document.cookie = BYPASS_COOKIE_NAME + '=' + value.popup +'~'+ value.wait + ';path=/;expires='+d.toGMTString()+';';
             }
 
-            function showLoading() {
+            function createUpdateFc(targetTime) {
+                if ( !targetTime ) {
+                    targetTime = (new Date()).getTime() + BYPASS_POPUP_TIME;
+                }
+                return function() {
+                    var done = BYPASS_POPUP_TIME - Math.max( 0, targetTime - (new Date()).getTime() );
+                    updateProgress(Math.round(done / BYPASS_POPUP_TIME * 100));
+                }
+            }
+
+            function showLoading(targetTime) {
                 document.getElementById('loading').style.display = '';
                 document.getElementById('bypass_button').style.display = 'none';
+                var updateHandler = createUpdateFc(targetTime);
+                updateHandler();
+                setInterval( updateHandler, 1000);
+            }
+
+            function showFail() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('popup_needed').style.display = 'none';
+                document.getElementById('popup_failed').style.display = '';
             }
 
             function reload() {
@@ -123,8 +160,13 @@
                 oXMLHttpRequest.onreadystatechange = function () {
                     if (this.readyState == 4) {
                         if (this.status == 418) {
-                            setBypassCookie(5, 1);
-                            setTimeout(reload, 5000);
+                            var now = (new Date()).getTime();
+                            var initial = { popup: 0, wait: PAGE_START_TIME + BYPASS_POPUP_TIME};
+                            if ( initial.wait < now ) { // popup time already passed - count from now
+                                initial.wait = now + BYPASS_POPUP_TIME;
+                            }
+                            setBypassCookie(initial);
+                            setTimeout(reload, BYPASS_RELOAD_TIME);
                         } else {
                             setTimeout(tryBypass, 500);
                         }
@@ -148,13 +190,18 @@
                     return;
                 }
                 
-                showLoading();
-                if ( cookieVal < 6 ) {
-                    setBypassCookie(5, cookieVal+1);
-                    setTimeout(reload, 5000);
+                showLoading(cookieVal.wait);
+                if ( cookieVal.wait > (new Date()).getTime() ) {
+                    setTimeout(reload, BYPASS_RELOAD_TIME);
                     return;
                 }
-                openInNewTab();
+                if ( cookieVal.popup < BYPASS_POPUP_LIMIT ) {
+                    cookieVal.popup++;
+                    setBypassCookie(cookieVal);
+                    openInNewTab();
+                    return;
+                }
+                showFail();
             }
 
             function ready() {
@@ -169,7 +216,6 @@
                     });
                 }
             }
-
             ready();
         </script>
 
